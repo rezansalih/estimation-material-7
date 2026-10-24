@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Material Estimator">
+  <rect width="512" height="512" rx="112" fill="#0d9488"/>
+  <!-- Row 1: two bricks -->
+  <path d="M128 136 H236 A12 12 0 0 1 248 148 V192 A12 12 0 0 1 236 204 H116 A12 12 0 0 1 104 192 V160 A24 24 0 0 1 128 136 Z" fill="#ffffff"/>
+  <path d="M276 136 H384 A24 24 0 0 1 408 160 V192 A12 12 0 0 1 396 204 H276 A12 12 0 0 1 264 192 V148 A12 12 0 0 1 276 136 Z" fill="#ffffff"/>
+  <!-- Row 2: three bricks -->
+  <rect x="104" y="220" width="80" height="68" rx="12" fill="#ffffff"/>
+  <rect x="200" y="220" width="112" height="68" rx="12" fill="#ffffff"/>
+  <rect x="328" y="220" width="80" height="68" rx="12" fill="#ffffff"/>
+  <!-- Row 3: two bricks -->
+  <path d="M116 304 H236 A12 12 0 0 1 248 316 V360 A12 12 0 0 1 236 372 H128 A24 24 0 0 1 104 348 V316 A12 12 0 0 1 116 304 Z" fill="#ffffff"/>
+  <path d="M276 304 H396 A12 12 0 0 1 408 316 V348 A24 24 0 0 1 384 372 H276 A12 12 0 0 1 264 360 V316 A12 12 0 0 1 276 304 Z" fill="#ffffff"/>
+</svg>

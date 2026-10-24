@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Mobile Web Optimization Tags -->
+    <meta name="theme-color" content="#f2f6f7" id="theme-color-meta">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Material Estimator">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    
+    <title>Construction Material Estimator</title>
+    <!-- Styles are embedded so the phone cannot load only half the layout. -->
+    <link rel="stylesheet" href="./new-style.css">
+<script>
+/* Icon system: one inline SVG sprite replaces the 652 KB Lucide runtime.
+   The public API (window.lucide.createIcons) is unchanged, so every existing
+   call site keeps working. */
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  function paint(root) {
+    (root || document).querySelectorAll('i[data-lucide]').forEach(function (el) {
+      var name = el.getAttribute('data-lucide');
+      var cls = (el.className || '');
+      // Icons with no Tailwind size class inherit a sensible default (older
+      // Android WebViews predate :where(), so this is done in JS on purpose).
+      if (!/(^|[ ])(w|h)-/.test(cls)) cls += ' lucide-default';
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('class', ('lucide ' + cls).trim());
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      var use = document.createElementNS(NS, 'use');
+      use.setAttribute('href', '#i-' + name);
+      svg.appendChild(use);
+      el.parentNode.replaceChild(svg, el);
+    });
+  }
+  window.lucide = { createIcons: function (opts) { paint(document); } };
+  document.addEventListener('DOMContentLoaded', function () { paint(document); });
+})();
+</script>
+
+</head>
+<body class="antialiased view-home">
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true" focusable="false">
+<symbol id="i-blending" viewBox="0 0 24 24"><path d="M8 14a2 2 0 0 0-1.963 1.615l-1.018 5.193A1 1 0 0 0 6 22h12a1 1 0 0 0 .981-1.192l-1.018-5.193A2 2 0 0 0 16 14z"></path><path d="m17 2-1 12"></path><path d="M8.006 14 7 2"></path><path d="M7.565 8.787A5 5 0 0 0 12 8a5 5 0 0 1 4.56-.75"></path><path d="M19 2H5a2 2 0 0 0-2 2v5a2 2 0 0 0 .688 1.5"></path><path d="M12 18h.01"></path></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></symbol>
+<symbol id="i-box-select" viewBox="0 0 24 24"><path d="M5 3a2 2 0 0 0-2 2"></path><path d="M19 3a2 2 0 0 1 2 2"></path><path d="M21 19a2 2 0 0 1-2 2"></path><path d="M5 21a2 2 0 0 1-2-2"></path><path d="M9 3h1"></path><path d="M9 21h1"></path><path d="M14 3h1"></path><path d="M14 21h1"></path><path d="M3 9v1"></path><path d="M21 9v1"></path><path d="M3 14v1"></path><path d="M21 14v1"></path></symbol>
+<symbol id="i-brick-wall" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 9v6"></path><path d="M16 15v6"></path><path d="M16 3v6"></path><path d="M3 15h18"></path><path d="M3 9h18"></path><path d="M8 15v6"></path><path d="M8 3v6"></path></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h16"></path><path d="M4 18h16"></path></symbol>
+<symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></symbol>
+<symbol id="i-check-circle-2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="m9 11 3 3L22 4"></path></symbol>
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></symbol>
+<symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></symbol>
+<symbol id="i-chevron-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"></path></symbol>
+<symbol id="i-circle-dollar-sign" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></symbol>
+<symbol id="i-coins" viewBox="0 0 24 24"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"></path><path d="M15 6h1v4"></path><path d="m6.134 14.768.866-.5 2 3.464"></path><circle cx="16" cy="8" r="6"></circle></symbol>
+<symbol id="i-cuboid" viewBox="0 0 24 24"><path d="M10 22v-8"></path><path d="M2.336 8.89 10 14l11.715-7.029"></path><path d="M22 14a2 2 0 0 1-.971 1.715l-10 6a2 2 0 0 1-2.138-.05l-6-4A2 2 0 0 1 2 16v-6a2 2 0 0 1 .971-1.715l10-6a2 2 0 0 1 2.138.05l6 4A2 2 0 0 1 22 8z"></path></symbol>
+<symbol id="i-droplets" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"></path><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"></path></symbol>
+<symbol id="i-file-spreadsheet" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M8 13h2"></path><path d="M14 13h2"></path><path d="M8 17h2"></path><path d="M14 17h2"></path></symbol>
+<symbol id="i-git-commit-horizontal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><line x1="3" x2="9" y1="12" y2="12"></line><line x1="15" x2="21" y1="12" y2="12"></line></symbol>
+<symbol id="i-grip-vertical" viewBox="0 0 24 24"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></symbol>
+<symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></symbol>
+<symbol id="i-land-plot" viewBox="0 0 24 24"><path d="m12 8 6-3-6-3v10"></path><path d="m8 11.99-5.5 3.14a1 1 0 0 0 0 1.74l8.5 4.86a2 2 0 0 0 2 0l8.5-4.86a1 1 0 0 0 0-1.74L16 12"></path><path d="m6.49 12.85 11.02 6.3"></path><path d="M17.51 12.85 6.5 19.15"></path></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></symbol>
+<symbol id="i-layout-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></symbol>
+<symbol id="i-mountain-snow" viewBox="0 0 24 24"><path d="m8 3 4 8 5-5 5 15H2L8 3z"></path><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"></path></symbol>
+<symbol id="i-move-horizontal" viewBox="0 0 24 24"><path d="m18 8 4 4-4 4"></path><path d="M2 12h20"></path><path d="m6 8-4 4 4 4"></path></symbol>
+<symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"></path><rect x="6" y="14" width="12" height="8" rx="1"></rect></symbol>
+<symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></symbol>
+<symbol id="i-ruler" viewBox="0 0 24 24"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"></path><path d="m14.5 12.5 2-2"></path><path d="m11.5 9.5 2-2"></path><path d="m8.5 6.5 2-2"></path><path d="m17.5 15.5 2-2"></path></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path><path d="M7 3v4a1 1 0 0 0 1 1h7"></path></symbol>
+<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"></path><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"></path><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"></path><path d="M7 21h10"></path></symbol>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></symbol>
+<symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></symbol>
+<symbol id="i-shovel" viewBox="0 0 24 24"><path d="M21.56 4.56a1.5 1.5 0 0 1 0 2.122l-.47.47a3 3 0 0 1-4.212-.03 3 3 0 0 1 0-4.243l.44-.44a1.5 1.5 0 0 1 2.121 0z"></path><path d="M3 22a1 1 0 0 1-1-1v-3.586a1 1 0 0 1 .293-.707l3.355-3.355a1.205 1.205 0 0 1 1.704 0l3.296 3.296a1.205 1.205 0 0 1 0 1.704l-3.355 3.355a1 1 0 0 1-.707.293z"></path><path d="m9 15 7.879-7.878"></path></symbol>
+<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></symbol>
+<symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"></rect></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></symbol>
+<symbol id="i-table-2" viewBox="0 0 24 24"><path d="M3 9h18"></path><path d="M9 3v18"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></symbol>
+<symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></symbol>
+<symbol id="i-waves" viewBox="0 0 24 24"><path d="M2 12q2.5 2 5 0t5 0 5 0 5 0"></path><path d="M2 19q2.5 2 5 0t5 0 5 0 5 0"></path><path d="M2 5q2.5 2 5 0t5 0 5 0 5 0"></path></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></symbol>
+<symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m17 8-5-5-5 5"></path></symbol>
+<symbol id="i-file-text" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></symbol>
+<symbol id="i-message-circle" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></symbol>
+<symbol id="i-shopping-cart" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></symbol>
+<symbol id="i-pencil-line" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"></path></symbol>
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></symbol>
+    </svg>
+
+    <!-- Mobile Sticky Action Footer -->
+
+    <div class="container app-shell mx-auto p-2 sm:p-3 md:p-4 max-w-6xl no-print">
+        
+        <header class="app-header flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-4">
+            <div class="text-start flex items-start gap-3">
+                <div class="brand-mark" aria-hidden="true"><img src="./icon-192.png" alt="" width="42" height="42"></div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold header-title tracking-tight" data-lang="appTitle">Construction Material Estimator</h1>
+                    <p class="header-byline" data-lang="appDesigner">Designed By Engineer Rezan Salih Noori</p>
+                </div>
+            </div>
+            
+            <div class="header-tools flex items-center gap-2 mt-3 sm:mt-0">
+                <button id="lang-indicator" class="lang-chip" type="button" data-lang-aria="languageLabel" aria-haspopup="dialog" aria-controls="app-menu">
+                    <i data-lucide="languages"></i><span id="lang-indicator-label">EN</span>
+                </button>
+                <button id="header-menu-btn" class="quick-action header-quick-action" type="button" aria-haspopup="dialog" aria-controls="app-menu">
+                    <i data-lucide="menu"></i><span data-lang="menuLabel">Menu</span>
+                </button>
+            </div>
+        </header>
+
+        <div id="app-menu" class="app-menu-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="app-menu-title">
+            <div class="app-menu-sheet">
+                <div class="app-menu-head">
+                    <h2 id="app-menu-title" data-lang="menuTitle">Menu</h2>
+                    <button id="app-menu-close-btn" class="icon-action" type="button" data-lang-aria="menuClose" aria-label="Close"><i data-lucide="x"></i></button>
+                </div>
+                <div class="app-menu-body">
+                    <div class="app-menu-section">
+                        <label class="app-menu-label" for="language-selector" data-lang="languageLabel">Language</label>
+                        <select id="language-selector" dir="ltr" data-lang-aria="languageLabel" aria-label="Language" class="pro-input text-sm w-full">
+                            <option value="en" dir="ltr">ENGLISH</option>
+                            <option value="ku" dir="ltr">KURDISH&nbsp;BADINI</option>
+                            <option value="ks" dir="ltr">KURDISH&nbsp;SORANI</option>
+                            <option value="ar" dir="ltr">ARABIC</option>
+                        </select>
+                    </div>
+                    <div class="app-menu-section">
+                        <div class="theme-switch">
+                            <label for="theme-toggle" class="theme-control">
+                                <i data-lucide="moon" class="text-indigo-400"></i>
+                                <span class="theme-label" data-lang="themeToggleLabel">Dark mode</span>
+                                <input type="checkbox" id="theme-toggle" role="switch" data-lang-aria="themeToggleLabel" aria-label="Dark mode" class="sr-only">
+                                <span class="theme-track" aria-hidden="true"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button id="open-settings-btn" class="quick-action app-menu-item" type="button"><i data-lucide="sliders-horizontal"></i><span data-lang="workspaceSettings">Project settings</span></button>
+                    <button id="workspace-history-btn" class="quick-action app-menu-item" type="button"><i data-lucide="history"></i><span data-lang="workspaceHistory">Recent calculations</span></button>
+                    <button id="site-tools-btn" class="quick-action app-menu-item" type="button"><i data-lucide="land-plot"></i><span data-lang="siteTools">Site Tools</span></button>
+                    <button id="header-grandtotal-btn" class="quick-action app-menu-item" type="button"><i data-lucide="file-text"></i><span data-lang="projectTotalNav">Project Total</span></button>
+                    <p class="app-menu-foot"><span id="offline-pill" class="offline-pill hidden"><i data-lucide="check-circle-2"></i><span data-lang="offlineReady">Offline Ready</span></span></p>
+                </div>
+            </div>
+        </div>
+
+        <section class="metric-grid mb-4" data-lang-aria="workspaceStatusLabel" aria-label="Workspace status">
+            <div class="metric-card"><span class="metric-label" data-lang="activeToolLabel">ACTIVE TOOL</span><strong id="active-tool-metric">Concrete</strong><span class="metric-meta" data-lang="activeToolMeta">Select a calculator below</span></div>
+            <button type="button" class="metric-card metric-card-action" id="session-items-metric-card"><span class="metric-label" data-lang="sessionItemsLabel">SESSION ITEMS</span><strong id="session-items-metric">0</strong><span class="metric-meta" data-lang="projectTotalNav">Project Total</span></button>
+            <div class="metric-card accent-metric"><span class="metric-label" data-lang="defaultWastageLabel">DEFAULT WASTAGE</span><strong id="wastage-metric">5%</strong><span class="metric-meta" data-lang="defaultWastageMeta">Adjust in project settings</span></div>
+        </section>
+
+        <!-- ================= HOME SCREEN ================= -->
+        <section id="home-screen" class="home-screen" data-lang-aria="homeScreenLabel" aria-label="Choose a calculator">
+            <div class="home-grid">
+                <button type="button" class="app-tile" data-goto="concrete" style="--tile-accent:#0d9488">
+                    <span class="app-tile-icon"><i data-lucide="box"></i></span>
+                    <strong data-lang="tabConcrete">Concrete</strong>
+                    <span class="tile-desc" data-lang="homeConcreteDesc">Slabs, footings, beams and columns</span>
+                </button>
+                <button type="button" class="app-tile" data-goto="blocks" style="--tile-accent:#0284c7">
+                    <span class="app-tile-icon"><i data-lucide="layout-grid"></i></span>
+                    <strong data-lang="tabBlocks">Blocks</strong>
+                    <span class="tile-desc" data-lang="homeBlocksDesc">Cement block walls by area or volume</span>
+                </button>
+                <button type="button" class="app-tile" data-goto="bricks" style="--tile-accent:#d2703f">
+                    <span class="app-tile-icon"><i data-lucide="brick-wall"></i></span>
+                    <strong data-lang="tabBricks">Bricks</strong>
+                    <span class="tile-desc" data-lang="homeBricksDesc">Brickwork with mortar and openings</span>
+                </button>
+                <button type="button" class="app-tile" data-goto="steel" style="--tile-accent:#64748b">
+                    <span class="app-tile-icon"><i data-lucide="git-commit-horizontal"></i></span>
+                    <strong data-lang="tabSteel">Steel</strong>
+                    <span class="tile-desc" data-lang="homeSteelDesc">Rebar weight, lengths, and bar counts by element</span>
+                </button>
+                <button type="button" class="app-tile" data-goto="earthwork" style="--tile-accent:#b45309">
+                    <span class="app-tile-icon"><i data-lucide="mountain-snow"></i></span>
+                    <strong data-lang="tabEarthwork">Earth Work</strong>
+                    <span class="tile-desc" data-lang="homeEarthworkDesc">Excavation, backfill and truck loads</span>
+                </button>
+            </div>
+
+            <button type="button" id="install-app-btn" class="install-app-btn hidden" data-lang-aria="installApp">
+                <i data-lucide="download"></i>
+                <span data-lang="installApp">Install app</span>
+            </button>
+
+            <div class="home-foot">
+                <i data-lucide="info"></i>
+                <span data-lang="homeTip">Results are estimates. Set your material wastage in Project settings before you start.</span>
+            </div>
+        </section>
+
+        <!-- Back bar: only visible while a calculator is open -->
+        <div id="calc-back" class="calc-back">
+            <button type="button" id="back-home-btn"><i data-lucide="chevron-left"></i><span data-lang="homeBack">All tools</span></button>
+            <span class="calc-back-title" id="calc-back-title">Concrete</span>
+        </div>
+
+        <!-- Wrapper for Global Settings -->
+        <div id="global-settings-wrapper" class="hidden">
+            <div class="card p-4 rounded-lg mb-4">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h2 class="text-lg font-semibold header-title" data-lang="globalSettings">Global Settings</h2>
+                    <button id="close-global-settings-btn" type="button" data-lang-aria="closeLabel" aria-label="Close" class="btn btn-secondary !p-2"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
+                     <div>
+                        <label for="wastage" class="block text-sm font-medium mb-1" data-lang="wastageLabel">General Material Wastage (%)</label>
+                        <input type="number" inputmode="decimal" id="wastage" value="5" min="0" max="50" class="pro-input">
+                     </div>
+                     <div>
+                        <label for="currency" class="block text-sm font-medium mb-1" data-lang="currencySymbol">Currency</label>
+                        <select id="currency" class="pro-input w-full">
+                            <option value="$">USD ($)</option>
+                            <option value="د.ع" selected>IQD (د.ع)</option>
+                        </select>
+                        <p id="currency-conversion-note" class="text-xs text-gray-500 mt-1">Only USD ↔ IQD conversion is supported; enter prices in the selected currency.</p>
+                        <input type="text" id="custom-currency" class="pro-input w-full mt-2 hidden" data-lang-aria="customCurrencyLabel" aria-label="Custom currency">
+                    </div>
+                    <div>
+                        <label for="exchange-rate" class="block text-sm font-medium mb-1" data-lang="exchangeRateLabel">100 USD to IQD Rate</label>
+                        <input type="number" inputmode="decimal" id="exchange-rate" value="148000" min="0" class="pro-input w-full">
+                    </div>
+                    <div><label for="cement-bag-mass" class="block text-sm font-medium mb-1" data-upgrade-label="cementBagSize">Cement bag size</label><select id="cement-bag-mass" class="pro-input w-full"><option value="25" data-upgrade-label="bag25">25 kg</option><option value="40" data-upgrade-label="bag40">40 kg</option><option value="50" selected data-upgrade-label="bag50">50 kg</option></select></div>
+                 </div>
+            </div>
+
+            <div class="card p-4 rounded-lg mb-4 text-start">
+                <h2 class="text-lg font-semibold header-title mb-1" data-lang="pricesTitle">Local Material Prices</h2>
+                <p class="text-xs mb-3" style="color: var(--muted);" data-lang="pricesHint">Set your local rates once here — every calculator fills its price fields from these values automatically.</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div><label for="price-cement-bag" class="block text-sm font-medium mb-1" data-lang="priceCementBag">Cement (per bag)</label><input type="number" inputmode="decimal" id="price-cement-bag" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-sand" class="block text-sm font-medium mb-1" data-lang="priceSand">Sand (per m³)</label><input type="number" inputmode="decimal" id="price-sand" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-aggregate" class="block text-sm font-medium mb-1" data-lang="priceAggregate">Aggregate (per m³)</label><input type="number" inputmode="decimal" id="price-aggregate" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-rebar" class="block text-sm font-medium mb-1" data-lang="priceRebar">Rebar (per kg)</label><input type="number" inputmode="decimal" id="price-rebar" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-block" class="block text-sm font-medium mb-1" data-lang="priceBlock">Block (per piece)</label><input type="number" inputmode="decimal" id="price-block" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-brick" class="block text-sm font-medium mb-1" data-lang="priceBrick">Brick (per piece)</label><input type="number" inputmode="decimal" id="price-brick" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-glue" class="block text-sm font-medium mb-1" data-lang="priceGlue">Glue (per bag)</label><input type="number" inputmode="decimal" id="price-glue" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-brc" class="block text-sm font-medium mb-1" data-lang="priceBrc">BRC mesh (per piece)</label><input type="number" inputmode="decimal" id="price-brc" class="pro-input w-full" min="0" step="any"></div>
+                    <div><label for="price-formwork" class="block text-sm font-medium mb-1" data-lang="priceFormwork">Formwork (per m²)</label><input type="number" inputmode="decimal" id="price-formwork" class="pro-input w-full" min="0" step="any"></div>
+                </div>
+            </div>
+
+            <div class="card p-4 rounded-lg mb-4 text-start">
+                <h2 class="text-lg font-semibold header-title mb-1" data-lang="backupSection">Data backup</h2>
+                <p class="text-xs mb-3" style="color: var(--muted);" data-lang="backupHint">Saves settings, projects, session rows and history into one JSON file you can keep or move to another device.</p>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="backup-btn" class="btn btn-primary">
+                        <i data-lucide="download" class="w-4 h-4 me-1 pointer-events-none"></i>
+                        <span data-lang="backupBtn">Back up (JSON)</span>
+                    </button>
+                    <button type="button" id="restore-btn" class="btn btn-secondary">
+                        <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+                        <span data-lang="restoreBtn">Restore from file</span>
+                    </button>
+                    <input type="file" id="restore-file" accept="application/json,.json" class="hidden" aria-hidden="true">
+                </div>
+            </div>
+            <div class="card p-4 rounded-lg mb-4 text-start">
+                <h2 class="text-lg font-semibold header-title mb-1" data-lang="grandTotalBtn">Project Grand Total</h2>
+                <p class="text-xs mb-3" style="color: var(--muted);" data-lang="grandTotalHint">Adds up cement, sand, aggregate, steel, blocks and bricks from every tool in the current session.</p>
+                <button type="button" id="grand-total-btn" class="btn btn-primary w-full">
+                    <i data-lucide="file-text" class="w-4 h-4 me-1 pointer-events-none"></i>
+                    <span data-lang="grandTotalOpenBtn">Open combined purchase order</span>
+                </button>
+            </div>
+            <div class="card p-4 rounded-lg mb-4 text-start">
+                <h2 class="text-lg font-semibold header-title mb-1" data-lang="newProjectTitle">Start a new project</h2>
+                <p class="text-xs mb-3" style="color: var(--muted);" data-lang="newProjectHint">Deletes every row in all five session tables so the next job starts clean.</p>
+                <button type="button" id="new-project-btn" class="btn btn-secondary w-full">
+                    <i data-lucide="trash-2" class="w-4 h-4 me-1 pointer-events-none"></i>
+                    <span data-lang="newProjectBtn">Clear all sessions</span>
+                </button>
+            </div>
+        </div>
+        
+        <div>
+            <!-- TABS -->
+            <div class="mobile-guide" aria-live="polite"><i data-lucide="info" class="w-4 h-4"></i><span data-lang="mobileGuide">Fill the sections from top to bottom, then tap Calculate.</span></div>
+            <div class="calculator-nav flex flex-wrap border-b-2 border-gray-700 mb-4 gap-y-1 sm:gap-y-0">
+                <button type="button" class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="concrete">
+                    <i data-lucide="box" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
+                    <span class="whitespace-nowrap" data-lang="tabConcrete">Concrete</span>
+                </button>
+                <button type="button" class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="blocks">
+                    <i data-lucide="layout-grid" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
+                    <span class="whitespace-nowrap" data-lang="tabBlocks">Blocks</span>
+                </button>
+                <button type="button" class="tab-btn w-[30%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="bricks">
+                    <i data-lucide="brick-wall" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
+                    <span class="whitespace-nowrap" data-lang="tabBricks">Bricks</span>
+                </button>
+                <button type="button" class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="steel">
+                    <i data-lucide="ruler" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
+                    <span class="whitespace-nowrap" data-lang="tabSteel">Steel</span>
+                </button>
+                <button type="button" class="tab-btn w-[45%] flex-grow sm:w-auto sm:flex-grow-0 py-2 px-1 sm:px-4 text-[13px] sm:text-base font-semibold border-b-2 border-transparent flex justify-center items-center gap-1 sm:gap-2" data-tab="earthwork">
+                    <i data-lucide="shovel" class="w-4 h-4 sm:w-5 sm:h-5"></i> 
+                    <span class="whitespace-nowrap" data-lang="tabEarthwork">Earth Work</span>
+                </button>
+            </div>
+            <main>
+                <div id="error-box" class="hidden bg-red-900 border border-red-700 text-red-200 px-3 py-2 rounded-lg relative mb-4 text-start" role="alert">
+                    <strong class="font-bold" data-lang="errorTitle">Error:</strong>
+                    <span class="block sm:inline" id="error-message"></span>
+                    <button type="button" class="absolute top-0 bottom-0 end-0 px-4 py-3" id="close-error" data-lang-aria="closeLabel" aria-label="Close">
+                      <i data-lucide="x"></i>
+                    </button>
+                </div>
+
+                <div id="concrete" class="tab-content hidden space-y-3 pb-4">
+                    <h2 class="text-xl font-semibold header-title" data-lang="concreteTitle">Concrete Calculator</h2>
+                    <div class="mb-2 ps-1 text-start">
+                       <span class="label-with-hint"><label id="calcmode-lbl-1" class="block text-sm font-medium mb-1" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcModeConcrete" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcModeConcrete">Use the element's dimensions, or switch to total volume if you already know it.</p>
+                        <div role="radiogroup" aria-labelledby="calcmode-lbl-1" class="flex flex-wrap gap-x-4 gap-y-2">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="concrete-mode" value="dims" class="h-4 w-4" checked>
+                                <span class="ms-2" data-lang="byDimensions">Using Element Dimensions</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="concrete-mode" value="volume" class="h-4 w-4">
+                                <span class="ms-2" data-lang="byTotalVolume">Using Total Volume</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Dimensions -->
+                    <div class="card p-3 rounded-lg space-y-3 text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Dimensions">Dimensions & Quantity</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="concrete-type" class="block text-sm font-medium" data-lang="appType">Concrete Element</label>
+                                <select id="concrete-type" class="pro-input">
+                                    <option value="slab" data-lang="slabOption">Slab / Foundation</option>
+                                    <option value="column" data-lang="columnOption">Column</option>
+                                    <option value="beam" data-lang="beamOption">Beam</option>
+                                </select>
+                                <div id="concrete-slab-support-wrap" class="mt-2">
+                                    <label for="concrete-slab-support" class="block text-xs sm:text-sm font-medium" data-upgrade-label="slabSupport">Slab support</label>
+                                    <select id="concrete-slab-support" class="pro-input w-full"><option value="ground" data-upgrade-label="groundSupported">Ground-supported (no soffit formwork)</option><option value="suspended" data-upgrade-label="suspendedSlab">Suspended slab (include soffit formwork)</option></select>
+                                </div>
+                            </div>
+                            <div id="concrete-quantity-wrapper" class="hidden">
+                                <label for="concrete-quantity" class="block text-sm font-medium" data-lang="numberOfElements">Number of elements</label>
+                                <input type="number" inputmode="numeric" id="concrete-quantity" value="1" min="1" class="pro-input" data-sane="1:200:">
+                            </div>
+                        </div>
+
+                        <div id="concrete-dims-inputs" class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label id="concrete-length-label" for="concrete-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
+                                <input type="number" inputmode="decimal" id="concrete-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:200:m">
+                            </div>
+                            <div>
+                                <label id="concrete-width-label" for="concrete-width" class="block text-xs sm:text-sm font-medium" data-lang="width">Width (m)</label>
+                                <input type="number" inputmode="decimal" id="concrete-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.3:200:m">
+                            </div>
+                            <div>
+                                <label id="concrete-thickness-label" for="concrete-thickness" class="block text-xs sm:text-sm font-medium" data-lang="thickness">Thickness (m)</label>
+                                <input type="number" inputmode="decimal" id="concrete-thickness" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="T/D" data-sane="0.05:2:m">
+                            </div>
+                        </div>
+
+                        <div id="concrete-volume-input" class="hidden">
+                            <label class="block text-sm font-medium" data-lang="totalVolumeInput">Total Concrete Volume (m³)</label>
+                            <input type="number" inputmode="decimal" id="concrete-total-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Mix -->
+                    <div class="card p-3 rounded-lg space-y-3 text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Mix">Mix Specifications</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <div id="concrete-nominal-ratio-wrap">
+                                    <label for="concrete-ratio" class="block text-sm font-medium" data-lang="mixRatio">Cement : sand : coarse aggregate, by loose volume</label>
+                                    <select id="concrete-ratio" class="pro-input">
+                                        <option value="1:1.5:3" data-lang="gradeOptC25">C25–C30 · High strength (1:1.5:3)</option>
+                                        <option value="1:2:4" selected data-lang="gradeOptC20">C20 · Ordinary (1:2:4)</option>
+                                        <option value="1:3:6" data-lang="gradeOptC15">C15 · Blinding (1:3:6)</option>
+                                    </select>
+                                    <p id="concrete-grade-note" class="text-xs opacity-75 mt-1" data-lang="gradeNoteC20">Ordinary concrete for footings, walls and slabs. About 300–350 kg cement per m³.</p>
+                                </div>
+                                <select id="concrete-mix-basis" class="pro-input mt-2"><option value="nominal" data-lang="mixModeNominal">Nominal ratio</option><option value="custom" data-lang="mixModeCustom">Custom nominal ratio</option></select>
+                                <div id="concrete-approved-profile" class="hidden mt-2"><input id="concrete-approved-ratio" data-lang-placeholder="customRatioPlaceholder" class="pro-input" value="1:2:4" placeholder="Custom cement:sand:coarse aggregate ratio"><p class="text-xs opacity-70 mt-1" data-lang="customRatioNote">This is still a nominal loose-volume ratio, not an approved mix design.</p></div>
+                            </div>
+                            <div id="concrete-dry-factor-wrap">
+                                <label for="concrete-dry-factor" class="block text-sm font-medium" data-lang="dryVolumeFactor">Dry-volume factor (estimate)</label>
+                                <input type="number" inputmode="decimal" id="concrete-dry-factor" value="1.54" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="dryVolumeFactorNote">Estimate only; actual yield varies by materials and batching.</p>
+                            </div>
+                            <div id="concrete-cement-density-wrap">
+                                <span class="label-with-hint"><label for="concrete-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Loose cement bulk density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                <input type="number" inputmode="decimal" id="concrete-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Cost -->
+                    <div class="card p-3 rounded-lg text-start">
+                        <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="concrete-cost-container" aria-expanded="false">
+                            <span class="text-base font-semibold header-title flex items-center gap-2">
+                                <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
+                                <span data-lang="step3Cost">Costing (Optional)</span>
+                            </span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="concrete-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="costCementBag">Cost per Cement Bag</label>
+                                    <input type="number" inputmode="decimal" id="concrete-cement-cost" min="0" step="0.01" class="pro-input">
+                                </div>
+                                <div>
+                                    <label id="concrete-sand-cost-label" class="block text-sm font-medium" data-lang="costSandM3">Cost per m³ of Sand</label>
+                                    <input type="number" inputmode="decimal" id="concrete-sand-cost" min="0" step="0.01" class="pro-input">
+                                </div>
+                                <div>
+                                    <label id="concrete-aggregate-cost-label" class="block text-sm font-medium" data-lang="costAggregateM3">Cost per m³ of Aggregate</label>
+                                    <input type="number" inputmode="decimal" id="concrete-aggregate-cost" min="0" step="0.01" class="pro-input">
+                                </div>
+                                <div id="concrete-formwork-row"><label class="block text-sm font-medium" data-upgrade-label="formworkCost">Formwork cost / m²</label><input type="number" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" value="0" class="pro-input"><p id="concrete-formwork-note" class="text-xs opacity-70 mt-1 hidden" data-lang="formworkDimensionsNote">Formwork pricing needs element dimensions; it is not included in total-volume mode.</p></div>
+                            </div>
+                            <p class="text-xs opacity-70 mt-3" data-lang="costScopeNote">Cost scope: the displayed total includes only entered cement, sand, coarse aggregate, and formwork prices. It is not a full construction cost.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- STICKY ACTION BUTTONS -->
+                    <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
+                        <button type="button" id="calculate-concrete" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="concrete" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
+                    </div>
+
+                    <div id="concrete-result" class="mt-4 p-3 card rounded-lg hidden"></div>
+                    
+                    <!-- SESSION RESULTS TABLE -->
+                    <div id="concrete-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
+
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <table>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolumeDim">Volume / Dimensions</th>
+                                <th scope="col" data-lang="tableHeaderTotalVolume">Total Volume</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderAggregate">Aggregate</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                <th scope="col" aria-hidden="true"></th>
+                            </tr>
+                                </thead>
+                                <tbody id="concrete-table-body"></tbody>
+                                <tfoot id="concrete-table-footer"></tfoot>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                 
+                <div id="blocks" class="tab-content hidden space-y-3 pb-4">
+                    <h2 class="text-xl font-semibold header-title" data-lang="blocksTitle">Cement Block Calculator</h2>
+                    <div class="mb-2 ps-1 text-start advanced-volume-row">
+                        <label class="flex items-center cursor-pointer gap-2">
+                            <input type="checkbox" id="block-adv-volume" class="h-4 w-4">
+                            <span class="text-sm font-medium" data-lang="advancedDirectM3">Advanced / Direct m³</span>
+                            <button type="button" class="hint-btn" data-hint="hintAdvancedVolume" data-lang-aria="helpBtn" aria-label="Help">?</button>
+                        </label>
+                        <p class="field-hint hidden" data-lang="hintAdvancedVolume">Skip the wall dimensions and type the total wall volume directly — only if you already know it.</p>
+                        <div class="hidden" aria-hidden="true">
+                            <label class="flex items-center"><input type="radio" name="block-mode" value="dims" class="h-4 w-4" checked></label>
+                            <label class="flex items-center"><input type="radio" name="block-mode" value="volume" class="h-4 w-4"></label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div id="block-dims-inputs" class="card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1WallDims">Wall Dimensions</h3>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallLength">Length (m)</label>
+                                    <input type="number" inputmode="decimal" id="block-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.5:300:m">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallHeight">Height (m)</label>
+                                    <input type="number" inputmode="decimal" id="block-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="1:20:m">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
+                                    <input type="number" inputmode="decimal" id="block-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
+                                </div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-600" id="block-openings-section">
+                                <div class="openings-toggle flex items-center gap-2 mb-2" id="block-openings-toggle">
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    <span data-lang="deductOpenings" class="font-semibold">Deduct Openings (Optional)</span>
+                                </div>
+                                <div class="openings-container hidden" id="block-openings-container">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="numWindows">Number of Windows</label>
+                                            <input type="number" inputmode="numeric" id="block-num-windows" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
+                                        </div>
+                                        <div><label class="block text-sm font-medium" data-lang="windowWidth">Window width (m)</label><input type="number" inputmode="decimal" id="block-window-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="windowHeight">Window height (m)</label><input type="number" inputmode="decimal" id="block-window-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="numDoors">Number of Doors</label>
+                                            <input type="number" inputmode="numeric" id="block-num-doors" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
+                                        </div>
+                                        <div><label class="block text-sm font-medium" data-lang="doorWidth">Door width (m)</label><input type="number" inputmode="decimal" id="block-door-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="doorHeight">Door height (m)</label><input type="number" inputmode="decimal" id="block-door-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                    </div>
+                                    <div id="block-openings-summary" class="text-sm text-gray-400 mb-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="block-volume-input" class="hidden card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1WallVolume">Wall Volume</h3>
+                            <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
+                           <input type="number" inputmode="decimal" id="block-wall-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
+                        </div>
+                        
+                        <div class="card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Material">Material Specifications</h3>
+                            <div>
+                                <label class="block text-sm font-medium" data-lang="blockType">Block Type</label>
+                                <select id="block-type" class="pro-input w-full">
+                                    <option value="solid_20" data-width="0.2" data-length="400" data-height="200" data-lang="solidBlock20">Solid (40x20x20cm)</option>
+                                    <option value="solid_15" data-width="0.15" data-length="400" data-height="200" data-lang="solidBlock15">Solid (40x20x15cm)</option>
+                                    <option value="hollow" data-width="0.2" data-length="400" data-height="200" data-lang="hollowBlock">Hollow (40x20x20cm)</option>
+                                    <option value="lightweight" data-width="0.1" data-length="600" data-height="200" data-lang="lightweightBlock">Lightweight (60x20x10cm)</option>
+                                    <option value="thermo_20" data-width="0.2" data-length="600" data-height="200" data-lang="thermoBlock20">Thermo-stone hollow (60x20x20cm)</option>
+                                    <option value="thermo_15" data-width="0.15" data-length="600" data-height="200" data-lang="thermoBlock15">Thermo-stone hollow (60x20x15cm)</option>
+                                    <option value="aac_20" data-width="0.2" data-length="600" data-height="200" data-lang="aacBlock20">AAC block (60x20x20cm)</option>
+                                    <option value="aac_15" data-width="0.15" data-length="600" data-height="200" data-lang="aacBlock15">AAC block (60x20x15cm)</option>
+                                    <option value="custom" data-lang="customProduct">Custom site product</option>
+                                </select>
+                                <p id="block-hollow-note" class="hidden text-xs opacity-75 mt-2" data-lang="hollowBlockNote">Hollow blocks are counted by external dimensions and joint mortar only. Grouted cells are not included; add a separate grout estimate if required.</p>
+                                <div id="block-custom-profile" class="hidden grid grid-cols-3 gap-2 mt-2"><input id="block-custom-length" type="number" class="pro-input" data-lang-placeholder="customLenPlaceholder" placeholder="Length (mm)"><input id="block-custom-width" type="number" class="pro-input" data-lang-placeholder="customThickPlaceholder" placeholder="Thickness (mm)"><input id="block-custom-height" type="number" class="pro-input" data-lang-placeholder="customHeightPlaceholder" placeholder="Height (mm)"></div>
+                            </div>
+
+                           <div class="mt-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="block-include-mortar" class="h-4 w-4" checked>
+                                    <span class="ms-2" data-lang="includeMortar">Calculate with Mortar</span>
+                                </label>
+                           </div>
+                           <div id="block-joint-type-wrap" class="mt-2">
+                                <label for="block-joint-type" class="block text-sm font-medium" data-lang="glueJointLabel">Joint type</label>
+                                <select id="block-joint-type" class="pro-input w-full">
+                                    <option value="mortar" data-lang="glueMortar">Cement mortar (conventional)</option>
+                                    <option value="glue" data-lang="glueThinBed">Thin-bed adhesive</option>
+                                </select>
+                           </div>
+                           <div id="block-glue-fields" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+                                <div>
+                                    <span class="label-with-hint"><label for="block-glue-rate" class="block text-sm font-medium" data-lang="glueRate">Glue per m² of wall (kg)</label><button type="button" class="hint-btn" data-hint="hintGlue" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                    <p class="field-hint hidden" data-lang="hintGlue">Thin-bed adhesive for thermo-stone and AAC blocks, applied 2–3 mm thick. About 4 kg per m² of wall is typical.</p>
+                                    <input type="number" inputmode="decimal" id="block-glue-rate" class="pro-input" value="4" min="0.5" step="0.5" data-sane="0.5:20:kg">
+                                </div>
+                                <div><label class="block text-sm font-medium" data-lang="glueBag">Glue bag size (kg)</label><input type="number" inputmode="decimal" id="block-glue-bag" class="pro-input" value="25" min="1" step="1"></div>
+                                <div><label class="block text-sm font-medium" data-lang="glueCost">Price per glue bag</label><input type="number" inputmode="decimal" id="block-glue-cost" class="pro-input" min="0" step="0.01"></div>
+                           </div>
+                           <div id="block-mortar-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                               <div>
+                                   <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
+                                   <input type="number" inputmode="decimal" id="block-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
+                               </div>
+                               <div>
+                                   <span class="label-with-hint"><label for="block-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label><button type="button" class="hint-btn" data-hint="hintMixRatio" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMixRatio">How much sand and gravel go with one bag of cement. 1:6 is common for mortar.</p>
+                                   <select id="block-mortar-ratio" class="pro-input w-full">
+                                       <option value="1:3" selected>1:3</option>
+                                       <option value="1:4">1:4</option>
+                                       <option value="1:5">1:5</option>
+                                       <option value="1:6">1:6</option>
+                                   </select>
+                                </div>
+                               <div class="sm:col-span-2">
+                                    <span class="label-with-hint"><label for="block-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                    <input type="number" inputmode="decimal" id="block-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
+                                </div>
+                                <div class="sm:col-span-2"><span class="label-with-hint"><label for="block-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><button type="button" class="hint-btn" data-hint="hintDryFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDryFactor">Dry mortar shrinks when water is added. 1.33 is the common factor.</p><input type="number" inputmode="decimal" id="block-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
+                           </div>
+                        </div>
+
+                        <div class="card p-3 rounded-lg text-start">
+                            <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="block-cost-container" aria-expanded="false">
+                                <span class="text-base font-semibold header-title flex items-center gap-2">
+                                    <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
+                                    <span data-lang="step3Cost">Costing (Optional)</span>
+                                </span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
+                            </button>
+                            <div id="block-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                   <div class="sm:col-span-2">
+                                       <label class="block text-sm font-medium" data-lang="costPerBlock">Cost per Block</label>
+                                       <input type="number" inputmode="decimal" id="block-cost" min="0" step="0.01" class="pro-input">
+                                   </div>
+                                   <div>
+                                       <label class="block text-sm font-medium" data-lang="mortarCementCost">Mortar Cement Cost/Bag</label>
+                                       <input type="number" inputmode="decimal" id="block-cement-cost" min="0" step="0.01" class="pro-input">
+                                   </div>
+                                   <div>
+                                       <label class="block text-sm font-medium" data-lang="mortarSandCost">Mortar Sand Cost/m³</label>
+                                       <input type="number" inputmode="decimal" id="block-sand-cost" min="0" step="0.01" class="pro-input">
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
+                        <button type="button" id="calculate-blocks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="blocks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
+                    </div>
+
+                    <div id="blocks-result" class="mt-4 p-3 card rounded-lg hidden"></div>
+                    
+                    <div id="blocks-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
+
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <table>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolume">Volume</th>
+                                <th scope="col" data-lang="tableHeaderBlocks">Blocks</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                <th scope="col" aria-hidden="true"></th>
+                            </tr>
+                                </thead>
+                                <tbody id="blocks-table-body"></tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="bricks" class="tab-content hidden space-y-3 pb-4">
+                    <h2 class="text-xl font-semibold header-title" data-lang="bricksTitle">Brick Calculator</h2>
+                    <div class="mb-2 ps-1 text-start advanced-volume-row">
+                        <label class="flex items-center cursor-pointer gap-2">
+                            <input type="checkbox" id="brick-adv-volume" class="h-4 w-4">
+                            <span class="text-sm font-medium" data-lang="advancedDirectM3">Advanced / Direct m³</span>
+                            <button type="button" class="hint-btn" data-hint="hintAdvancedVolume" data-lang-aria="helpBtn" aria-label="Help">?</button>
+                        </label>
+                        <p class="field-hint hidden" data-lang="hintAdvancedVolume">Skip the wall dimensions and type the total wall volume directly — only if you already know it.</p>
+                        <div class="hidden" aria-hidden="true">
+                            <label class="flex items-center"><input type="radio" name="brick-mode" value="dims" class="h-4 w-4" checked></label>
+                            <label class="flex items-center"><input type="radio" name="brick-mode" value="volume" class="h-4 w-4"></label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div id="brick-dims-inputs" class="card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1WallDims">Wall Dimensions</h3>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallLength">Length (m)</label>
+                                    <input type="number" inputmode="decimal" id="brick-wall-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.5:300:m">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallHeight">Height (m)</label>
+                                    <input type="number" inputmode="decimal" id="brick-wall-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="1:20:m">
+                                </div>
+                                <div>
+                                    <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
+                                    <input type="number" inputmode="decimal" id="brick-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
+                                </div>
+                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-600" id="brick-openings-section">
+                                <div class="openings-toggle flex items-center gap-2 mb-2" id="brick-openings-toggle">
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    <span data-lang="deductOpenings" class="font-semibold">Deduct Openings (Optional)</span>
+                                </div>
+                                <div class="openings-container hidden" id="brick-openings-container">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="numWindows">Number of Windows</label>
+                                            <input type="number" inputmode="numeric" id="brick-num-windows" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
+                                        </div>
+                                        <div><label class="block text-sm font-medium" data-lang="windowWidth">Window width (m)</label><input type="number" inputmode="decimal" id="brick-window-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="windowHeight">Window height (m)</label><input type="number" inputmode="decimal" id="brick-window-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="numDoors">Number of Doors</label>
+                                            <input type="number" inputmode="numeric" id="brick-num-doors" min="0" step="1" class="pro-input" value="0" data-sane="0:200:">
+                                        </div>
+                                        <div><label class="block text-sm font-medium" data-lang="doorWidth">Door width (m)</label><input type="number" inputmode="decimal" id="brick-door-width" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                        <div><label class="block text-sm font-medium" data-lang="doorHeight">Door height (m)</label><input type="number" inputmode="decimal" id="brick-door-height" min="0" step="0.01" class="pro-input" value="0" data-sane="0.2:6:m"></div>
+                                    </div>
+                                    <div id="brick-openings-summary" class="text-sm text-gray-400 mb-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="brick-volume-input" class="hidden card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1WallVolume">Wall Volume</h3>
+                            <label class="block text-sm font-medium" data-lang="totalWallVolumeInput">Total Wall Volume (m³)</label>
+                            <input type="number" inputmode="decimal" id="brick-wall-volume" min="0" step="0.01" class="pro-input" data-sane="0.1:5000:m3">
+                        </div>
+
+                        <div class="card p-3 rounded-lg space-y-2 text-start">
+                            <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Material">Material Specifications</h3>
+                            <div>
+                                <label class="block text-sm font-medium" data-lang="brickType">Brick Type</label>
+                                <select id="brick-type" class="pro-input w-full">
+                                    <option value="local_iraqi" selected data-width="115" data-length="240" data-height="75" data-lang="localBrick">Local Iraqi IQS 25 (24x11.5x7.5cm)</option>
+                                    <option value="standard" data-width="102.5" data-length="215" data-height="65" data-lang="standardBrick">Standard (215x102.5x65mm)</option>
+                                    <option value="engineering" data-width="102.5" data-length="215" data-height="73" data-lang="engineeringBrick">Engineering (215x102.5x73mm)</option>
+                                    <option value="roman" data-width="90" data-length="290" data-height="40" data-lang="romanBrick">Roman (290x90x40mm)</option>
+                                    <option value="hollow_brick" data-width="120" data-length="300" data-height="120" data-lang="hollowBrick">Hollow Brick (30x12x12cm)</option><option value="custom" data-lang="customProduct">Custom site product</option>
+                                </select>
+                                <p id="brick-hollow-note" class="hidden text-xs opacity-75 mt-2" data-lang="hollowBrickNote">Hollow bricks are counted by external dimensions and joint mortar only. Cavity filling or grout is not included.</p>
+                                <div id="brick-custom-profile" class="hidden grid grid-cols-3 gap-2 mt-2"><input id="brick-custom-length" type="number" inputmode="decimal" class="pro-input" data-lang-placeholder="customLenPlaceholder" placeholder="Length (mm)"><input id="brick-custom-width" type="number" inputmode="decimal" class="pro-input" data-lang-placeholder="customThickPlaceholder" placeholder="Thickness (mm)"><input id="brick-custom-height" type="number" inputmode="decimal" class="pro-input" data-lang-placeholder="customHeightPlaceholder" placeholder="Height (mm)"></div>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" id="brick-include-mortar" class="h-4 w-4" checked>
+                                    <span class="ms-2" data-lang="includeMortarBricks">Calculate with Mortar</span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                                <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
+                                    <input type="number" inputmode="decimal" id="brick-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
+                                </div>
+                                <div>
+                                    <span class="label-with-hint"><label for="brick-mortar-ratio" class="block text-sm font-medium" data-lang="mortarMixRatio">Mortar Mix Ratio (Cement:Sand)</label><button type="button" class="hint-btn" data-hint="hintMixRatio" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMixRatio">How much sand and gravel go with one bag of cement. 1:6 is common for mortar.</p>
+                                    <select id="brick-mortar-ratio" class="pro-input w-full">
+                                        <option value="1:3" selected>1:3</option>
+                                        <option value="1:4">1:4</option>
+                                        <option value="1:5">1:5</option>
+                                        <option value="1:6">1:6</option>
+                                    </select>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <span class="label-with-hint"><label for="brick-cement-density" class="block text-sm font-medium" data-lang="cementDensity">Cement Density (kg/m³)</label><button type="button" class="hint-btn" data-hint="hintCementDensity" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCementDensity">Weight of one cubic meter of loose cement. 1440 kg/m³ is common.</p>
+                                    <input type="number" inputmode="decimal" id="brick-cement-density" value="1440" min="1" class="pro-input" data-sane="800:1600:">
+                                </div>
+                                <div class="sm:col-span-2"><span class="label-with-hint"><label for="brick-mortar-dry-factor" class="block text-sm font-medium" data-lang="mortarDryFactor">Mortar dry-volume factor (estimate)</label><button type="button" class="hint-btn" data-hint="hintDryFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDryFactor">Dry mortar shrinks when water is added. 1.33 is the common factor.</p><input type="number" inputmode="decimal" id="brick-mortar-dry-factor" value="1.33" min="1" step="0.01" class="pro-input" data-sane="0.5:2.5:"><p class="text-xs opacity-70 mt-1" data-lang="mortarDryFactorNote">Estimate only; actual mortar yield varies by materials and batching.</p></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card p-3 rounded-lg text-start">
+                            <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="brick-cost-container" aria-expanded="false">
+                                <span class="text-base font-semibold header-title flex items-center gap-2">
+                                    <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
+                                    <span data-lang="step3Cost">Costing (Optional)</span>
+                                </span>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
+                            </button>
+                            <div id="brick-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-sm font-medium" data-lang="costPerBrick">Cost per Brick</label>
+                                        <input type="number" inputmode="decimal" id="brick-cost" min="0" step="0.01" class="pro-input">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium" data-lang="mortarCementCost">Mortar Cement Cost/Bag</label>
+                                        <input type="number" inputmode="decimal" id="brick-cement-cost" min="0" step="0.01" class="pro-input">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium" data-lang="mortarSandCost">Mortar Sand Cost/m³</label>
+                                        <input type="number" inputmode="decimal" id="brick-sand-cost" min="0" step="0.01" class="pro-input">
+                                    </div>
+                               </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
+                        <button type="button" id="calculate-bricks" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="bricks" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
+                    </div>
+
+                    <div id="bricks-result" class="mt-4 p-3 card rounded-lg hidden"></div>
+
+                    <div id="bricks-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
+
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <table>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderVolume">Volume</th>
+                                <th scope="col" data-lang="tableHeaderBricks">Bricks</th>
+                                <th scope="col" data-lang="tableHeaderCement">Cement</th>
+                                <th scope="col" data-lang="tableHeaderSand">Sand</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                <th scope="col" aria-hidden="true"></th>
+                            </tr>
+                                </thead>
+                                <tbody id="bricks-table-body"></tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="steel" class="tab-content hidden space-y-3 pb-4">
+                    <h2 class="text-xl font-semibold header-title" data-lang="steelTitle">Rebar Calculator</h2>
+                    <div class="card p-3 rounded-lg space-y-3 text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1General">General Settings</h3>
+
+                        <div>
+                            <label for="steel-element-selector" class="block text-sm font-medium mb-1" data-lang="selectElement">Element type</label>
+                            <select id="steel-element-selector" class="pro-input w-full">
+                                <option value="" data-lang="selectOption">Choose element…</option>
+                                <option value="footing" data-lang="footing">Footing</option>
+                                <option value="slab" data-lang="slab">Slab</option>
+                                <option value="beam" data-lang="beam">Beam</option>
+                                <option value="column" data-lang="column">Column</option>
+                                <option value="one_way" data-lang="oneWay">One-way slab / strip</option>
+                                <option value="brc" data-lang="brcMesh">BRC wire mesh</option>
+                                <option value="custom" data-lang="customBars">Custom bars</option>
+                            </select>
+                            <div id="steel-member-qty-row">
+                                <span class="label-with-hint"><label for="steel-member-quantity" class="block text-sm font-medium mt-2" data-lang="memberQuantity">Number of members (same size)</label><button type="button" class="hint-btn" data-hint="hintMemberQty" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMemberQty">How many identical pieces you will pour — like 5 identical footings.</p>
+                                <input type="number" inputmode="numeric" id="steel-member-quantity" min="1" step="1" value="1" class="pro-input w-full" data-sane="1:200:">
+                            </div>
+                            <div>
+                                <span class="label-with-hint"><label class="block text-sm font-medium mt-2" data-lang="standardBarLength">Bar length in shops (m)</label><button type="button" class="hint-btn" data-hint="hintBarLength" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintBarLength">Length of one bar from the steel shop — usually 12 m. Used to count the bars to buy.</p>
+                                <input type="number" inputmode="decimal" id="steel-standard-bar-length" class="pro-input w-full" value="12" data-sane="2:24:m">
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Step 2: Dynamic Inputs -->
+                    <div id="steel-step-2-card" class="card p-3 rounded-lg space-y-3 hidden text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Details">Element Details</h3>
+                        <button type="button" id="steel-preset-btn" class="btn btn-secondary w-full" data-lang="presetBtn">Fill typical values</button>
+                        
+                        <div id="steel-footing-inputs" class="hidden mt-2 space-y-3">
+                            <div class="flex flex-wrap items-center gap-4">
+                                 <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="footing-mode" value="spacing" class="h-4 w-4" checked> 
+                                    <span class="ms-2" data-lang="bySpacing">Spacing</span>
+                                </label>
+                                 <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="footing-mode" value="number" class="h-4 w-4"> 
+                                    <span class="ms-2" data-lang="byNumberOfBars">Number of Bars</span>
+                                </label>
+                            </div>
+                    
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="footingLength">Footing Length (m)</label>
+                                    <input type="number" inputmode="decimal" id="footing-length" class="pro-input w-full" data-sane="0.3:100:m">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="footingWidth">Footing Width (m)</label>
+                                    <input type="number" inputmode="decimal" id="footing-width" class="pro-input w-full" data-sane="0.3:100:m">
+                                </div>
+                             </div>
+                            
+                             <div id="footing-spacing-inputs">
+                                 <div class="border-t border-gray-700 pt-2">
+                                    <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                            <input type="number" inputmode="decimal" id="footing-spacing-len" class="pro-input w-full" data-sane="40:300:mm">
+                                        </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="footing-diameter-len" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                 </div>
+                                <div class="border-t border-gray-700 pt-2 mt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                            <input type="number" inputmode="decimal" id="footing-spacing-wid" class="pro-input w-full" data-sane="40:300:mm">
+                                        </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="footing-diameter-wid" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                        </div>
+                                     </div>
+                                 </div>
+                            </div>
+                            
+                            <div id="footing-number-inputs" class="hidden">
+                                <div class="border-t border-gray-700 pt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="numeric" id="footing-number-len" class="pro-input w-full" data-sane="1:2000:">
+                                         </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="footing-diameter-len-alt" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                        </div>
+                                     </div>
+                                 </div>
+                                <div class="border-t border-gray-700 pt-2 mt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="numeric" id="footing-number-wid" class="pro-input w-full" data-sane="1:2000:">
+                                         </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="footing-diameter-wid-alt" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                        </div>
+                                     </div>
+                                </div>
+                             </div>
+                         </div>
+
+                        <div id="steel-slab-inputs" class="hidden mt-2 space-y-3">
+                             <div class="flex flex-wrap items-center gap-4">
+                                 <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="calcMode">Calculate By</label><button type="button" class="hint-btn" data-hint="hintCalcMode" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCalcMode">Spacing finds the number of bars from the distance between them. Number of Bars uses the count you type.</p>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="slab-mode" value="spacing" class="h-4 w-4" checked> 
+                                    <span class="ms-2" data-lang="bySpacing">Spacing</span>
+                                </label>
+                                 <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="slab-mode" value="number" class="h-4 w-4"> 
+                                    <span class="ms-2" data-lang="byNumberOfBars">Number of Bars</span>
+                                </label>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="slabLength">Slab Length (m)</label>
+                                    <input type="number" inputmode="decimal" id="slab-length" class="pro-input w-full" data-sane="0.3:100:m">
+                                </div>
+                                 <div>
+                                     <label class="block text-sm font-medium" data-lang="slabWidth">Slab Width (m)</label>
+                                     <input type="number" inputmode="decimal" id="slab-width" class="pro-input w-full" data-sane="0.3:100:m">
+                                 </div>
+                            </div>
+                            
+                             <div id="slab-spacing-inputs">
+                                 <div class="border-t border-gray-700 pt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
+                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                             <input type="number" inputmode="decimal" id="slab-spacing-len" class="pro-input w-full" data-sane="40:300:mm">
+                                         </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                             <select id="slab-diameter-len" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                         </div>
+                                     </div>
+                                 </div>
+                                <div class="border-t border-gray-700 pt-2 mt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                             <input type="number" inputmode="decimal" id="slab-spacing-wid" class="pro-input w-full" data-sane="40:300:mm">
+                                         </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="slab-diameter-wid" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                        </div>
+                                     </div>
+                                 </div>
+                            </div>
+                            
+                             <div id="slab-number-inputs" class="hidden">
+                                <div class="border-t border-gray-700 pt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="lengthwiseBars">Bars parallel to Length</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="numeric" id="slab-number-len" class="pro-input w-full" data-sane="1:2000:">
+                                         </div>
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                            <select id="slab-diameter-len-alt" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="border-t border-gray-700 pt-2 mt-2">
+                                     <p class="text-sm font-medium mb-1" data-lang="widthwiseBars">Bars parallel to Width</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                             <input type="number" inputmode="numeric" id="slab-number-wid" class="pro-input w-full" data-sane="1:2000:">
+                                         </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                             <select id="slab-diameter-wid-alt" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                         </div>
+                                     </div>
+                                </div>
+                             </div>
+                         </div>
+                
+                        <div id="steel-beam-inputs" class="hidden mt-2 space-y-3">
+                            <p class="text-base font-semibold header-title" data-lang="mainBars">Main Bars</p>
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                 <div>
+                                     <label class="block text-sm font-medium" data-lang="beamLength">Beam Length (m)</label>
+                                     <input type="number" inputmode="decimal" id="beam-length" class="pro-input w-full" data-sane="0.3:60:m">
+                                 </div>
+                                 <div>
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                     <input type="number" inputmode="numeric" id="beam-bars" class="pro-input w-full" data-sane="1:2000:">
+                                 </div>
+                                 <div class="sm:col-span-2">
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                    <select id="beam-diameter" class="pro-input w-full">
+                                        <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                    </select>
+                                 </div>
+                             </div>
+                    
+                             <div class="border-t border-gray-700 pt-2">
+                                 <label class="flex items-center gap-2 mb-2 cursor-pointer">
+                                    <input type="checkbox" id="beam-include-stirrups" class="h-4 w-4">
+                                     <span class="font-semibold header-title" data-lang="includeStirrups">Include Stirrups Calculation</span>
+                                 </label>
+                                 <div id="beam-stirrups-details" class="hidden space-y-3">
+                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <label class="block text-sm font-medium" data-lang="beamWidthDim">Beam Width (mm)</label>
+                                             <input type="number" inputmode="decimal" id="beam-width-dim" class="pro-input w-full" data-sane="100:2500:mm">
+                                         </div>
+                                         <div>
+                                             <label class="block text-sm font-medium" data-lang="beamDepthDim">Beam Depth (mm)</label>
+                                             <input type="number" inputmode="decimal" id="beam-depth-dim" class="pro-input w-full" data-sane="100:2500:mm">
+                                         </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
+                                             <input type="number" inputmode="decimal" id="beam-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                         </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Stirrup Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
+                                             <input type="number" inputmode="decimal" id="beam-stirrup-spacing" class="pro-input w-full" data-sane="40:300:mm">
+                                         </div>
+                                         <div class="sm:col-span-2">
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Stirrup Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
+                                            <select id="beam-stirrup-diameter" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+
+                         <div id="steel-column-inputs" class="hidden mt-2 space-y-3">
+                            <p class="text-base font-semibold header-title" data-lang="mainBars">Vertical Bars</p>
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                      <label class="block text-sm font-medium" data-lang="columnHeight">Column Height (m)</label>
+                                      <input type="number" inputmode="decimal" id="column-height" class="pro-input w-full" data-sane="1:30:m">
+                                  </div>
+                                  <div>
+                                      <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="numberOfBars">Number of Bars</label><button type="button" class="hint-btn" data-hint="hintNumberOfBars" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintNumberOfBars">How many cut bars you will place in this direction.</p>
+                                      <input type="number" inputmode="numeric" id="column-bars" class="pro-input w-full" data-sane="1:2000:">
+                                  </div>
+                                  <div class="sm:col-span-2">
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                    <select id="column-diameter" class="pro-input w-full">
+                                        <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                    </select>
+                                  </div>
+                             </div>
+
+                            <div class="border-t border-gray-700 pt-2">
+                                 <label class="flex items-center gap-2 mb-2 cursor-pointer">
+                                     <input type="checkbox" id="column-include-stirrups" class="h-4 w-4">
+                                     <span class="font-semibold header-title" data-lang="includeStirrups">Include Ties/Stirrups Calculation</span>
+                                 </label>
+                                 <div id="column-stirrups-details" class="hidden space-y-3">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                         <div>
+                                             <label class="block text-sm font-medium" data-lang="columnWidthDim">Column Width (mm)</label>
+                                             <input type="number" inputmode="decimal" id="column-width-dim" class="pro-input w-full" data-sane="100:2500:mm">
+                                         </div>
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="columnDepthDim">Column Depth (mm)</label>
+                                            <input type="number" inputmode="decimal" id="column-depth-dim" class="pro-input w-full" data-sane="100:2500:mm">
+                                        </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
+                                             <input type="number" inputmode="decimal" id="column-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                         </div>
+                                         <div>
+                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Tie Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
+                                             <input type="number" inputmode="decimal" id="column-stirrup-spacing" class="pro-input w-full" data-sane="40:300:mm">
+                                         </div>
+                                         <div class="sm:col-span-2">
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Tie Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
+                                            <select id="column-stirrup-diameter" class="pro-input w-full">
+                                                <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                            </select>
+                                         </div>
+                                     </div>
+                                 </div>
+                            </div>
+                         </div>
+
+                         <div id="steel-spec-preview" class="spec-preview" aria-hidden="true"></div>
+                        <div id="steel-one-way-inputs" class="hidden mt-2 space-y-3">
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                 <div>
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="distLength">Distribution Length (m)</label><button type="button" class="hint-btn" data-hint="hintDistLength" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDistLength">The length that the bars cover — the run of the strip.</p>
+                                     <input type="number" inputmode="decimal" id="one-way-dist-length" class="pro-input w-full" data-sane="0.5:150:m">
+                                 </div>
+                                  <div>
+                                      <label class="block text-sm font-medium" data-lang="barLength">Single Bar Length (m)</label>
+                                      <input type="number" inputmode="decimal" id="one-way-bar-length" class="pro-input w-full" data-sane="0.3:24:m">
+                                 </div>
+                                 <div>
+                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                     <input type="number" inputmode="decimal" id="one-way-spacing" class="pro-input w-full" data-sane="40:300:mm">
+                                 </div>
+                                 <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                    <select id="one-way-diameter" class="pro-input w-full">
+                                        <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
+                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                    </select>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <div id="steel-custom-inputs" class="hidden mt-2 space-y-2">
+                            <div id="steel-custom-rows" class="space-y-2"></div>
+                            <button type="button" id="steel-custom-add-row" class="btn btn-secondary w-full" data-lang="addRowBtn">Add bar row</button>
+                        </div>
+
+                        <div id="steel-brc-inputs" class="hidden mt-2 space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-sm font-medium" data-lang="length">Length (m)</label><input type="number" inputmode="decimal" id="brc-area-len" class="pro-input" min="0.1" step="0.1"></div>
+                                <div><label class="block text-sm font-medium" data-lang="width">Width (m)</label><input type="number" inputmode="decimal" id="brc-area-wid" class="pro-input" min="0.1" step="0.1"></div>
+                            </div>
+                            <div>
+                                <span class="label-with-hint"><label for="brc-mode" class="block text-sm font-medium" data-lang="brcSoldAs">Sold as</label><button type="button" class="hint-btn" data-hint="hintBrc" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                <p class="field-hint hidden" data-lang="hintBrc">Ground slabs and driveways often use pre-welded wire mesh instead of tied bars. The count comes from the area plus an overlap allowance.</p>
+                                <select id="brc-mode" class="pro-input w-full">
+                                    <option value="roll" data-lang="brcRolls">Rolls</option>
+                                    <option value="sheet" data-lang="brcSheets">Sheets (panels)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="block text-sm font-medium" data-lang="brcPieceW">Piece width (m)</label><input type="number" inputmode="decimal" id="brc-width" class="pro-input" value="2.0" min="0.5" step="0.1" data-sane="0.5:10:m"></div>
+                                <div><label class="block text-sm font-medium" data-lang="brcPieceL">Piece length (m)</label><input type="number" inputmode="decimal" id="brc-length" class="pro-input" value="20" min="1" step="0.5" data-sane="1:50:m"></div>
+                            </div>
+                            <div>
+                                <span class="label-with-hint"><label for="brc-overlap" class="block text-sm font-medium" data-lang="brcOverlap">Overlap / waste allowance (%)</label><button type="button" class="hint-btn" data-hint="hintOverlap" data-lang-aria="helpBtn" aria-label="Help">?</button></span>
+                                <p class="field-hint hidden" data-lang="hintOverlap">Extra mesh for overlaps and cutting waste. 10% is common.</p>
+                                <input type="number" inputmode="decimal" id="brc-overlap" class="pro-input" value="10" min="0" max="50" step="1" data-sane="0:50:%">
+                            </div>
+                            <div><label class="block text-sm font-medium" data-lang="priceEach">Price per piece</label><input type="number" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
+                        </div>
+
+                        <details id="steel-lap-details" class="advanced-details">
+                            <summary>
+                                <i data-lucide="chevron-right" class="sd-chev adv-chev"></i>
+                                <span data-lang="lapSplicesAdvanced">Lap splices (for long bars)</span>
+                            </summary>
+                            <div class="pt-2">
+                                <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="lapSpliceFactor">Lap Splice Factor (e.g., 50d)</label><button type="button" class="hint-btn" data-hint="hintLapFactor" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintLapFactor">For bars longer than shop bars, the bars overlap. 50d means the overlap is 50 × the bar diameter.</p>
+                                <input type="number" inputmode="decimal" id="steel-lap-splice-factor" class="pro-input w-full" value="50" data-sane="20:100:">
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- Step 3: Costing -->
+                    <div id="steel-cost-card" class="card p-3 rounded-lg hidden text-start">
+                        <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="steel-cost-container" aria-expanded="false">
+                            <span class="text-base font-semibold header-title flex items-center gap-2">
+                                <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
+                                <span data-lang="step3Cost">Costing (Optional)</span>
+                            </span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
+                        </button>
+                        <div id="steel-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
+                            <div>
+                                <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="costPerKg">Cost per kg</label><button type="button" class="hint-btn" data-hint="hintCostPerKg" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCostPerKg">Price of one kilogram at your supplier.</p>
+                                <input type="number" inputmode="decimal" id="steel-cost" min="0" step="0.01" class="pro-input w-full">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STICKY ACTION BUTTONS -->
+                    <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
+                        <button type="button" id="calculate-steel" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="steel" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
+                    </div>
+
+                    <div id="steel-result" class="mt-4 p-3 card rounded-lg hidden"></div>
+
+                    <!-- SESSION RESULTS TABLE -->
+                    <div id="steel-table-section" class="mt-4 hidden">
+                        <details class="session-details">
+                            <summary>
+                                <i data-lucide="table-2" class="sd-icon"></i>
+                                <span data-lang="sessionResults">Session Results</span>
+                                <span class="session-count">0</span>
+                                <i data-lucide="chevron-down" class="sd-chev"></i>
+                            </summary>
+                            <div class="card p-4 rounded-lg">
+                                <div class="flex justify-end items-center mb-2">
+                                    <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                    </button>
+                                </div>
+                                <div class="swipe-indicator">
+                                <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                                <span data-lang="swipeHint">Swipe table to view more</span>
+                                </div>
+
+                                <div class="table-scroll-container">
+                                <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                                <table>
+                                <thead>
+                                <tr>
+                                <th scope="col" data-lang="tableHeaderElement">Element</th>
+                                <th scope="col" data-lang="tableHeaderDims">Dimensions</th>
+                                <th scope="col" data-lang="tableHeaderWeight">Total Weight</th>
+                                <th scope="col" data-lang="tableHeaderCost">Cost</th>
+                                <th scope="col" aria-hidden="true"></th>
+                            </tr>
+                                </thead>
+                                <tbody id="steel-table-body"></tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <div id="earthwork" class="tab-content hidden space-y-3 pb-4">
+                    <h2 class="text-xl font-semibold header-title" data-lang="earthworkTitle">Earth Work Calculator</h2>
+                    <div class="card p-3 rounded-lg space-y-3 text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step1Excavation">Excavation Details</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="sm:col-span-3">
+                                    <div role="radiogroup" data-lang-aria="earthworkModeLabel" aria-label="Earthwork mode" class="flex flex-wrap gap-x-4 gap-y-2">
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="earthwork-mode" value="excavation" class="h-4 w-4" checked>
+                                            <span class="ms-2" data-lang="excavationMode">Excavation (swell)</span>
+                                        </label>
+                                        <label class="flex items-center cursor-pointer">
+                                            <input type="radio" name="earthwork-mode" value="backfill" class="h-4 w-4">
+                                            <span class="ms-2" data-lang="backfillMode">Backfill (compaction)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="sm:col-span-3"><label for="earthwork-shape" class="block text-sm font-medium" data-lang="excavShape">Excavation shape</label><select id="earthwork-shape" class="pro-input"><option value="rectangular" data-lang="shapeRectangular">Rectangular pit</option><option value="trench" data-lang="shapeTrench">Trench / strip</option><option value="custom" data-lang="shapeCustom">Custom profile (same L × W × H basis)</option></select></div>
+                            <div>
+                                <label for="earthwork-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
+                                <input type="number" inputmode="decimal" id="earthwork-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:300:m">
+                            </div>
+                            <div>
+                                <label for="earthwork-width" class="block text-xs sm:text-sm font-medium" data-lang="width">Width (m)</label>
+                               <input type="number" inputmode="decimal" id="earthwork-width" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.3:300:m">
+                            </div>
+                            <div>
+                                <label for="earthwork-height" class="block text-xs sm:text-sm font-medium" data-lang="height">Height (m)</label>
+                                <input type="number" inputmode="decimal" id="earthwork-height" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="H" data-sane="0.2:30:m">
+                            </div>
+                       </div>
+                       </div>
+                       <div class="card p-3 rounded-lg space-y-3 text-start">
+                        <h3 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="step2Haulage">Haulage &amp; Soil</h3>
+                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                           <div>
+                                <label for="earthwork-quantity" class="block text-sm font-medium" data-lang="numberOfWalls">Number of elements (same size)</label>
+                                <input type="number" inputmode="numeric" id="earthwork-quantity" value="1" min="1" class="pro-input" data-sane="1:500:">
+                            </div>
+                            <div class="sm:col-span-2 border-t border-gray-700 pt-2">
+                                <span class="label-with-hint"><label for="earthwork-truck-capacity" class="block text-sm font-medium" data-lang="truckCapacityLabel">Truck Capacity (m³)</label><button type="button" class="hint-btn" data-hint="hintTruck" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintTruck">How much one truck can carry, in m³.</p>
+                                <input type="number" inputmode="decimal" id="earthwork-truck-capacity" value="4" min="0.1" step="0.1" class="pro-input" placeholder="e.g., 4" data-sane="1:50:m3">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <span class="label-with-hint"><label for="earthwork-swell" class="block text-sm font-medium"><span id="earthwork-swell-label-excav" data-lang="swellFactorLabel">Soil Swell Factor (%)</span><span id="earthwork-swell-label-backfill" class="hidden" data-lang="compactionFactorLabel">Compaction shrinkage (%)</span></label><button type="button" class="hint-btn" data-hint="hintSwell" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" id="earthwork-hint-swell" data-lang="hintSwell">Dug soil becomes looser and takes more space. 25–30% is common.</p><p class="field-hint hidden" id="earthwork-hint-compaction" data-lang="hintCompaction">How much the loose soil shrinks when compacted. 10–20% is common.</p>
+                                <div class="quick-picks" id="earthwork-soil-picks">
+                                    <label class="quick-picks-label" for="earthwork-soil-type" data-lang="soilTypeLabel">Soil type</label>
+                                    <select id="earthwork-soil-type" class="pro-input text-sm">
+                                        <option value="" selected data-lang="soilCustom">Custom swell %</option>
+                                        <option value="12" data-lang="soilSandy">Sandy soil · +12% swell</option>
+                                        <option value="20" data-lang="soilCommon">Common earth / gravel · +20%</option>
+                                        <option value="30" data-lang="soilClay">Dense clay · +30%</option>
+                                        <option value="50" data-lang="soilRock">Blasted rock · +50%</option>
+                                    </select>
+                                </div>
+                                <input type="number" inputmode="decimal" id="earthwork-swell" data-lang-placeholder="swellPlaceholder" value="25" min="0" max="50" step="1" class="pro-input" placeholder="sand ~12, gravel ~15, clay ~30, rock ~50" data-sane="0:100:%">
+                            </div>
+                       </div>
+                   </div>
+                   
+                   <div class="sticky-action-container sticky bottom-4 z-40 flex gap-3 mt-6 p-3 card rounded-xl shadow-2xl no-print">
+                        <button type="button" id="calculate-earthwork" class="btn btn-primary flex-grow text-lg shadow-lg" data-lang="calculateBtn">Calculate</button>
+                        <button type="button" data-form="earthwork" class="btn btn-secondary reset-btn flex-shrink-0 shadow-lg" data-lang="resetBtn">
+                            <i data-lucide="rotate-ccw"></i>
+                        </button>
+                   </div>
+
+                    <div id="earthwork-result" class="mt-4 p-3 card rounded-lg hidden"></div>
+
+                   <div id="earthwork-table-section" class="mt-4 hidden">
+                       <details class="session-details">
+                           <summary>
+                               <i data-lucide="table-2" class="sd-icon"></i>
+                               <span data-lang="sessionResults">Session Results</span>
+                               <span class="session-count">0</span>
+                               <i data-lucide="chevron-down" class="sd-chev"></i>
+                           </summary>
+                           <div class="card p-4 rounded-lg">
+                               <div class="flex justify-end items-center mb-2">
+                                   <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                   <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                   </button>
+                               </div>
+                               <div class="swipe-indicator">
+                               <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+                               <span data-lang="swipeHint">Swipe table to view more</span>
+                               </div>
+
+                               <div class="table-scroll-container">
+                               <div class="overflow-x-auto custom-scrollbar table-wrapper">
+                               <table>
+                               <thead>
+                               <tr>
+                               <th scope="col" data-lang="tableHeaderDims">Dimensions</th>
+                               <th scope="col" data-lang="tableHeaderQty">Quantity</th>
+                               <th scope="col" data-lang="tableHeaderVolume">Total Volume</th>
+                               <th scope="col" data-lang="truckLoads">Truck Loads</th>
+                                <th scope="col" aria-hidden="true"></th>
+                            </tr>
+                               </thead>
+                               <tbody id="earthwork-table-body"></tbody>
+                               </table>
+                               </div>
+                               </div>
+                           </div>
+                       </details>
+                   </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="designer-credit no-print">
+            <span data-lang="appDesigner">Designed By Engineer Rezan Salih Noori</span>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="history-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden modal-overlay opacity-0">
+        <div class="card rounded-lg shadow-xl w-full max-w-md modal-content transform scale-95 flex flex-col max-h-[80vh]" role="dialog" aria-modal="true" aria-labelledby="history-modal-title">
+            <div class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="clock" class="text-indigo-400"></i>
+                    <h3 id="history-modal-title" class="text-lg font-semibold header-title" data-lang="calcHistory">Calculation History</h3>
+                </div>
+                <button type="button" id="close-history-modal-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+                    <i data-lucide="x-circle"></i>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-grow custom-scrollbar" id="calculation-history">
+                <p class="text-center text-gray-500 py-4" data-lang="noHistory">No calculation history yet</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="print-area"></div>
+
+    <!-- First-run guide -->
+    <div id="intro-overlay" class="intro-overlay hidden" role="dialog" aria-modal="true">
+      <div class="intro-card">
+        <div class="intro-slide is-active" data-slide="0">
+          <div class="intro-icon"><i data-lucide="ruler"></i></div>
+          <h3 data-lang="intro1Title">Measure</h3>
+          <p data-lang="intro1Body">Measure what you want to build — length, width and height, in meters.</p>
+        </div>
+        <div class="intro-slide" data-slide="1">
+          <div class="intro-icon"><i data-lucide="pencil-line"></i></div>
+          <h3 data-lang="intro2Title">Enter</h3>
+          <p data-lang="intro2Body">Choose the material and type your numbers. Not sure about a field? Tap ? — or use Fill typical values.</p>
+        </div>
+        <div class="intro-slide" data-slide="2">
+          <div class="intro-icon"><i data-lucide="shopping-cart"></i></div>
+          <h3 data-lang="intro3Title">Order</h3>
+          <p data-lang="intro3Body">Press Calculate. The big number is what you need; &quot;What to order&quot; is your shopping list. Save, print or share it.</p>
+        </div>
+        <div class="intro-dots"><span class="intro-dot is-active"></span><span class="intro-dot"></span><span class="intro-dot"></span></div>
+        <div class="intro-actions">
+          <button type="button" id="intro-next" class="btn btn-primary" data-lang="introNext">Next</button>
+          <button type="button" id="intro-start" data-close-modal class="btn btn-primary hidden" data-lang="introStart">Start estimating</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./vendor/jspdf.umd.min.js" defer></script>
+    <script src="./app.js" defer></script>
+<script>
+/* ===== ZOOM LOCK: the app UI stays at a fixed scale (no pinch / double-tap / keyboard zoom) ===== */
+(function () {
+    // iOS Safari pinch gestures
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+        document.addEventListener(type, function (e) { e.preventDefault(); }, { passive: false });
+    });
+    // Multi-touch zoom in older mobile browsers (page must keep scrolling with one finger)
+    document.addEventListener('touchmove', function (e) {
+        if (e.touches && e.touches.length > 1) e.preventDefault();
+    }, { passive: false });
+    // Desktop trackpad / mouse zoom (ctrl + wheel)
+    document.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) e.preventDefault();
+    }, { passive: false });
+    // Keyboard zoom shortcuts (Ctrl / Cmd + / - / 0)
+    document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '_', '0'].indexOf(e.key) !== -1) e.preventDefault();
+    });
+})();
+</script>
+<script>
+/* ===== PRO WORKSPACE ENHANCEMENTS ===== */
+(function () {
+    function initWorkspaceShell() {
+        const settingsBtn = document.getElementById('open-settings-btn');
+        const headerSettingsBtn = document.getElementById('header-settings-btn');
+        const historyBtn = document.getElementById('workspace-history-btn');
+        const settings = document.getElementById('global-settings-wrapper');
+        const wastage = document.getElementById('wastage');
+            const activeMetric = document.getElementById('active-tool-metric');
+            const mobileActiveTool = document.getElementById('mobile-active-tool');
+        const sessionMetric = document.getElementById('session-items-metric');
+        const labels = { concrete: 'Concrete', blocks: 'Blocks', bricks: 'Bricks', steel: 'Steel', earthwork: 'Earth Work' };
+
+        if (settingsBtn && settings) settingsBtn.addEventListener('click', () => {
+            // Project settings opens as its own screen (back bar + bottom nav),
+            // the same way the bottom navigation opens the calculators.
+            if (typeof window.openTool === 'function') {
+                window.openTool('settings');
+                document.getElementById('close-global-settings-btn')?.focus();
+            } else {
+                settings.classList.remove('hidden');
+                settings.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+        if (headerSettingsBtn) headerSettingsBtn.addEventListener('click', () => settingsBtn?.click());
+        document.getElementById('header-grandtotal-btn')?.addEventListener('click', () => { if (typeof window.openGrandTotal === 'function') window.openGrandTotal(); });
+
+        /* v63 header drawer: everything that used to crowd the phone top bar
+           lives in one menu sheet; the bar keeps [logo + title] + [lang chip] + [menu]. */
+        const menu = document.getElementById('app-menu');
+        const openMenu = (focusEl) => {
+            if (!menu) return;
+            menu.classList.remove('hidden');
+            setTimeout(() => (focusEl || menu.querySelector('[id$="-close-btn"]'))?.focus(), 30);
+        };
+        const closeMenu = () => {
+            if (!menu || menu.classList.contains('hidden')) return;
+            menu.classList.add('hidden');
+            document.getElementById('header-menu-btn')?.focus();
+        };
+        document.getElementById('header-menu-btn')?.addEventListener('click', () => openMenu());
+        document.getElementById('lang-indicator')?.addEventListener('click', () => openMenu(document.getElementById('language-selector')));
+        document.getElementById('app-menu-close-btn')?.addEventListener('click', closeMenu);
+        menu?.addEventListener('click', (e) => { if (e.target === menu) closeMenu(); });
+        ['open-settings-btn', 'workspace-history-btn', 'header-grandtotal-btn', 'site-tools-btn'].forEach((id) => {
+            document.getElementById(id)?.addEventListener('click', () => closeMenu());
+        });
+        const LANG_CHIP = { en: 'EN', ku: 'KU', ks: 'KS', ar: 'AR' };
+        const syncLangChip = () => {
+            const lang = localStorage.getItem('language') || 'en';
+            const el = document.getElementById('lang-indicator-label');
+            if (el) el.textContent = LANG_CHIP[lang] || lang.toUpperCase();
+        };
+        document.getElementById('language-selector')?.addEventListener('change', () => setTimeout(syncLangChip, 30));
+        syncLangChip();
+        document.getElementById('session-items-metric-card')?.addEventListener('click', () => { if (typeof window.openGrandTotal === 'function') window.openGrandTotal(); });
+        // The primary history handler is registered by the calculator script.
+
+        const updateMetrics = () => {
+            const activeTab = document.querySelector('.tab-btn.tab-active')?.dataset.tab || 'concrete';
+            const tabLabel = document.querySelector(`.tab-btn[data-tab="${activeTab}"] span[data-lang]`);
+            if (activeMetric) activeMetric.textContent = tabLabel?.textContent?.trim() || labels[activeTab] || activeTab;
+            if (mobileActiveTool) mobileActiveTool.textContent = tabLabel?.textContent?.trim() || labels[activeTab] || activeTab;
+            if (wastage) document.getElementById('wastage-metric').textContent = `${wastage.value || 0}%`;
+            const sessionCount = [...document.querySelectorAll('[id$="-table-body"]')].reduce((sum, body) => sum + body.querySelectorAll('tr').length, 0);
+            if (sessionMetric) sessionMetric.textContent = sessionCount;
+            const navTotal = document.getElementById('nav-total-count');
+            if (navTotal) navTotal.textContent = sessionCount > 0 ? String(sessionCount) : '';
+        };
+        document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', () => setTimeout(updateMetrics, 20)));
+        document.getElementById('language-selector')?.addEventListener('change', () => setTimeout(updateMetrics, 30));
+        wastage?.addEventListener('input', updateMetrics);
+        new MutationObserver(updateMetrics).observe(document.querySelector('main') || document.body, { childList: true, subtree: true });
+        updateMetrics();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initWorkspaceShell); else initWorkspaceShell();
+})();
+</script>
+<script>
+/* ===== OFFLINE APP REGISTRATION ===== */
+if ('serviceWorker' in navigator) {
+    function showUpdateToast() {
+        const toast = document.getElementById('update-toast');
+        if (toast) toast.classList.remove('hidden');
+    }
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+            .then(registration => {
+                registration.update();
+                registration.addEventListener('updatefound', () => {
+                    const worker = registration.installing;
+                    if (!worker) return;
+                    worker.addEventListener('statechange', () => {
+                        if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdateToast();
+                    });
+                });
+                if (registration.waiting && navigator.serviceWorker.controller) showUpdateToast();
+                const reloadBtn = document.getElementById('update-reload-btn');
+                if (reloadBtn) reloadBtn.addEventListener('click', () => location.reload());
+            })
+            .catch(() => {});
+        // A new service worker took control (fresh deploy): offer the reload.
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (navigator.serviceWorker.controller) showUpdateToast();
+        });
+    });
+}
+</script>
+<script>
+/* ===== A11Y HELPER: labels, icon names, tabs, dialogs ===== */
+(function () {
+    const FIELD = 'input:not([type="hidden"]), select, textarea';
+    let uid = 0;
+    function linkLabels() {
+        document.querySelectorAll('label:not([for])').forEach(l => {
+            if (l.querySelector(FIELD)) return;
+            let el = l.nextElementSibling, ctl = null;
+            while (el && !ctl) {
+                if (el.matches(FIELD)) ctl = el;
+                else if (el.matches('label')) break;
+                else ctl = el.querySelector(FIELD);
+                el = el.nextElementSibling;
+            }
+            if (!ctl) return;
+            if (ctl.type === 'radio' || ctl.type === 'checkbox') {
+                const group = ctl.closest('div');
+                if (group && !group.hasAttribute('role')) {
+                    if (!l.id) l.id = 'a11y-lbl-' + (++uid);
+                    group.setAttribute('role', ctl.type === 'radio' ? 'radiogroup' : 'group');
+                    group.setAttribute('aria-labelledby', l.id);
+                }
+                return;
+            }
+            if (!ctl.id) ctl.id = 'a11y-fld-' + (++uid);
+            if (document.querySelector('label[for="' + ctl.id + '"]')) return;
+            l.htmlFor = ctl.id;
+        });
+    }
+    function nameIcons(root) {
+        (root || document).querySelectorAll('svg.lucide, i[data-lucide]').forEach(s => s.setAttribute('aria-hidden', 'true'));
+        (root || document).querySelectorAll('button').forEach(b => {
+            if (b.textContent.trim() || b.hasAttribute('aria-label')) return;
+            if (b.title) b.setAttribute('aria-label', b.title);
+        });
+    }
+    function setupTabs() {
+        const tabs = [...document.querySelectorAll('.tab-btn')];
+        if (!tabs.length) return;
+        tabs[0].parentElement.setAttribute('role', 'tablist');
+        const sync = () => tabs.forEach(t => {
+            const on = t.classList.contains('tab-active');
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            t.tabIndex = on ? 0 : -1;
+        });
+        tabs.forEach(t => {
+            t.setAttribute('role', 'tab');
+            t.id = t.id || 'tab-' + t.dataset.tab;
+            t.setAttribute('aria-controls', t.dataset.tab);
+            const panel = document.getElementById(t.dataset.tab);
+            if (panel) { panel.setAttribute('role', 'tabpanel'); panel.setAttribute('aria-labelledby', t.id); }
+            t.addEventListener('click', () => setTimeout(sync, 0));
+            t.addEventListener('keydown', e => {
+                const rtl = document.documentElement.dir === 'rtl';
+                const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1, Home: 'first', End: 'last' }[e.key];
+                if (step === undefined) return;
+                e.preventDefault();
+                const i = tabs.indexOf(t);
+                const n = step === 'first' ? 0 : step === 'last' ? tabs.length - 1 : (i + step + tabs.length) % tabs.length;
+                tabs[n].focus(); tabs[n].click();
+            });
+        });
+        sync();
+    }
+    function setupDialogs() {
+        const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const isOpen = m => !m.classList.contains('hidden');
+        const modals = ['history-modal', 'quote-overlay', 'intro-overlay', 'grandtotal-overlay', 'app-menu', 'site-tools-overlay'].map(id => document.getElementById(id)).filter(Boolean);
+        modals.forEach(m => {
+            let opener = null, wasOpen = isOpen(m);
+            new MutationObserver(() => {
+                const open = isOpen(m);
+                if (open && !wasOpen) {
+                    opener = document.activeElement;
+                    setTimeout(() => { const f = m.querySelector(FOCUSABLE); if (f) f.focus(); }, 50);
+                } else if (!open && wasOpen && opener && document.contains(opener)) {
+                    opener.focus();
+                }
+                wasOpen = open;
+            }).observe(m, { attributes: true, attributeFilter: ['class'] });
+        });
+        document.addEventListener('keydown', e => {
+            const m = modals.find(isOpen);
+            if (!m) return;
+            if (e.key === 'Escape') {
+                const close = m.querySelector('[id^="close-"], [id$="-close-btn"], [data-close-modal]');
+                if (close) { e.preventDefault(); close.click(); }
+            } else if (e.key === 'Tab') {
+                const items = [...m.querySelectorAll(FOCUSABLE)].filter(el => el.offsetParent !== null);
+                if (!items.length) return;
+                const first = items[0], last = items[items.length - 1];
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                else if (!m.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+            }
+        });
+    }
+    function init() {
+        linkLabels(); nameIcons(); setupTabs(); setupDialogs();
+        let queued = false;
+        new MutationObserver(() => {
+            if (queued) return; queued = true;
+            requestAnimationFrame(() => { queued = false; nameIcons(); linkLabels(); });
+        }).observe(document.body, { childList: true, subtree: true });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+<div id="site-tools-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden modal-overlay opacity-0" role="dialog" aria-modal="true" aria-labelledby="site-tools-title" aria-hidden="true">
+    <div class="card rounded-lg shadow-xl w-full max-w-md modal-content transform scale-95 flex flex-col max-h-[80vh]">
+        <div class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0">
+            <div class="flex items-center gap-2">
+                <i data-lucide="land-plot" class="text-accent"></i>
+                <h3 id="site-tools-title" class="text-lg font-semibold header-title" data-lang="siteTools">Site Tools</h3>
+            </div>
+            <button type="button" id="site-tools-close-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+                <i data-lucide="x-circle"></i>
+            </button>
+        </div>
+        <div class="p-4 overflow-y-auto flex-grow custom-scrollbar">
+            <div class="card p-3 rounded-lg space-y-2 text-start">
+                <h4 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="convTitle">Land area converter</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+                    <div><label class="block text-xs font-medium" data-lang="convValue">Area</label>
+                        <div class="flex gap-1">
+                            <input type="number" inputmode="decimal" id="land-area-value" class="pro-input" min="0" step="0.01">
+                            <select id="land-area-unit" class="pro-input">
+                                <option value="m2" data-lang="convM2">m²</option>
+                                <option value="dunum" data-lang="convDunum">Dunum (2,500 m²)</option>
+                                <option value="olak" data-lang="convOlak">Olak (100 m²)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div><label class="block text-xs font-medium" data-lang="convM2">Square meters (m²)</label><input type="text" id="land-out-m2" class="pro-input pro-output" readonly tabindex="-1"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block text-xs font-medium" data-lang="convDunum">Dunum (2,500 m²)</label><input type="text" id="land-out-dunum" class="pro-input pro-output" readonly tabindex="-1"></div>
+                        <div><label class="block text-xs font-medium" data-lang="convOlak">Olak (100 m²)</label><input type="text" id="land-out-olak" class="pro-input pro-output" readonly tabindex="-1"></div>
+                    </div>
+                </div>
+                <p class="text-xs opacity-75 mt-1" data-lang="convHint">Type an area in one unit to see it in the others. 1 dunum = 2,500 m²; 1 olak = 100 m².</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="update-toast" class="update-toast hidden" role="status">
+    <span data-lang="updateToast">Update available</span>
+    <button type="button" id="update-reload-btn" class="btn btn-primary" data-lang="updateReload">Reload</button>
+</div>
+<div id="grandtotal-overlay" class="hidden modal-overlay" role="dialog" aria-modal="true" aria-labelledby="grandtotal-title">
+    <div class="quote-sheet" id="grandtotal-sheet">
+        <div class="quote-toolbar">
+            <button type="button" id="grandtotal-close-btn" class="btn btn-secondary">
+                <i data-lucide="x" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quoteCloseBtn">Close</span>
+            </button>
+            <button type="button" id="grandtotal-print-btn" class="btn btn-primary">
+                <i data-lucide="printer" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quotePrintBtn">Print / Save as PDF</span>
+            </button>
+            <button type="button" id="grandtotal-pdf-btn" class="btn btn-primary">
+                <i data-lucide="download" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="downloadPdf">Download PDF</span>
+            </button>
+            <button type="button" id="grandtotal-whatsapp-btn" class="btn btn-primary">
+                <i data-lucide="message-circle" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quoteWhatsappBtn">Send to WhatsApp</span>
+            </button>
+            <button type="button" id="grandtotal-share-btn" class="btn btn-secondary">
+                <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="shareBtn">Share / Copy</span>
+            </button>
+        </div>
+        <div id="grandtotal-content"></div>
+    </div>
+</div>
+<div id="quote-overlay" class="hidden" aria-hidden="true">
+    <div class="quote-sheet" id="quote-sheet">
+        <div class="quote-toolbar">
+            <button type="button" id="quote-close-btn" class="btn btn-secondary">
+                <i data-lucide="x" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quoteCloseBtn">Close</span>
+            </button>
+            <button type="button" id="quote-print-btn" class="btn btn-primary">
+                <i data-lucide="printer" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quotePrintBtn">Print / Save as PDF</span>
+            </button>
+            <button type="button" id="quote-pdf-btn" class="btn btn-primary">
+                <i data-lucide="download" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="downloadPdf">Download PDF</span>
+            </button>
+            <button type="button" id="quote-whatsapp-btn" class="btn btn-primary">
+                <i data-lucide="message-circle" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="quoteWhatsappBtn">Send to WhatsApp</span>
+            </button>
+            <button type="button" id="quote-share-btn" class="btn btn-secondary">
+                <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="shareBtn">Share / Copy</span>
+            </button>
+        </div>
+        <div class="quote-doc" id="quote-doc">
+            <div class="quote-head">
+                <h1 class="quote-title" data-lang="quoteTitle">Material Quote</h1>
+                <div class="quote-date-line"><span data-lang="quoteDateLabel">Date</span>: <span id="quote-date-val"></span></div>
+            </div>
+            <div class="quote-fields">
+                <div><label data-lang="quoteProject">Project name</label><input id="quote-project" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteClient">Client name</label><input id="quote-client" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteContractor">Contractor / Engineer name</label><input id="quote-contractor" class="quote-input" type="text"></div>
+                <div><label data-lang="quoteContact">Contact</label><input id="quote-contact" class="quote-input" type="text"></div>
+            </div>
+            <p class="quote-hint" data-lang="quotePriceHint">Type the agreed unit price for each line — the amounts and grand total fill in automatically.</p>
+            <table class="quote-table" id="quote-table">
+                <thead>
+                    <tr>
+                        <th data-lang="quoteItemCol">Item</th>
+                        <th data-lang="quoteQtyCol">Quantity</th>
+                        <th data-lang="quotePriceCol">Unit price</th>
+                        <th data-lang="quoteAmountCol">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="quote-items"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" data-lang="quoteTotalLabel">Grand total</td>
+                        <td id="quote-total"></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div class="quote-notes">
+                <label for="quote-notes" data-lang="quoteNotesLabel">Notes</label>
+                <textarea id="quote-notes" class="quote-input" rows="2"></textarea>
+            </div>
+            <div class="quote-signs">
+                <div><div class="quote-sign-line"></div><div data-lang="quoteSignContractor">Contractor signature</div></div>
+                <div><div class="quote-sign-line"></div><div data-lang="quoteSignClient">Client signature</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
