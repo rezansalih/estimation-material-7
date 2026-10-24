@@ -117,7 +117,7 @@
             </div>
             
             <div class="header-tools flex items-center gap-2 mt-3 sm:mt-0">
-                <button id="lang-indicator" class="lang-chip" type="button" data-lang-aria="languageLabel" aria-haspopup="dialog" aria-controls="app-menu">
+                <button id="lang-indicator" class="lang-chip" type="button" data-lang-aria="languageLabel" aria-haspopup="dialog" aria-controls="language-overlay">
                     <i data-lucide="languages"></i><span id="lang-indicator-label">EN</span>
                 </button>
                 <button id="header-menu-btn" class="quick-action header-quick-action" type="button" aria-haspopup="dialog" aria-controls="app-menu">
@@ -133,28 +133,8 @@
                     <button id="app-menu-close-btn" class="icon-action" type="button" data-lang-aria="menuClose" aria-label="Close"><i data-lucide="x"></i></button>
                 </div>
                 <div class="app-menu-body">
-                    <div class="app-menu-section">
-                        <label class="app-menu-label" for="language-selector" data-lang="languageLabel">Language</label>
-                        <select id="language-selector" dir="ltr" data-lang-aria="languageLabel" aria-label="Language" class="pro-input text-sm w-full">
-                            <option value="en" dir="ltr">ENGLISH</option>
-                            <option value="ku" dir="ltr">KURDISH&nbsp;BADINI</option>
-                            <option value="ks" dir="ltr">KURDISH&nbsp;SORANI</option>
-                            <option value="ar" dir="ltr">ARABIC</option>
-                        </select>
-                    </div>
-                    <div class="app-menu-section">
-                        <div class="theme-switch">
-                            <label for="theme-toggle" class="theme-control">
-                                <i data-lucide="moon" class="text-indigo-400"></i>
-                                <span class="theme-label" data-lang="themeToggleLabel">Dark mode</span>
-                                <input type="checkbox" id="theme-toggle" role="switch" data-lang-aria="themeToggleLabel" aria-label="Dark mode" class="sr-only">
-                                <span class="theme-track" aria-hidden="true"></span>
-                            </label>
-                        </div>
-                    </div>
                     <button id="open-settings-btn" class="quick-action app-menu-item" type="button"><i data-lucide="sliders-horizontal"></i><span data-lang="workspaceSettings">Project settings</span></button>
                     <button id="workspace-history-btn" class="quick-action app-menu-item" type="button"><i data-lucide="history"></i><span data-lang="workspaceHistory">Recent calculations</span></button>
-                    <button id="site-tools-btn" class="quick-action app-menu-item" type="button"><i data-lucide="land-plot"></i><span data-lang="siteTools">Site Tools</span></button>
                     <button id="header-grandtotal-btn" class="quick-action app-menu-item" type="button"><i data-lucide="file-text"></i><span data-lang="projectTotalNav">Project Total</span></button>
                     <p class="app-menu-foot"><span id="offline-pill" class="offline-pill hidden"><i data-lucide="check-circle-2"></i><span data-lang="offlineReady">Offline Ready</span></span></p>
                 </div>
@@ -220,6 +200,14 @@
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <h2 class="text-lg font-semibold header-title" data-lang="globalSettings">Global Settings</h2>
                     <button id="close-global-settings-btn" type="button" data-lang-aria="closeLabel" aria-label="Close" class="btn btn-secondary !p-2"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div class="theme-switch mb-4">
+                    <label for="theme-toggle" class="theme-control">
+                        <i data-lucide="moon" class="text-indigo-400"></i>
+                        <span class="theme-label" data-lang="themeToggleLabel">Dark mode</span>
+                        <input type="checkbox" id="theme-toggle" role="switch" data-lang-aria="themeToggleLabel" aria-label="Dark mode" class="sr-only">
+                        <span class="theme-track" aria-hidden="true"></span>
+                    </label>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
                      <div>
@@ -463,7 +451,7 @@
                             </summary>
                             <div class="card p-4 rounded-lg">
                                 <div class="flex justify-end items-center mb-2">
-                                    <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <button type="button" id="clear-concrete-table" class="btn btn-secondary !p-2" data-lang="clearTable" data-lang-aria="clearTable" title="Clear this table">
                                     <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                                     </button>
                                 </div>
@@ -527,7 +515,6 @@
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
                                     <input type="number" inputmode="decimal" id="block-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
                                 </div>
-                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="block-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="block-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="block-openings-toggle">
@@ -669,7 +656,7 @@
                             </summary>
                             <div class="card p-4 rounded-lg">
                                 <div class="flex justify-end items-center mb-2">
-                                    <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <button type="button" id="clear-blocks-table" class="btn btn-secondary !p-2" data-lang="clearTable" data-lang-aria="clearTable" title="Clear this table">
                                     <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                                     </button>
                                 </div>
@@ -731,7 +718,6 @@
                                     <label class="block text-xs sm:text-sm font-medium" data-lang="wallWidth">Width (m)</label>
                                     <input type="number" inputmode="decimal" id="brick-wall-width-input" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="W" data-sane="0.05:1.5:m">
                                 </div>
-                                <div><label class="block text-xs sm:text-sm font-medium" data-upgrade-label="wallLeaves">Wall leaves</label><input type="number" inputmode="numeric" id="brick-leaves" min="1" step="1" value="1" class="pro-input text-sm !p-2" data-sane="1:3:"></div>
                             </div>
                             <div class="pt-2 border-t border-gray-600" id="brick-openings-section">
                                 <div class="openings-toggle flex items-center gap-2 mb-2" id="brick-openings-toggle">
@@ -854,7 +840,7 @@
                             </summary>
                             <div class="card p-4 rounded-lg">
                                 <div class="flex justify-end items-center mb-2">
-                                    <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <button type="button" id="clear-bricks-table" class="btn btn-secondary !p-2" data-lang="clearTable" data-lang-aria="clearTable" title="Clear this table">
                                     <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                                     </button>
                                 </div>
@@ -1336,7 +1322,7 @@
                             </summary>
                             <div class="card p-4 rounded-lg">
                                 <div class="flex justify-end items-center mb-2">
-                                    <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                    <button type="button" id="clear-steel-table" class="btn btn-secondary !p-2" data-lang="clearTable" data-lang-aria="clearTable" title="Clear this table">
                                     <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                                     </button>
                                 </div>
@@ -1445,7 +1431,7 @@
                            </summary>
                            <div class="card p-4 rounded-lg">
                                <div class="flex justify-end items-center mb-2">
-                                   <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" title="Clear this table">
+                                   <button type="button" id="clear-earthwork-table" class="btn btn-secondary !p-2" data-lang="clearTable" data-lang-aria="clearTable" title="Clear this table">
                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                                    </button>
                                </div>
@@ -1593,10 +1579,11 @@
             document.getElementById('header-menu-btn')?.focus();
         };
         document.getElementById('header-menu-btn')?.addEventListener('click', () => openMenu());
-        document.getElementById('lang-indicator')?.addEventListener('click', () => openMenu(document.getElementById('language-selector')));
+        /* The lang chip opens the language popup — wired in app.src.js with the
+           shared openModal/closeModal helpers. */
         document.getElementById('app-menu-close-btn')?.addEventListener('click', closeMenu);
         menu?.addEventListener('click', (e) => { if (e.target === menu) closeMenu(); });
-        ['open-settings-btn', 'workspace-history-btn', 'header-grandtotal-btn', 'site-tools-btn'].forEach((id) => {
+        ['open-settings-btn', 'workspace-history-btn', 'header-grandtotal-btn'].forEach((id) => {
             document.getElementById(id)?.addEventListener('click', () => closeMenu());
         });
         const LANG_CHIP = { en: 'EN', ku: 'KU', ks: 'KS', ar: 'AR' };
@@ -1728,7 +1715,7 @@ if ('serviceWorker' in navigator) {
     function setupDialogs() {
         const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
         const isOpen = m => !m.classList.contains('hidden');
-        const modals = ['history-modal', 'quote-overlay', 'intro-overlay', 'grandtotal-overlay', 'app-menu', 'site-tools-overlay'].map(id => document.getElementById(id)).filter(Boolean);
+        const modals = ['history-modal', 'quote-overlay', 'intro-overlay', 'grandtotal-overlay', 'app-menu', 'language-overlay'].map(id => document.getElementById(id)).filter(Boolean);
         modals.forEach(m => {
             let opener = null, wasOpen = isOpen(m);
             new MutationObserver(() => {
@@ -1769,39 +1756,24 @@ if ('serviceWorker' in navigator) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
-<div id="site-tools-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden modal-overlay opacity-0" role="dialog" aria-modal="true" aria-labelledby="site-tools-title" aria-hidden="true">
-    <div class="card rounded-lg shadow-xl w-full max-w-md modal-content transform scale-95 flex flex-col max-h-[80vh]">
-        <div class="p-4 border-b border-gray-700 flex justify-between items-center shrink-0">
+<div id="language-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 hidden modal-overlay opacity-0" role="dialog" aria-modal="true" aria-labelledby="language-overlay-title" aria-hidden="true">
+    <div class="card rounded-lg shadow-xl w-full max-w-sm modal-content transform scale-95">
+        <div class="p-4 border-b border-gray-700 flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i data-lucide="land-plot" class="text-accent"></i>
-                <h3 id="site-tools-title" class="text-lg font-semibold header-title" data-lang="siteTools">Site Tools</h3>
+                <i data-lucide="languages" class="text-accent"></i>
+                <h3 id="language-overlay-title" class="text-lg font-semibold header-title" data-lang="languageLabel">Language</h3>
             </div>
-            <button type="button" id="site-tools-close-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
+            <button type="button" id="language-overlay-close-btn" data-lang-aria="closeLabel" aria-label="Close" class="hover:text-red-500 transition-colors">
                 <i data-lucide="x-circle"></i>
             </button>
         </div>
-        <div class="p-4 overflow-y-auto flex-grow custom-scrollbar">
-            <div class="card p-3 rounded-lg space-y-2 text-start">
-                <h4 class="text-base font-semibold header-title border-b border-gray-700 pb-2" data-lang="convTitle">Land area converter</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
-                    <div><label class="block text-xs font-medium" data-lang="convValue">Area</label>
-                        <div class="flex gap-1">
-                            <input type="number" inputmode="decimal" id="land-area-value" class="pro-input" min="0" step="0.01">
-                            <select id="land-area-unit" class="pro-input">
-                                <option value="m2" data-lang="convM2">m²</option>
-                                <option value="dunum" data-lang="convDunum">Dunum (2,500 m²)</option>
-                                <option value="olak" data-lang="convOlak">Olak (100 m²)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div><label class="block text-xs font-medium" data-lang="convM2">Square meters (m²)</label><input type="text" id="land-out-m2" class="pro-input pro-output" readonly tabindex="-1"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div><label class="block text-xs font-medium" data-lang="convDunum">Dunum (2,500 m²)</label><input type="text" id="land-out-dunum" class="pro-input pro-output" readonly tabindex="-1"></div>
-                        <div><label class="block text-xs font-medium" data-lang="convOlak">Olak (100 m²)</label><input type="text" id="land-out-olak" class="pro-input pro-output" readonly tabindex="-1"></div>
-                    </div>
-                </div>
-                <p class="text-xs opacity-75 mt-1" data-lang="convHint">Type an area in one unit to see it in the others. 1 dunum = 2,500 m²; 1 olak = 100 m².</p>
-            </div>
+        <div class="p-4">
+            <select id="language-selector" dir="ltr" data-lang-aria="languageLabel" aria-label="Language" class="pro-input text-sm w-full">
+                <option value="en" dir="ltr">ENGLISH</option>
+                <option value="ku" dir="ltr">KURDISH&nbsp;BADINI</option>
+                <option value="ks" dir="ltr">KURDISH&nbsp;SORANI</option>
+                <option value="ar" dir="ltr">ARABIC</option>
+            </select>
         </div>
     </div>
 </div>

@@ -39,12 +39,12 @@ console.log('\n--- targeted checks ---');
 const checks = {
   'custom brick size inputs exist': /id="brick-custom-profile"/.test(html) && /id="brick-custom-length"/.test(html),
   'custom block size inputs exist': /id="block-custom-profile"/.test(html) && /id="block-custom-length"/.test(html),
-  'bricks uses dedicated thickness-mismatch key (errWallThicknessMismatch)': brickHandler.includes('T.errWallThicknessMismatch'),
+  'bricks derives layers from the wall width (no leaves input)': brickHandler.includes('wallThicknessM / (brickWidthM + mortarThicknessM)') && !brickHandler.includes('brick-leaves'),
   'bricks result shows "bags" unit next to cement': /T\.cementBags\}<\/strong> \$\{cementBags\}/.test(brickHandler),
   'blocks result shows "bags" unit next to cement': /T\.cementBags\}<\/strong> \$\{cementBags\} bags/.test(source),
   'bricks mortar volume is labelled before/after waste': /mortarVolumeOrder|mortarWithWaste/.test(brickHandler),
   'opening summary uses the translated key (EN text is only a fallback)': /T\.openingsDeducted \|\|/.test(brickHandler),
-  'bricks tab has leaves input': idsInHtml.has('brick-leaves'),
+  'bricks tab has no leaves input': !idsInHtml.has('brick-leaves'),
   'bricks tab has mortar dry factor': idsInHtml.has('brick-mortar-dry-factor'),
 };
 for (const [k, v] of Object.entries(checks)) console.log(v ? 'PASS' : 'FAIL', '-', k);

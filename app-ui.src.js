@@ -32,7 +32,8 @@
     var nav = doc.createElement('nav');
     nav.className = 'bottom-nav';
     nav.id = 'bottom-nav';
-    nav.setAttribute('aria-label', 'Calculators');
+    nav.setAttribute('data-lang-aria', 'calculatorsNav');
+    nav.setAttribute('aria-label', t('calculatorsNav', 'Calculators'));
 
     nav.appendChild(navButton({ id: 'home', key: 'homeBack', icon: 'layers', label: function () { return t('homeBack', 'All tools'); } }));
     TOOLS.forEach(function (tool) {
@@ -127,8 +128,8 @@
       var box = doc.createElement('div');
       box.className = 'num-stepper';
       box.innerHTML =
-        '<button type="button" data-dir="-1" aria-label="Decrease">−</button>' +
-        '<button type="button" data-dir="1" aria-label="Increase">+</button>';
+        '<button type="button" data-dir="-1" data-lang-aria="stepperDecrease" aria-label="' + t('stepperDecrease', 'Decrease') + '">−</button>' +
+        '<button type="button" data-dir="1" data-lang-aria="stepperIncrease" aria-label="' + t('stepperIncrease', 'Increase') + '">+</button>';
       wrap.appendChild(box);
 
       box.addEventListener('click', function (e) {
@@ -778,7 +779,9 @@
     /* v63 spec previews: lightweight SVG diagrams so a mistyped Length/Thickness
        is visible at a glance. currentColor + CSS vars — RTL and dark-mode safe. */
     function svgOpen(title) {
-      return '<svg class="spec-svg" viewBox="0 0 320 190" role="img" aria-label="' + title + '">' +
+      /* The diagram is decorative — the numbers live in the text rows next
+         to it, so screen readers skip the drawing entirely. */
+      return '<svg class="spec-svg" viewBox="0 0 320 190" aria-hidden="true">' +
         '<rect x="0" y="0" width="320" height="190" rx="10" fill="none"></rect>';
     }
     function specNum(id) {

@@ -800,45 +800,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok('glue: no mortar volume rows', !/Mortar Volume/.test(t));
     ok('no errors in glue mode', errs.length === 0, errs.join(' | '));
   }
-  {
-    const { dom, errs } = await boot();
-    const d = dom.window.document;
-    d.querySelector('.bn-item[data-goto="earthwork"]').click();
-    await tick(150);
-    ok('converter is out of the earthwork card', !d.querySelector('#earthwork #land-area-value'));
-    ok('Site Tools button is in the app menu', !!d.getElementById('site-tools-btn'));
-    d.getElementById('site-tools-btn').click();
-    await tick(150);
-    ok('Site Tools popup opens with the converter',
-       !d.getElementById('site-tools-overlay').classList.contains('hidden') &&
-       !!d.querySelector('#site-tools-overlay #land-area-value'));
-    const v = d.getElementById('land-area-value');
-    v.value = '2';
-    d.getElementById('land-area-unit').value = 'dunum';
-    v.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
-    await tick(80);
-    ok('converter: 2 dunum = 5000 m²', d.getElementById('land-out-m2').value === '5000');
-    ok('converter: 2 dunum = 50 olak', d.getElementById('land-out-olak').value === '50');
-    ok('converter: 2 dunum = 2 dunum', d.getElementById('land-out-dunum').value === '2');
-    v.value = '100';
-    d.getElementById('land-area-unit').value = 'olak';
-    v.dispatchEvent(new dom.window.Event('input', { bubbles: true }));
-    await tick(50);
-    ok('converter: 100 olak = 10000 m² = 4 dunum', d.getElementById('land-out-m2').value === '10000' &&
-       d.getElementById('land-out-dunum').value === '4');
-    // switching the unit with only a change event (no input) must recalculate too
-    d.getElementById('land-area-unit').value = 'dunum';
-    d.getElementById('land-area-unit').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
-    await tick(50);
-    ok('converter: change on unit select recalculates', d.getElementById('land-out-m2').value === '250000');
-    d.getElementById('land-area-unit').dispatchEvent(new dom.window.Event('input', { bubbles: true }));
-    await tick(50);
-    ok('converter: input on unit select recalculates', d.getElementById('land-out-olak').value === '2500');
-    d.getElementById('site-tools-close-btn').click();
-    await tick(400);
-    ok('Site Tools popup closes', d.getElementById('site-tools-overlay').classList.contains('hidden'));
-    ok('no errors in converter', errs.length === 0, errs.join(' | '));
-  }
+
   {
     const { dom, errs } = await boot();
     const d = dom.window.document;
@@ -910,13 +872,6 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('theme-toggle').click();
     await tick(60);
     ok('light mode restores status-bar color', metaEl.getAttribute('content') === '#f2f6f7');
-    ok('converter outputs are read-only distinct fields', ['land-out-m2', 'land-out-dunum', 'land-out-olak'].every(id => {
-        const el = d.getElementById(id);
-        return el && el.hasAttribute('readonly') && el.classList.contains('pro-output');
-    }));
-    ok('land converter lives in the Site Tools popup',
-       !!d.querySelector('#site-tools-overlay [data-lang="convTitle"]') &&
-       !!d.querySelector('#site-tools-overlay #land-out-m2'));
     let confirmCalls = 0;
     dom.window.confirm = () => { confirmCalls++; return false; };
     const beforeRows = d.querySelectorAll('#bricks-table-section tbody tr').length;
@@ -1150,7 +1105,6 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('brick-wall-length').value = '3';
     d.getElementById('brick-wall-height').value = '2';
     d.getElementById('brick-wall-width-input').value = '0.25';
-    d.getElementById('brick-leaves').value = '2';
     d.getElementById('mobile-calculate').click();
     await tick(300);
     d.getElementById('brick-wall-length').value = '4';
@@ -1395,10 +1349,10 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok('plus increments by step', field.value === '10.01', field.value);
     wrap.querySelector('button[data-dir="-1"]').click();
     ok('minus decrements', field.value === '10', field.value);
-    const leaves = d.getElementById('brick-leaves');
-    leaves.value = '1';
-    leaves.closest('.num-field').querySelector('button[data-dir="1"]').click();
-    ok('integer step = 1', leaves.value === '2', leaves.value);
+    const wins = d.getElementById('brick-num-windows');
+    wins.value = '1';
+    wins.closest('.num-field').querySelector('button[data-dir="1"]').click();
+    ok('integer step = 1', wins.value === '2', wins.value);
     ok('no errors', errs.length === 0, errs.join(' | '));
   }
 
@@ -1614,17 +1568,20 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('header-menu-btn').click();
     await tick(80);
     ok('menu button opens drawer', !menu.classList.contains('hidden'));
-    ok('drawer hosts language + theme + settings + history + project total',
-       !!menu.querySelector('#language-selector') && !!menu.querySelector('#theme-toggle') &&
+    ok('drawer hosts settings + history + project total',
        !!menu.querySelector('#open-settings-btn') && !!menu.querySelector('#workspace-history-btn') &&
-       !!menu.querySelector('#header-grandtotal-btn'));
+       !!menu.querySelector('#header-grandtotal-btn') &&
+       !menu.querySelector('#language-selector') && !menu.querySelector('#theme-toggle') && !menu.querySelector('#site-tools-btn'));
     ok('drawer registered as dialog (Esc/focus trap)', /'app-menu'/.test(d.documentElement.innerHTML) || true);
     d.getElementById('app-menu-close-btn').click();
     await tick(50);
     ok('close button closes drawer', menu.classList.contains('hidden'));
     d.getElementById('lang-indicator').click();
     await tick(80);
-    ok('lang chip opens drawer too', !menu.classList.contains('hidden'));
+    const langOv = d.getElementById('language-overlay');
+    ok('lang chip opens the language popup', !langOv.classList.contains('hidden') && !!langOv.querySelector('#language-selector'));
+    d.getElementById('language-overlay-close-btn').click();
+    await tick(350);
     d.getElementById('open-settings-btn').click();
     await tick(80);
     ok('choosing a tool closes drawer', menu.classList.contains('hidden'));

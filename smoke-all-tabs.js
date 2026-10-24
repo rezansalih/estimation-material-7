@@ -23,7 +23,7 @@ const set=(d,id,v)=>{const e=d.getElementById(id); if(!e) throw new Error('missi
   // BLOCKS: 10x3 wall, 0.2 m, 1 leaf, hollow block 40x20x20
   let env=await boot(); let d=env.dom.window.document;
   set(d,'block-wall-length',10); set(d,'block-wall-height',3); set(d,'block-wall-width-input',0.2);
-  set(d,'block-leaves',1); set(d,'block-mortar-thickness',1.0); set(d,'block-mortar-ratio','1:4');
+  set(d,'block-mortar-thickness',1.0); set(d,'block-mortar-ratio','1:4');
   set(d,'block-cost',1.2); set(d,'block-cement-cost',8); set(d,'block-sand-cost',25);
   set(d,'block-num-windows',1); set(d,'block-window-width',2); set(d,'block-window-height',1.5);
   d.getElementById('calculate-blocks').click();

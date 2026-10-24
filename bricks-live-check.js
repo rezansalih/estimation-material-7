@@ -45,7 +45,6 @@ function fillBrickWall({ dom }, o) {
   setVal(doc, 'brick-wall-length', o.len);
   setVal(doc, 'brick-wall-height', o.hgt);
   setVal(doc, 'brick-wall-width-input', o.thick);
-  setVal(doc, 'brick-leaves', o.leaves ?? 1);
   setVal(doc, 'brick-mortar-thickness', o.mortarCm ?? 1.0);
   if (o.ratio) setVal(doc, 'brick-mortar-ratio', o.ratio);
   const sel = doc.getElementById('brick-type');

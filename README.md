@@ -348,3 +348,30 @@ WhatsApp text, and the project PDF), and every Quick-picks chip row
 (concrete + blocks + bricks). Steel's rebar section diagram stays. The
 calculators no longer write a `tag` key. Quick-picks/preset dict keys become
 orphans (harmless). 6 new guard pins keep the removed UI gone.
+
+## v69
+Menu declutter (user's pick: Language row + Dark mode): the drawer keeps four
+actions (Project settings · Recent calculations · Site Tools · Project Total).
+The header language chip now opens a small language popup (same pinned
+4-language select); Dark mode moved inside Project settings. Deep audit round
+(`tests/deep-audit.mjs`): 4-language static scan, live language-switch probes,
+and hand-verified formulas (concrete 1:2:4 dry-volume method, glue 4 kg/m²
+25 kg bags, BRC overlap count, earthwork swell/truck loads). Fixed: stepper
++/− buttons and the bottom nav now have translated accessible names, "Clear
+this table" title/aria follow the language, the steel diagram is decorative
+for screen readers, and an open Quote sheet / Project Total re-render on a
+language switch. Guard pins updated (drawer layout, chip popup, settings
+theme, quote re-render).
+
+## v70
+Two deletions (user decision):
+1. **Wall leaves gone** (blocks + bricks). The question "one leaf or two?"
+   confused the flow — the wall width the user types already says how thick
+   the wall is. Layers through the thickness are now derived automatically
+   (wall width ÷ block width + joint), so length × width × height is all you
+   enter. The thickness-mismatch error is gone with it. Double-thick walls
+   still count correctly (a 40 cm wall of 20 cm blocks = 2 layers).
+2. **Site Tools deleted entirely** (land area converter + popup + menu
+   button). This reverses v65's "keep as popup" — the new word wins.
+Guard pins updated: site tools / leaves must stay gone, handlers must derive
+layers from the width. Full chain green incl. tests/deep-audit.mjs (0 findings).

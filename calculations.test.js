@@ -129,7 +129,10 @@ assert.ok(Math.abs(steelKg(12, 10, 4) - 37.33) < .02);
 assert.deepEqual(earthwork({ length: 5, width: 4, height: 1, sections: 1, swell: 25, truckCapacity: 4 }), { gross: 20, loose: 25, truckLoads: 7 });
 
 // Edge cases required by the specification.
-assert.throws(() => masonry({ wallVolume: 1, wallThickness: .4, unitLength: .4, unitThickness: .2, unitHeight: .2, leaves: 1 }), /wall thickness/);
+// v70: layers through the thickness are derived from the wall width — a
+// 40 cm wall of 20 cm blocks counts as 2 layers automatically.
+const doubleLeaf = masonry({ wallVolume: 12, wallThickness: .4, unitLength: .4, unitThickness: .2, unitHeight: .2, leaves: 2 });
+assert.ok(Math.abs(doubleLeaf.theoretical - 2 * block.theoretical) < 0.5, 'double-thick wall = double the blocks');
 assert.throws(() => {
   const gross = 2 * 2 * .2;
   const openings = 3;
@@ -178,7 +181,10 @@ assert.match(html, /block-window-width.*block-window-height.*wallWidth/s);
 assert.match(html, /id="block-mortar-dry-factor"/);
 const blockHandler = html.slice(html.indexOf("__calcHandlers.blocks"), html.indexOf("__calcHandlers.bricks"));
 assert.equal(blockHandler.includes('const dryMortarVolume = mortarVolume * 1.33;'), false);
-assert.match(html, /T\.errWallThicknessMismatch/);
+// v70: no leaves question — layers through the wall thickness are derived
+// from the wall width the user types.
+assert.match(blockHandler, /wallThicknessM \/ \(blockWidthM \+ mortarThicknessM\)/);
+assert.equal(blockHandler.includes('block-leaves'), false);
 assert.match(html, /T\.hollowBlockNote/);
 assert.match(html, /id="brick-hollow-note"/);
 assert.match(html, /T\.hollowBrickNote/);
@@ -218,7 +224,8 @@ assert.match(html, /const mixingWaterLitres = cementWeight \* MORTAR_WATER_PER_K
 const brickHandler = html.slice(html.indexOf("__calcHandlers.bricks"), html.indexOf("__calcHandlers.steel"));
 assert.equal(brickHandler.includes('const dryMortarVolume = mortarVolume * 1.33;'), false);
 assert.match(brickHandler, /<details class="calculation-trail/);
-assert.match(brickHandler, /T\.errWallThicknessMismatch/, 'bricks must use the dedicated wall-thickness error, not the generic dimensions error');
+assert.match(brickHandler, /wallThicknessM \/ \(brickWidthM \+ mortarThicknessM\)/, 'bricks derive layers from the wall width');
+assert.equal(brickHandler.includes('brick-leaves'), false);
 assert.equal(html.includes('windowVolume'), false, 'obsolete window-volume translation/input key returned');
 assert.equal(html.includes('doorVolume'), false, 'obsolete door-volume translation/input key returned');
 assert.equal(html.includes('title="1 = single-leaf wall"'), false, 'English-only leaf tooltip returned');
@@ -266,9 +273,6 @@ assert.equal(/Select Structural Element/.test(indexHtml), false, 'stale Structur
 assert.equal(/Structural Steel Calculator/.test(indexHtml), false, 'stale Structural Steel title must be gone');
 // theme-color is driven by JS; converter outputs read-only; modal has its print action.
 assert.ok(/id="theme-color-meta"/.test(indexHtml), 'theme-color meta needs its id');
-for (const oid of ['land-out-m2', 'land-out-dunum', 'land-out-olak']) {
-  assert.ok(new RegExp(`id="${oid}" class="pro-input pro-output" readonly`).test(indexHtml), `${oid} must be a distinct read-only output`);
-}
 assert.ok(/id="quote-print-btn"/.test(indexHtml), 'summary modal keeps a print button (same combined PDF)');
 
 // iOS status bar glyphs must be dark (readable on the light app); integer
@@ -293,11 +297,11 @@ assert.ok(/'history-modal', 'quote-overlay', 'intro-overlay'/.test(indexHtml), '
 // v65: the land converter moved out of the excavation card into a Site Tools
 // popup; masonry volume mode sits behind an Advanced / Direct m³ toggle;
 // concrete quick picks are tagged per element.
-assert.ok(/id="site-tools-overlay"/.test(indexHtml), 'site tools popup exists');
-assert.ok(/id="site-tools-btn"/.test(indexHtml), 'the app menu opens site tools');
-assert.ok(/id="site-tools-overlay"[\s\S]*?id="land-area-value"/.test(indexHtml), 'the converter lives in the site tools popup');
-assert.equal(indexHtml.slice(indexHtml.indexOf('id="earthwork"'), indexHtml.indexOf('id="site-tools-overlay"')).includes('land-area-value'), false, 'the converter must not sit before the site tools popup');
-assert.ok(/data-lucide="land-plot"/.test(indexHtml), 'site tools keeps the land-plot icon');
+// v70: Site Tools is deleted entirely (user decision) — no popup, no menu
+// button, no land converter markup. Wall leaves is gone too: the wall width
+// alone determines how many layers of block fit through the thickness.
+assert.equal(/id="site-tools-overlay"/.test(indexHtml) || /id="site-tools-btn"/.test(indexHtml) || /id="land-area-value"/.test(indexHtml), false, 'site tools must stay gone');
+assert.equal(/id="block-leaves"/.test(indexHtml) || /id="brick-leaves"/.test(indexHtml), false, 'wall leaves input must stay gone');
 assert.ok(/class="sd-chev[^"]*"/.test(indexHtml), 'app accordions keep the rotating chevron');
 assert.ok(/id="block-adv-volume"/.test(indexHtml) && /id="brick-adv-volume"/.test(indexHtml), 'masonry gets the advanced / direct m³ toggle');
 assert.equal(/role="radiogroup" aria-labelledby="calcmode-lbl-[23]"/.test(indexHtml), false, 'masonry mode radios must not crowd the main form');
@@ -403,7 +407,16 @@ assert.ok(/spec-svg/.test(cssFile) && /steel-spec-preview/.test(indexHtml), 'spe
 // v63: header drawer — top bar keeps only [logo+title] + [lang chip] + [menu];
 // settings / history / project total / language / theme live in #app-menu.
 assert.ok(/id="lang-indicator"/.test(indexHtml) && /id="header-menu-btn"/.test(indexHtml), 'header needs lang chip + menu button');
-assert.ok(/id="app-menu"[\s\S]*id="language-selector"[\s\S]*id="theme-toggle"[\s\S]*id="open-settings-btn"[\s\S]*id="workspace-history-btn"[\s\S]*id="header-grandtotal-btn"/.test(indexHtml), 'drawer must host language, theme, settings, history, project total');
+// v69: the drawer keeps four actions — language moved to the header chip
+// popup, dark mode moved inside Project settings.
+assert.ok(/id="app-menu"[\s\S]*id="open-settings-btn"[\s\S]*id="workspace-history-btn"[\s\S]*id="header-grandtotal-btn"/.test(indexHtml), 'drawer must host settings, history, project total');
+const drawerSlice = indexHtml.slice(indexHtml.indexOf('class="app-menu-body"'), indexHtml.indexOf('id="global-settings-wrapper"'));
+assert.equal(/id="language-selector"/.test(drawerSlice) || /id="theme-toggle"/.test(drawerSlice), false, 'language and dark mode must leave the drawer');
+assert.ok(/id="language-overlay"[\s\S]*?id="language-selector"/.test(indexHtml), 'the language list opens from the header chip');
+assert.ok(/id="global-settings-wrapper"[\s\S]*?id="theme-toggle"/.test(indexHtml), 'dark mode lives in project settings');
+assert.ok(/'app-menu', 'language-overlay'/.test(indexHtml), 'the language popup joins the dialog registry');
+assert.ok(/data-lang-aria="stepperDecrease"/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8')), 'stepper buttons need translatable labels');
+assert.ok(appSrc.split("addEventListener('app:lang'")[1].slice(0, 1500).includes('openQuote(quoteCurrentType)'), 'the open quote sheet must re-render on language switch');
 assert.ok(/\.app-menu-overlay/.test(cssFile) && /\.lang-chip/.test(cssFile), 'drawer CSS must exist');
 assert.ok(/role="radiogroup" data-lang-aria="earthworkModeLabel"/.test(indexHtml), 'earthwork mode must be a segmented radiogroup with a translatable label');
 const earthSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-earthwork.src.js'), 'utf8');
