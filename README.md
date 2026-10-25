@@ -375,3 +375,49 @@ Two deletions (user decision):
    button). This reverses v65's "keep as popup" — the new word wins.
 Guard pins updated: site tools / leaves must stay gone, handlers must derive
 layers from the width. Full chain green incl. tests/deep-audit.mjs (0 findings).
+
+## v71
+One export place for the whole app (user decision: "this type of export one
+ time on my app").
+- The result card's 4-button row (Save / CSV / PDF / Summary), the shopping
+  list's Share button, the Summary's Print/WhatsApp/Copy, and Project Total's
+  4 toolbar buttons are all GONE from view — replaced by ONE "Share / Export"
+  button that opens THE export sheet (bottom-sheet).
+- The sheet: choose WHAT (this calculation / shopping list / priced summary /
+  project) and HOW (Save / PDF / CSV / Print / WhatsApp / Copy) — each export
+  type listed exactly once, with an enable/disable matrix per document.
+- The old buttons remain as hidden plumbing the sheet dispatches to, so every
+  existing export (PDF builder, CSV, WhatsApp text, print sheet) works unchanged.
+- Project Total appears once (bottom nav + status card) — removed from the menu
+  drawer (drawer = Project settings + Recent calculations).
+- Fixed: bottom-nav "Project Total" label stayed English after a language
+  switch (the count badge stole the label's slot — .bn-label now).
+Full chain green incl. deep-audit (0 findings); export sheet tested per scope.
+
+## v72
+One price place for the whole app (user decision — delete one, keep the best).
+- KEPT: the global "Local Material Prices" panel in Project settings (9
+  material prices, set once). It already auto-fills every calculator.
+- DELETED from view: the per-tool "Costing (Optional)" wizard step in
+  concrete / blocks / bricks / steel, plus the stray inline price fields
+  (glue bag price, BRC price each, formwork cost). Wizards are now 2 steps.
+- The removed fields stay as hidden plumbing (auto-fill + formulas unchanged),
+  so every result, cost row and "Cost not entered" behaviour works as before.
+- Fixed at the root: wizard labels (Back / Next / Review & calculate / Step)
+  fell back to English on phones because they have no [data-lang] carrier —
+  t() now reads the live dictionary first.
+- Guards: the 4 cost cards carry data-wizard-skip (wizard excludes them, but
+  steel's conditionally-revealed step 2 still counts); pins assert the global
+  panel exists and the cost UI stays gone. Full chain green incl. deep-audit
+  (0 findings).
+
+## v73
+Stepper fix (user report: typed numbers hide under the +/− buttons on phones).
+- Root cause class removed: the steppers used to float ON the input (absolute,
+  with a 100px padding reservation that some compact Tailwind !p-2 fields
+  could fight). Layout now places the +/− buttons BESIDE the field (flex row;
+  row-reverse in RTL so they stay on the right) — a typed value can never be
+  covered at any width, zoom level or language direction. Also covers
+  non-.pro-input inputs (quote prices) that never got the old reservation.
+- Guard pins assert .num-field stays flex and .num-stepper stays static.
+Full chain green incl. deep-audit (0 findings).

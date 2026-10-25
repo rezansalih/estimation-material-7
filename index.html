@@ -82,6 +82,7 @@
 <symbol id="i-save" viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path><path d="M7 3v4a1 1 0 0 0 1 1h7"></path></symbol>
 <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"></path><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"></path><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"></path><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"></path><path d="M7 21h10"></path></symbol>
 <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></symbol>
 <symbol id="i-shopping-bag" viewBox="0 0 24 24"><path d="M16 10a4 4 0 0 1-8 0"></path><path d="M3.103 6.034h17.794"></path><path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"></path></symbol>
 <symbol id="i-shovel" viewBox="0 0 24 24"><path d="M21.56 4.56a1.5 1.5 0 0 1 0 2.122l-.47.47a3 3 0 0 1-4.212-.03 3 3 0 0 1 0-4.243l.44-.44a1.5 1.5 0 0 1 2.121 0z"></path><path d="M3 22a1 1 0 0 1-1-1v-3.586a1 1 0 0 1 .293-.707l3.355-3.355a1.205 1.205 0 0 1 1.704 0l3.296 3.296a1.205 1.205 0 0 1 0 1.704l-3.355 3.355a1 1 0 0 1-.707.293z"></path><path d="m9 15 7.879-7.878"></path></symbol>
 <symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></symbol>
@@ -135,7 +136,6 @@
                 <div class="app-menu-body">
                     <button id="open-settings-btn" class="quick-action app-menu-item" type="button"><i data-lucide="sliders-horizontal"></i><span data-lang="workspaceSettings">Project settings</span></button>
                     <button id="workspace-history-btn" class="quick-action app-menu-item" type="button"><i data-lucide="history"></i><span data-lang="workspaceHistory">Recent calculations</span></button>
-                    <button id="header-grandtotal-btn" class="quick-action app-menu-item" type="button"><i data-lucide="file-text"></i><span data-lang="projectTotalNav">Project Total</span></button>
                     <p class="app-menu-foot"><span id="offline-pill" class="offline-pill hidden"><i data-lucide="check-circle-2"></i><span data-lang="offlineReady">Offline Ready</span></span></p>
                 </div>
             </div>
@@ -402,7 +402,7 @@
                     </div>
 
                     <!-- Step 3: Cost -->
-                    <div class="card p-3 rounded-lg text-start">
+                    <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
                         <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="concrete-cost-container" aria-expanded="false">
                             <span class="text-base font-semibold header-title flex items-center gap-2">
                                 <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
@@ -424,7 +424,7 @@
                                     <label id="concrete-aggregate-cost-label" class="block text-sm font-medium" data-lang="costAggregateM3">Cost per m³ of Aggregate</label>
                                     <input type="number" inputmode="decimal" id="concrete-aggregate-cost" min="0" step="0.01" class="pro-input">
                                 </div>
-                                <div id="concrete-formwork-row"><label class="block text-sm font-medium" data-upgrade-label="formworkCost">Formwork cost / m²</label><input type="number" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" value="0" class="pro-input"><p id="concrete-formwork-note" class="text-xs opacity-70 mt-1 hidden" data-lang="formworkDimensionsNote">Formwork pricing needs element dimensions; it is not included in total-volume mode.</p></div>
+                                <div id="concrete-formwork-row" hidden><label class="block text-sm font-medium" data-upgrade-label="formworkCost">Formwork cost / m²</label><input type="number" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" value="0" class="pro-input"><p id="concrete-formwork-note" class="text-xs opacity-70 mt-1 hidden" data-lang="formworkDimensionsNote">Formwork pricing needs element dimensions; it is not included in total-volume mode.</p></div>
                             </div>
                             <p class="text-xs opacity-70 mt-3" data-lang="costScopeNote">Cost scope: the displayed total includes only entered cement, sand, coarse aggregate, and formwork prices. It is not a full construction cost.</p>
                         </div>
@@ -586,7 +586,7 @@
                                     <input type="number" inputmode="decimal" id="block-glue-rate" class="pro-input" value="4" min="0.5" step="0.5" data-sane="0.5:20:kg">
                                 </div>
                                 <div><label class="block text-sm font-medium" data-lang="glueBag">Glue bag size (kg)</label><input type="number" inputmode="decimal" id="block-glue-bag" class="pro-input" value="25" min="1" step="1"></div>
-                                <div><label class="block text-sm font-medium" data-lang="glueCost">Price per glue bag</label><input type="number" inputmode="decimal" id="block-glue-cost" class="pro-input" min="0" step="0.01"></div>
+                                <div hidden><label class="block text-sm font-medium" data-lang="glueCost">Price per glue bag</label><input type="number" inputmode="decimal" id="block-glue-cost" class="pro-input" min="0" step="0.01"></div>
                            </div>
                            <div id="block-mortar-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                <div>
@@ -610,7 +610,7 @@
                            </div>
                         </div>
 
-                        <div class="card p-3 rounded-lg text-start">
+                        <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
                             <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="block-cost-container" aria-expanded="false">
                                 <span class="text-base font-semibold header-title flex items-center gap-2">
                                     <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
@@ -793,7 +793,7 @@
                             </div>
                         </div>
                         
-                        <div class="card p-3 rounded-lg text-start">
+                        <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
                             <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="brick-cost-container" aria-expanded="false">
                                 <span class="text-base font-semibold header-title flex items-center gap-2">
                                     <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
@@ -1269,7 +1269,7 @@
                                 <p class="field-hint hidden" data-lang="hintOverlap">Extra mesh for overlaps and cutting waste. 10% is common.</p>
                                 <input type="number" inputmode="decimal" id="brc-overlap" class="pro-input" value="10" min="0" max="50" step="1" data-sane="0:50:%">
                             </div>
-                            <div><label class="block text-sm font-medium" data-lang="priceEach">Price per piece</label><input type="number" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
+                            <div hidden><label class="block text-sm font-medium" data-lang="priceEach">Price per piece</label><input type="number" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
                         </div>
 
                         <details id="steel-lap-details" class="advanced-details">
@@ -1285,7 +1285,7 @@
                     </div>
 
                     <!-- Step 3: Costing -->
-                    <div id="steel-cost-card" class="card p-3 rounded-lg hidden text-start">
+                    <div id="steel-cost-card" class="card p-3 rounded-lg hidden text-start" data-wizard-skip>
                         <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="steel-cost-container" aria-expanded="false">
                             <span class="text-base font-semibold header-title flex items-center gap-2">
                                 <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
@@ -1563,7 +1563,6 @@
             }
         });
         if (headerSettingsBtn) headerSettingsBtn.addEventListener('click', () => settingsBtn?.click());
-        document.getElementById('header-grandtotal-btn')?.addEventListener('click', () => { if (typeof window.openGrandTotal === 'function') window.openGrandTotal(); });
 
         /* v63 header drawer: everything that used to crowd the phone top bar
            lives in one menu sheet; the bar keeps [logo + title] + [lang chip] + [menu]. */
@@ -1583,7 +1582,7 @@
            shared openModal/closeModal helpers. */
         document.getElementById('app-menu-close-btn')?.addEventListener('click', closeMenu);
         menu?.addEventListener('click', (e) => { if (e.target === menu) closeMenu(); });
-        ['open-settings-btn', 'workspace-history-btn', 'header-grandtotal-btn'].forEach((id) => {
+        ['open-settings-btn', 'workspace-history-btn'].forEach((id) => {
             document.getElementById(id)?.addEventListener('click', () => closeMenu());
         });
         const LANG_CHIP = { en: 'EN', ku: 'KU', ks: 'KS', ar: 'AR' };
@@ -1715,7 +1714,7 @@ if ('serviceWorker' in navigator) {
     function setupDialogs() {
         const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
         const isOpen = m => !m.classList.contains('hidden');
-        const modals = ['history-modal', 'quote-overlay', 'intro-overlay', 'grandtotal-overlay', 'app-menu', 'language-overlay'].map(id => document.getElementById(id)).filter(Boolean);
+        const modals = ['history-modal', 'quote-overlay', 'intro-overlay', 'grandtotal-overlay', 'app-menu', 'language-overlay', 'export-overlay'].map(id => document.getElementById(id)).filter(Boolean);
         modals.forEach(m => {
             let opener = null, wasOpen = isOpen(m);
             new MutationObserver(() => {
@@ -1777,6 +1776,38 @@ if ('serviceWorker' in navigator) {
         </div>
     </div>
 </div>
+<div id="export-overlay" class="hidden modal-overlay" role="dialog" aria-modal="true" aria-labelledby="export-title">
+    <div class="export-sheet" id="export-sheet">
+        <div class="export-grip" aria-hidden="true"></div>
+        <div class="export-head">
+            <h3 id="export-title" data-lang="exportTitle">Export</h3>
+            <button type="button" id="export-close-btn" class="icon-btn">
+                <i data-lucide="x" class="w-5 h-5 pointer-events-none"></i>
+                <span class="sr-only" data-lang="menuClose">Close</span>
+            </button>
+        </div>
+        <div class="export-what">
+            <p class="export-label" id="export-what-label" data-lang="exportWhatLabel">What to export</p>
+            <div class="export-docs" role="radiogroup" aria-labelledby="export-what-label">
+                <button type="button" class="export-doc" data-doc="calc" role="radio" aria-checked="true"><span data-lang="docCalc">This calculation</span></button>
+                <button type="button" class="export-doc" data-doc="list" role="radio" aria-checked="false"><span data-lang="docList">Shopping list</span></button>
+                <button type="button" class="export-doc" data-doc="summary" role="radio" aria-checked="false"><span data-lang="docSummary">Summary (priced)</span></button>
+                <button type="button" class="export-doc" data-doc="project" role="radio" aria-checked="false"><span data-lang="docProject">Project (all saved)</span></button>
+            </div>
+        </div>
+        <div class="export-how">
+            <p class="export-label" id="export-how-label" data-lang="exportHowLabel">How</p>
+            <div class="export-types" aria-labelledby="export-how-label">
+                <button type="button" class="export-type" data-type="save"><i data-lucide="save" class="w-5 h-5 pointer-events-none"></i><span data-lang="typeSave">Save to project</span></button>
+                <button type="button" class="export-type" data-type="pdf"><i data-lucide="file-text" class="w-5 h-5 pointer-events-none"></i><span data-lang="typePdf">PDF</span></button>
+                <button type="button" class="export-type" data-type="csv"><i data-lucide="file-spreadsheet" class="w-5 h-5 pointer-events-none"></i><span data-lang="typeCsv">CSV</span></button>
+                <button type="button" class="export-type" data-type="print"><i data-lucide="printer" class="w-5 h-5 pointer-events-none"></i><span data-lang="typePrint">Print</span></button>
+                <button type="button" class="export-type" data-type="whats"><i data-lucide="message-circle" class="w-5 h-5 pointer-events-none"></i><span data-lang="typeWhats">WhatsApp</span></button>
+                <button type="button" class="export-type" data-type="copy"><i data-lucide="copy" class="w-5 h-5 pointer-events-none"></i><span data-lang="typeCopy">Copy</span></button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="update-toast" class="update-toast hidden" role="status">
     <span data-lang="updateToast">Update available</span>
     <button type="button" id="update-reload-btn" class="btn btn-primary" data-lang="updateReload">Reload</button>
@@ -1788,19 +1819,23 @@ if ('serviceWorker' in navigator) {
                 <i data-lucide="x" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quoteCloseBtn">Close</span>
             </button>
-            <button type="button" id="grandtotal-print-btn" class="btn btn-primary">
+            <button type="button" class="btn btn-primary export-open-btn" data-scope="project">
+                <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="exportOpenBtn">Share / Export</span>
+            </button>
+            <button type="button" id="grandtotal-print-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="printer" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quotePrintBtn">Print / Save as PDF</span>
             </button>
-            <button type="button" id="grandtotal-pdf-btn" class="btn btn-primary">
+            <button type="button" id="grandtotal-pdf-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="download" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="downloadPdf">Download PDF</span>
             </button>
-            <button type="button" id="grandtotal-whatsapp-btn" class="btn btn-primary">
+            <button type="button" id="grandtotal-whatsapp-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="message-circle" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quoteWhatsappBtn">Send to WhatsApp</span>
             </button>
-            <button type="button" id="grandtotal-share-btn" class="btn btn-secondary">
+            <button type="button" id="grandtotal-share-btn" class="btn btn-secondary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="shareBtn">Share / Copy</span>
             </button>
@@ -1815,19 +1850,23 @@ if ('serviceWorker' in navigator) {
                 <i data-lucide="x" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quoteCloseBtn">Close</span>
             </button>
-            <button type="button" id="quote-print-btn" class="btn btn-primary">
+            <button type="button" class="btn btn-primary export-open-btn" data-scope="summary">
+                <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+                <span data-lang="exportOpenBtn">Share / Export</span>
+            </button>
+            <button type="button" id="quote-print-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="printer" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quotePrintBtn">Print / Save as PDF</span>
             </button>
-            <button type="button" id="quote-pdf-btn" class="btn btn-primary">
+            <button type="button" id="quote-pdf-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="download" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="downloadPdf">Download PDF</span>
             </button>
-            <button type="button" id="quote-whatsapp-btn" class="btn btn-primary">
+            <button type="button" id="quote-whatsapp-btn" class="btn btn-primary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="message-circle" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="quoteWhatsappBtn">Send to WhatsApp</span>
             </button>
-            <button type="button" id="quote-share-btn" class="btn btn-secondary">
+            <button type="button" id="quote-share-btn" class="btn btn-secondary" hidden aria-hidden="true" tabindex="-1">
                 <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
                 <span data-lang="shareBtn">Share / Copy</span>
             </button>

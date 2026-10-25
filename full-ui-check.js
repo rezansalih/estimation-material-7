@@ -128,7 +128,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok(tool + ': wizard built', !!wiz);
     if (wiz) {
       const steps = wiz.querySelectorAll('.wizard-step');
-      ok(tool + ': >=3 steps', steps.length >= 3, `(${steps.length})`);
+      ok(tool + ': exactly 2 steps (v72: cost step deleted — prices live in Project settings)', steps.length === 2, `(${steps.length})`);
       ok(tool + ': only step 1 visible', wiz.querySelectorAll('.wizard-step.is-current').length === 1 &&
          steps[0].classList.contains('is-current'));
       ok(tool + ': progress segments', wiz.querySelectorAll('.wp-seg').length === steps.length);
@@ -167,8 +167,32 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
       ok('hero shows no fake cost without prices', !hero.querySelector('.rh-cost'));
     }
     ok('action buttons row', !!res.querySelector('.result-actions'));
-    ok('save/export buttons present', res.querySelectorAll('.result-actions button').length >= 3,
-       `(${res.querySelectorAll('.result-actions button').length})`);
+    ok('one visible export button + hidden plumbing', !!res.querySelector('.result-actions .export-open-btn') && !res.querySelector('.export-open-btn').hasAttribute('hidden') &&
+       ['save-history-btn', 'export-csv-btn', 'export-btn', 'quote-btn'].every(c => res.querySelector('.result-actions .' + c)),
+       `(${res.querySelectorAll('.result-actions button').length} total)`);
+
+    // v71: the ONE export sheet
+    res.querySelector('.export-open-btn').click();
+    await tick(120);
+    const ex = d.getElementById('export-overlay');
+    ok('export sheet opens from the result', !ex.classList.contains('hidden'));
+    ok('sheet has 4 documents and 6 unique types',
+       ex.querySelectorAll('.export-doc').length === 4 && ex.querySelectorAll('.export-type').length === 6);
+    ok('calc scope: save/pdf/csv/whats enabled, print/copy disabled',
+       !ex.querySelector('[data-type="save"]').classList.contains('is-disabled') &&
+       !ex.querySelector('[data-type="pdf"]').classList.contains('is-disabled') &&
+       ex.querySelector('[data-type="print"]').classList.contains('is-disabled') &&
+       ex.querySelector('[data-type="copy"]').classList.contains('is-disabled'));
+    ex.querySelector('.export-doc[data-doc="project"]').click();
+    ok('project scope: pdf/print/whats/copy enabled, save disabled',
+       !ex.querySelector('[data-type="pdf"]').classList.contains('is-disabled') &&
+       !ex.querySelector('[data-type="copy"]').classList.contains('is-disabled') &&
+       ex.querySelector('[data-type="save"]').classList.contains('is-disabled'));
+    ok('doc pills behave like radios', ex.querySelector('.export-doc[data-doc="project"]').getAttribute('aria-checked') === 'true' &&
+       ex.querySelector('.export-doc[data-doc="calc"]').getAttribute('aria-checked') === 'false');
+    d.getElementById('export-close-btn').click();
+    await tick(120);
+    ok('export sheet closes', ex.classList.contains('hidden'));
     ok('one "See details" section with the trail merged inside',
        res.querySelectorAll('details.result-more').length === 1 && !res.querySelector('details.calculation-trail'),
        `(more=${res.querySelectorAll('details.result-more').length}, trail=${res.querySelectorAll('details.calculation-trail').length})`);
@@ -1037,7 +1061,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('grandtotal-close-btn').click();
     await tick(40);
     // access points: header button + metric card + nav badge
-    d.getElementById('header-grandtotal-btn').click();
+    d.querySelector('.bn-item[data-goto="grandtotal"]').click();
     await tick(60);
     ok('header Project Total button opens the order', !d.getElementById('grandtotal-overlay').classList.contains('hidden'));
     d.getElementById('grandtotal-close-btn').click();
@@ -1082,7 +1106,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
         return !!use && !!d.querySelector('symbol' + (use.getAttribute('href') || ''));
     };
     ok('new-project icon resolves in the sprite', iconOk('#new-project-btn'), 'new-project');
-    ok('header Project Total icon resolves in the sprite', iconOk('#header-grandtotal-btn'), 'header');
+    ok('nav Project Total icon resolves in the sprite', iconOk('.bn-item[data-goto="grandtotal"]'), 'nav');
     ok('whatsapp icon resolves in the sprite', iconOk('#grandtotal-whatsapp-btn'), 'whatsapp');
     // explicit Reset clears that tool's draft
     d.querySelector('.bn-item[data-goto="concrete"]').click();
@@ -1568,9 +1592,9 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('header-menu-btn').click();
     await tick(80);
     ok('menu button opens drawer', !menu.classList.contains('hidden'));
-    ok('drawer hosts settings + history + project total',
+    ok('drawer hosts settings + history only (v71: not Project Total)',
        !!menu.querySelector('#open-settings-btn') && !!menu.querySelector('#workspace-history-btn') &&
-       !!menu.querySelector('#header-grandtotal-btn') &&
+       !menu.querySelector('#header-grandtotal-btn') &&
        !menu.querySelector('#language-selector') && !menu.querySelector('#theme-toggle') && !menu.querySelector('#site-tools-btn'));
     ok('drawer registered as dialog (Esc/focus trap)', /'app-menu'/.test(d.documentElement.innerHTML) || true);
     d.getElementById('app-menu-close-btn').click();

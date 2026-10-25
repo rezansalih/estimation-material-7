@@ -22,6 +22,15 @@
   // back off the DOM: every translatable string has a [data-lang] carrier that
   // applyTranslations() keeps current. That keeps the UI layer localised too.
   var t = function (key, fallback) {
+    // v72: prefer the live dictionary — wizard-only strings (Back, Next,
+    // Review & calculate, Step) have no [data-lang] carrier and used to fall
+    // back to English on phones.
+    try {
+      var lang = localStorage.getItem('language') || 'en';
+      if (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) {
+        return translations[lang][key];
+      }
+    } catch (e) {}
     var el = doc.querySelector('[data-lang="' + key + '"]');
     var txt = el ? el.textContent.trim() : '';
     return txt || fallback;
@@ -58,8 +67,8 @@
       b.setAttribute('data-lang-key', cfg.key);
       b.innerHTML =
         '<span class="bn-icon"><svg class="lucide" aria-hidden="true"><use href="#i-' + cfg.icon + '"></use></svg></span>' +
-        '<span></span>';
-      b.querySelector('span:last-child').textContent = cfg.label();
+        '<span class="bn-label"></span>';
+      b.querySelector('.bn-label').textContent = cfg.label();
       if (cfg.badgeId) {
         var badge = doc.createElement('span');
         badge.className = 'bn-badge';
@@ -174,6 +183,11 @@
   var NUM_PREFIX = /^\s*[\u0660-\u0669\u06F0-\u06F90-9]+\s*[\.\)\-\u00B7]\s*/;
 
   function stepIndexOf(card) {
+    // v72: cards marked data-wizard-skip (the removed per-tool cost step —
+    // prices live in Project settings only) never join a wizard step.
+    // Cards that are merely hidden (steel reveals its step 2 on selection)
+    // still count, exactly as before.
+    if (card.hasAttribute('data-wizard-skip')) return null;
     var h = card.querySelector('h3');
     var m = h ? /^\s*(\d+)\s*[\.\)]/.exec(h.textContent) : null;
     if (m) return parseInt(m[1], 10);
@@ -415,7 +429,7 @@
       var row = doc.createElement('div');
       row.className = 'result-actions';
       Array.prototype.slice.call(tray.children).forEach(function (b) {
-        b.classList.add('btn', 'btn-secondary');
+        b.classList.add('btn', b.classList.contains('export-open-btn') ? 'btn-primary' : 'btn-secondary');
         row.appendChild(b);
       });
       tray.remove();
@@ -538,6 +552,8 @@
     var shareBtn = doc.createElement('button');
     shareBtn.type = 'button'; shareBtn.className = 'btn btn-secondary order-share';
     shareBtn.textContent = strings.share;
+    // v71: hidden plumbing — the ONE export sheet dispatches to it.
+    shareBtn.hidden = true; shareBtn.setAttribute('aria-hidden', 'true'); shareBtn.setAttribute('tabindex', '-1');
     shareBtn.addEventListener('click', function () {
       var lines = [strings.listTitle];
       var hv = card.querySelector('.rh-value'), hl = card.querySelector('.rh-label');
@@ -939,7 +955,7 @@
     // Re-read every string when the language changes (applyTranslations runs first).
     function refreshLang() {
       Array.prototype.forEach.call(doc.querySelectorAll('.bn-item'), function (b) {
-        var lbl = b.querySelector('span:last-child');
+        var lbl = b.querySelector('.bn-label');
         if (lbl) lbl.textContent = t(b.getAttribute('data-lang-key'), lbl.textContent);
       });
       WIZARDS.forEach(function (w) { w.render(); });

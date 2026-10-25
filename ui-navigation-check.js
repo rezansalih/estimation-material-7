@@ -191,8 +191,10 @@ const vis = (d, sel) => {
     ok('viewport disables user scaling', /maximum-scale=1/.test(htmlSrc) && /user-scalable=no/.test(htmlSrc));
     ok('touch-action pan-x pan-y in CSS', /touch-action: pan-x pan-y/.test(css));
     ok('gesture / keyboard zoom guards present', /gesturestart/.test(htmlSrc) && /touchmove/.test(htmlSrc) && /ctrlKey/.test(htmlSrc));
-    ok('stepper reserve is !important (beats compact !p-2 padding)',
-       /padding-inline-end: 100px !important/.test(css) && /padding-inline-start: 100px !important/.test(css));
+    ok('steppers sit beside the input (v73: flex, never over the typed value)',
+       /\.num-field \{[^}]*display: flex/.test(css) && /\.num-stepper \{[^}]*position: static/.test(css));
+    ok('field padding is !important (beats compact !p-2 padding)',
+       /\.num-field > \.pro-input[^}]*padding-inline-start: 14px !important/.test(css));
   }
 
   console.log('\n=== 6c. Session table labels are plain and honest ===');

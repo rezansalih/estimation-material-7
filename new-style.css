@@ -478,16 +478,19 @@ body.view-settings .mobile-actions   { display: none !important; }
 .tab-content [role="radiogroup"] label.seg-on { background: var(--surface); color: var(--accent-ink); box-shadow: var(--sh-2); }
 
 /* --------------------------------------------------------- number fields */
-.num-field { position: relative; display: block; width: 100%; max-width: 100%; min-width: 0; }
-/* Reserve space for the +/− steppers with !important: compact fields use Tailwind
-   !p-2 (padding: .5rem !important), which otherwise hides typed values under the buttons. */
-.num-field > .pro-input { display: block; box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding-inline-start: 14px !important; padding-inline-end: 100px !important; }
-html[dir="rtl"] .num-field > .pro-input { padding-inline-start: 100px !important; padding-inline-end: 14px !important; }
+/* v73: steppers sit BESIDE the field (flex), never over it — a typed value
+   can never hide under the +/− buttons at any width, zoom or direction.
+   The old absolute overlay reserved 100px of padding and still lost to
+   Tailwind !p-2 on some compact fields. */
+.num-field { position: relative; display: flex; align-items: center; gap: 6px; width: 100%; max-width: 100%; min-width: 0; }
+html[dir="rtl"] .num-field { flex-direction: row-reverse; }
+.num-field > .pro-input, .num-field > input { display: block; box-sizing: border-box; flex: 1 1 auto; width: auto; max-width: 100%; min-width: 0; margin: 0; padding-inline-start: 14px !important; padding-inline-end: 14px !important; }
+html[dir="rtl"] .num-field > .pro-input, html[dir="rtl"] .num-field > input { padding-inline-start: 14px !important; padding-inline-end: 14px !important; }
 .num-stepper {
-  position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
-  display: flex; gap: 5px;
+  position: static; inset: auto; transform: none;
+  flex: 0 0 auto; display: flex; gap: 5px;
 }
-html[dir="rtl"] .num-stepper { inset-inline-end: auto; inset-inline-start: 6px; }
+html[dir="rtl"] .num-stepper { position: static; inset: auto; }
 .num-stepper button {
   width: 40px; height: 40px; display: grid; place-items: center;
   font-family: inherit; font-size: 1.15rem; font-weight: 800; line-height: 1;
@@ -1086,3 +1089,36 @@ body.keyboard-open .mobile-actions { display: none !important; }
 /* ===== Language picker: the names are always Latin — force LTR so RTL
    page direction can never reverse or scramble "KURDISH BADINI/SORANI". ===== */
 #language-selector, #language-selector option { direction: ltr; unicode-bidi: isolate; text-align: start; }
+
+/* ===== v71: the ONE export sheet (bottom-sheet pattern) ===== */
+#export-overlay { align-items: flex-end; }
+.export-sheet {
+    width: 100%; max-width: 32rem; margin: 0 auto; background: var(--surface, #fff);
+    border-radius: 1.25rem 1.25rem 0 0; padding: 0.5rem 1.1rem calc(1.4rem + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 40px rgba(15, 55, 45, 0.18);
+}
+.export-grip { width: 2.6rem; height: 0.28rem; border-radius: 999px; background: #d6dedd; margin: 0.45rem auto 0.65rem; }
+[dir="rtl"] .export-sheet { direction: rtl; }
+.export-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
+.export-head h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
+.export-label { font-size: 0.78rem; font-weight: 700; opacity: 0.72; margin: 0 0 0.45rem; letter-spacing: 0.02em; }
+.export-docs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.95rem; }
+.export-doc {
+    border: 1.5px solid #d6dedd; background: transparent; border-radius: 999px;
+    padding: 0.5rem 0.95rem; font-size: 0.86rem; font-weight: 600; cursor: pointer;
+}
+.export-doc[aria-checked="true"] { background: var(--brand, #0f7464); border-color: var(--brand, #0f7464); color: #fff; }
+.export-types { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+.export-type {
+    display: flex; align-items: center; gap: 0.55rem; border: 1.5px solid #d6dedd;
+    background: var(--surface, #fff); border-radius: 0.9rem; padding: 0.8rem 0.9rem;
+    font-size: 0.92rem; font-weight: 600; cursor: pointer; text-align: start;
+}
+.export-type .lucide { width: 1.15rem; height: 1.15rem; color: var(--brand, #0f7464); flex: none; }
+.export-type.is-disabled { opacity: 0.38; cursor: default; }
+.export-type:not(.is-disabled):hover, .export-type:not(.is-disabled):active { border-color: var(--brand, #0f7464); }
+.export-type:focus-visible, .export-doc:focus-visible { outline: 2px solid var(--brand, #0f7464); outline-offset: 2px; }
+@media (min-width: 640px) {
+    #export-overlay { align-items: center; }
+    .export-sheet { border-radius: 1.25rem; }
+}

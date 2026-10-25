@@ -367,7 +367,7 @@ assert.ok(/id="grandtotal-overlay" class="hidden modal-overlay" role="dialog" ar
 assert.ok(/id="grandtotal-whatsapp-btn"/.test(indexHtml), 'grand total needs the WhatsApp button');
 assert.ok(/buildGrandTotalWhatsAppText/.test(appSrc) && /api\.whatsapp\.com\/send\?text=/.test(appSrc), 'whatsapp order text builder must exist');
 assert.ok(/id="new-project-btn"/.test(indexHtml), 'new-project button must exist');
-assert.ok(/id="header-grandtotal-btn"/.test(indexHtml) && /id="session-items-metric-card"/.test(indexHtml) && /nav-total-count/.test(indexHtml + fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8')), 'grand total needs header + metric + nav access points');
+assert.ok(/id="session-items-metric-card"/.test(indexHtml) && /nav-total-count/.test(indexHtml + fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8')), 'grand total needs metric + nav access points (v71: not in the drawer)');
 assert.ok(/id="update-toast"/.test(indexHtml) && /updatefound/.test(indexHtml) && /controllerchange/.test(indexHtml), 'update toast + SW listeners must exist');
 assert.ok(/name="earthwork-mode"/.test(indexHtml) && /backfillMode/.test(appSrc), 'earthwork backfill mode must exist');
 assert.ok(/volume \/ \(1 - factorUsed \/ 100\)/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-earthwork.src.js'), 'utf8')), 'backfill must use bank / (1 - compaction)');
@@ -409,12 +409,13 @@ assert.ok(/spec-svg/.test(cssFile) && /steel-spec-preview/.test(indexHtml), 'spe
 assert.ok(/id="lang-indicator"/.test(indexHtml) && /id="header-menu-btn"/.test(indexHtml), 'header needs lang chip + menu button');
 // v69: the drawer keeps four actions — language moved to the header chip
 // popup, dark mode moved inside Project settings.
-assert.ok(/id="app-menu"[\s\S]*id="open-settings-btn"[\s\S]*id="workspace-history-btn"[\s\S]*id="header-grandtotal-btn"/.test(indexHtml), 'drawer must host settings, history, project total');
+assert.ok(/id="app-menu"[\s\S]*id="open-settings-btn"[\s\S]*id="workspace-history-btn"/.test(indexHtml), 'drawer must host settings + history');
+assert.ok(!/id="header-grandtotal-btn"/.test(indexHtml), 'v71: Project Total lives only in the bottom nav + metric card, not the drawer');
 const drawerSlice = indexHtml.slice(indexHtml.indexOf('class="app-menu-body"'), indexHtml.indexOf('id="global-settings-wrapper"'));
 assert.equal(/id="language-selector"/.test(drawerSlice) || /id="theme-toggle"/.test(drawerSlice), false, 'language and dark mode must leave the drawer');
 assert.ok(/id="language-overlay"[\s\S]*?id="language-selector"/.test(indexHtml), 'the language list opens from the header chip');
 assert.ok(/id="global-settings-wrapper"[\s\S]*?id="theme-toggle"/.test(indexHtml), 'dark mode lives in project settings');
-assert.ok(/'app-menu', 'language-overlay'/.test(indexHtml), 'the language popup joins the dialog registry');
+assert.ok(/'app-menu', 'language-overlay', 'export-overlay'/.test(indexHtml), 'language popup + the ONE export sheet join the dialog registry');
 assert.ok(/data-lang-aria="stepperDecrease"/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8')), 'stepper buttons need translatable labels');
 assert.ok(appSrc.split("addEventListener('app:lang'")[1].slice(0, 1500).includes('openQuote(quoteCurrentType)'), 'the open quote sheet must re-render on language switch');
 assert.ok(/\.app-menu-overlay/.test(cssFile) && /\.lang-chip/.test(cssFile), 'drawer CSS must exist');
@@ -446,6 +447,65 @@ for (const f of ['calc-concrete.src.js', 'calc-blocks.src.js', 'calc-bricks.src.
   assert.equal(/Cost\.toFixed\(2\)/.test(src), false, `${f} must not render money with toFixed(2)`);
 }
 assert.ok(/id="quote-share-btn"/.test(indexHtml) && /id="grandtotal-share-btn"/.test(indexHtml), 'both overlays need Share buttons');
+
+// ===== v73: steppers beside the field — typed values can never hide =====
+{
+  const css = fs.readFileSync(path.join(__dirname, '..', 'new-style.css'), 'utf8');
+  const m = css.match(/\.num-field \{[^}]*\}/);
+  assert.ok(m && /display: flex/.test(m[0]), '.num-field must lay out as flex (steppers beside the input, never over it)');
+  const st = css.match(/\.num-stepper \{[^}]*\}/);
+  assert.ok(st && /position: static/.test(st[0]), '.num-stepper must be position: static (no overlay)');
+  assert.ok(!/padding-inline-end: 100px/.test(css), 'the old 100px overlay reservation is gone');
+  assert.ok(/html\[dir="rtl"\] .num-field \{ flex-direction: row-reverse/.test(css), 'RTL keeps the steppers on the right side');
+}
+
+// ===== v72: ONE price place — the global panel; per-tool cost steps gone =====
+{
+  // global panel is the single entry point (9 material prices)
+  for (const pid of ['price-cement-bag', 'price-sand', 'price-aggregate', 'price-rebar', 'price-block', 'price-brick', 'price-glue', 'price-brc', 'price-formwork']) {
+    assert.ok(new RegExp('id="' + pid + '"').test(indexHtml), `global price input ${pid} missing`);
+  }
+  // the per-tool cost cards and stray inline price fields are hidden plumbing
+  for (const m of indexHtml.matchAll(/data-target="(concrete|block|brick)-cost-container"[\s\S]{0,80}/g)) {
+    const before = indexHtml.slice(Math.max(0, m.index - 220), m.index);
+    assert.ok(/<div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>/.test(before), `${m[1]}: cost card must be hidden plumbing`);
+  }
+  assert.ok(/id="steel-cost-card" class="card p-3 rounded-lg hidden/.test(indexHtml), 'steel cost card must stay hidden');
+  assert.ok(/id="concrete-formwork-row" hidden/.test(indexHtml), 'formwork price row must be hidden plumbing');
+  assert.ok(/<div hidden><label[^>]*data-lang="glueCost"/.test(indexHtml), 'glue price field must be hidden plumbing');
+  assert.ok(/<div hidden><label[^>]*data-lang="priceEach"/.test(indexHtml), 'BRC price field must be hidden plumbing');
+  // wizard must skip hidden cards (so the cost step vanishes from the flow)
+  const appUiSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8');
+  assert.ok(appUiSrc.includes("card.hasAttribute('data-wizard-skip')"), 'wizard must skip data-wizard-skip cards');
+  assert.equal((indexHtml.match(/data-wizard-skip/g) || []).length, 4, 'exactly the 4 cost cards are wizard-skipped');
+  // wizard labels read the live dictionary (fixes English-on-phones at boot)
+  assert.ok(/translations\[lang\] && translations\[lang\]\[key\]/.test(appUiSrc), 't() must prefer the live dictionary');
+}
+
+// ===== v71: the ONE export sheet — every export type appears exactly once =====
+assert.ok(/id="export-overlay"/.test(indexHtml) && /class="export-doc"/.test(indexHtml) && /class="export-type"/.test(indexHtml), 'export sheet (what x how) must exist');
+{
+  const docs = [...indexHtml.matchAll(/class="export-doc" data-doc="(\w+)"/g)].map(m => m[1]);
+  assert.deepEqual(docs, ['calc', 'list', 'summary', 'project'], `export docs must be exactly calc/list/summary/project: ${docs}`);
+  const types = [...indexHtml.matchAll(/class="export-type" data-type="(\w+)"/g)].map(m => m[1]);
+  assert.deepEqual(types, ['save', 'pdf', 'csv', 'print', 'whats', 'copy'], `export types must be exactly the 6 unique types: ${types}`);
+  // the scattered button clusters are gone from view: each result shows ONE
+  // visible action; the old four are hidden plumbing the sheet dispatches to.
+  for (const f of ['concrete', 'blocks', 'bricks', 'steel', 'earthwork']) {
+    const src = fs.readFileSync(path.join(__dirname, '..', 'src', `calc-${f}.src.js`), 'utf8');
+    assert.ok(/class="btn btn-primary result-action-btn export-open-btn"/.test(src), `${f}: needs the one export button`);
+    for (const cls of ['save-history-btn', 'export-csv-btn', 'export-btn', 'quote-btn']) {
+      assert.ok(new RegExp('class="btn btn-secondary result-action-btn ' + cls + '" hidden').test(src), `${f}: ${cls} must be hidden plumbing`);
+    }
+  }
+  // export sheet labels exist in every language block
+  for (const k of ['exportTitle', 'exportOpenBtn', 'docCalc', 'docProject', 'typePdf', 'typeWhats']) {
+    assert.ok(html.includes(k + ':'), `dict key ${k} missing`);
+    assert.ok(appSrc.includes(k + ':'), `app.src.js dict key ${k} missing`);
+    assert.equal((appSrc.match(new RegExp(k + ': "', 'g')) || []).length, 4, `${k} must exist in all 4 languages`);
+  }
+}
+
 assert.ok(/navigator\.share/.test(appSrc) && /shareTextOrCopy/.test(appSrc), 'share must use navigator.share with clipboard fallback');
 assert.ok(/shareBtn: "Share \/ Copy"/.test(appSrc), 'shareBtn key must exist in every language block');
 assert.ok(/w\.value = '2\.4'; l\.value = '4\.8'/.test(appSrc) && /w\.value = '2\.0'; l\.value = '20\.0'/.test(appSrc), 'BRC roll/sheet must fill commercial dimensions');

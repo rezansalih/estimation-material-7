@@ -140,19 +140,23 @@ window.__calcHandlers.concrete = function (ctx) {
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultConcrete}</h3>
                             <div class="flex gap-2">
-                                <button type="button" class="btn btn-secondary result-action-btn save-history-btn" title="${T.saveToHistoryTitle}">
+<button type="button" class="btn btn-primary result-action-btn export-open-btn">
+    <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
+    <span data-lang="exportOpenBtn">${T.exportOpenBtn}</span>
+</button>
+                                <button type="button" class="btn btn-secondary result-action-btn save-history-btn" hidden aria-hidden="true" tabindex="-1" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="saveBtn">${T.saveBtn}</span>
                                 </button>
-                                <button type="button" class="btn btn-secondary result-action-btn export-csv-btn" title="${T.exportCsvTitle}">
+                                <button type="button" class="btn btn-secondary result-action-btn export-csv-btn" hidden aria-hidden="true" tabindex="-1" title="${T.exportCsvTitle}">
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="csvBtn">${T.csvBtn}</span>
                                 </button>
-                                <button type="button" class="btn btn-secondary result-action-btn export-btn" title="${T.exportPdfTitle}">
+                                <button type="button" class="btn btn-secondary result-action-btn export-btn" hidden aria-hidden="true" tabindex="-1" title="${T.exportPdfTitle}">
                                     <i data-lucide="printer" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="pdfBtn">${T.pdfBtn}</span>
                                 </button>
-<button type="button" class="btn btn-secondary result-action-btn quote-btn" title="${T.quoteBtn}">
+<button type="button" class="btn btn-secondary result-action-btn quote-btn" hidden aria-hidden="true" tabindex="-1" title="${T.quoteBtn}">
                                     <i data-lucide="file-text" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="quoteBtn">${T.quoteBtn}</span>
                                 </button>

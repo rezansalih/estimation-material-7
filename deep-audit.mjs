@@ -124,7 +124,7 @@ for (const lang of LANGS) {
 // Keys that never change across languages are suspicious (may be proper nouns — review).
 for (const [k, by] of Object.entries(textsByKey)) {
   const uniq = new Set(Object.values(by));
-  if (uniq.size === 1 && /[A-Za-z]{3,}/.test(by.en || '')) note(`data-lang "${k}" identical in all languages: "${by.en}"`);
+  if (uniq.size === 1 && /[A-Za-z]{3,}/.test(by.en || '') && !ALLOW.test((by.en || '').trim())) note(`data-lang "${k}" identical in all languages: "${by.en}"`);
 }
 ok(true, 'static scan complete');
 
@@ -172,6 +172,16 @@ console.log('=== B. live language switching ===');
       if (q === snaps.en.quote && /[A-Za-z]{3,}/.test(q)) note(`[${lang}] quote sheet open during switch keeps English rows: "${q.slice(0, 80)}"`);
     }
   }
+  // wizard nav labels (Back / Next / Review & calculate / Step) are t()-only
+  // strings — they used to fall back to English on phones (v72: t() reads the
+  // live dictionary, so after switching to ar none may stay Latin).
+  Array.prototype.forEach.call(d.querySelectorAll('.wizard'), (wiz, i) => {
+    scanLatin(wiz.querySelector('.wizard-nav') || wiz, 'ar', 'wizard-nav(after-switch) #' + i);
+  });
+  // bottom-nav labels must follow the switch too (v71: the Project Total
+  // label used to stay English because the count badge stole its slot)
+  const navGT = d.querySelector('.bn-item[data-goto="grandtotal"] .bn-label') || d.querySelector('.bn-item[data-goto="grandtotal"] span:last-child');
+  if (navGT && /[A-Za-z]{3,}/.test(navGT.textContent || '')) note(`[ar] bottom nav keeps English label after switch: "${navGT.textContent}"`);
   // any Latin leftovers in the result card / table after switching to ar
   scanLatin(d.getElementById('concrete-result'), 'ar', 'concrete-result(after-switch)');
   scanLatin(d.getElementById('concrete-table-body'), 'ar', 'session-table(after-switch)');
