@@ -433,6 +433,9 @@
         row.appendChild(b);
       });
       tray.remove();
+      // v74: exports live in Project Total only — when the row holds nothing
+      // but hidden plumbing, the row itself stays hidden too.
+      if (!row.querySelector('button:not([hidden])')) row.hidden = true;
       grid.insertBefore(row, hero.nextSibling);
     }
 

@@ -448,6 +448,12 @@ for (const f of ['calc-concrete.src.js', 'calc-blocks.src.js', 'calc-bricks.src.
 }
 assert.ok(/id="quote-share-btn"/.test(indexHtml) && /id="grandtotal-share-btn"/.test(indexHtml), 'both overlays need Share buttons');
 
+// ===== v74: [hidden] must always win (hidden plumbing stays invisible) =====
+{
+  const css = fs.readFileSync(path.join(__dirname, '..', 'new-style.css'), 'utf8');
+  assert.ok(/\[hidden\] \{ display: none !important; \}/.test(css), '[hidden] must force display:none !important');
+}
+
 // ===== v73: steppers beside the field — typed values can never hide =====
 {
   const css = fs.readFileSync(path.join(__dirname, '..', 'new-style.css'), 'utf8');
@@ -489,15 +495,18 @@ assert.ok(/id="export-overlay"/.test(indexHtml) && /class="export-doc"/.test(ind
   assert.deepEqual(docs, ['calc', 'list', 'summary', 'project'], `export docs must be exactly calc/list/summary/project: ${docs}`);
   const types = [...indexHtml.matchAll(/class="export-type" data-type="(\w+)"/g)].map(m => m[1]);
   assert.deepEqual(types, ['save', 'pdf', 'csv', 'print', 'whats', 'copy'], `export types must be exactly the 6 unique types: ${types}`);
-  // the scattered button clusters are gone from view: each result shows ONE
-  // visible action; the old four are hidden plumbing the sheet dispatches to.
+  // v74 (user decision): results show ZERO export buttons — exports live in
+  // Project Total only. The four legacy buttons stay as hidden plumbing the
+  // sheet dispatches to; Project Total keeps the one visible opener.
   for (const f of ['concrete', 'blocks', 'bricks', 'steel', 'earthwork']) {
     const src = fs.readFileSync(path.join(__dirname, '..', 'src', `calc-${f}.src.js`), 'utf8');
-    assert.ok(/class="btn btn-primary result-action-btn export-open-btn"/.test(src), `${f}: needs the one export button`);
+    assert.ok(!/export-open-btn/.test(src), `${f}: no export button on results (v74)`);
     for (const cls of ['save-history-btn', 'export-csv-btn', 'export-btn', 'quote-btn']) {
       assert.ok(new RegExp('class="btn btn-secondary result-action-btn ' + cls + '" hidden').test(src), `${f}: ${cls} must be hidden plumbing`);
     }
   }
+  assert.ok(/class="btn btn-primary export-open-btn" data-scope="project"/.test(indexHtml), 'Project Total keeps the one export opener');
+  assert.equal((indexHtml.match(/class="btn btn-primary export-open-btn"/g) || []).length, 2, 'exactly two openers app-wide: Project Total + Summary view');
   // export sheet labels exist in every language block
   for (const k of ['exportTitle', 'exportOpenBtn', 'docCalc', 'docProject', 'typePdf', 'typeWhats']) {
     assert.ok(html.includes(k + ':'), `dict key ${k} missing`);

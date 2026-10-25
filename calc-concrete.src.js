@@ -140,10 +140,6 @@ window.__calcHandlers.concrete = function (ctx) {
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-base font-bold header-title">${T.resultConcrete}</h3>
                             <div class="flex gap-2">
-<button type="button" class="btn btn-primary result-action-btn export-open-btn">
-    <i data-lucide="upload" class="w-4 h-4 me-1 pointer-events-none"></i>
-    <span data-lang="exportOpenBtn">${T.exportOpenBtn}</span>
-</button>
                                 <button type="button" class="btn btn-secondary result-action-btn save-history-btn" hidden aria-hidden="true" tabindex="-1" title="${T.saveToHistoryTitle}">
                                     <i data-lucide="save" class="w-4 h-4 pointer-events-none"></i>
                                     <span data-lang="saveBtn">${T.saveBtn}</span>

@@ -1090,6 +1090,10 @@ body.keyboard-open .mobile-actions { display: none !important; }
    page direction can never reverse or scramble "KURDISH BADINI/SORANI". ===== */
 #language-selector, #language-selector option { direction: ltr; unicode-bidi: isolate; text-align: start; }
 
+/* v74: the hidden attribute must ALWAYS win — .btn sets display and was
+   beating Tailwind's [hidden] rule (hidden plumbing buttons showed). */
+[hidden] { display: none !important; }
+
 /* ===== v71: the ONE export sheet (bottom-sheet pattern) ===== */
 #export-overlay { align-items: flex-end; }
 .export-sheet {

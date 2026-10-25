@@ -226,7 +226,7 @@ console.log('\n================ 4. BOTTOM BUTTONS ================');
   // v71: exactly one VISIBLE action (Share / Export sheet); the old four
   // remain as hidden plumbing the sheet dispatches to.
   const visible = rbtns.filter(b => !b.hasAttribute('hidden'));
-  ok('exactly one visible action (Share / Export)', visible.length === 1 && visible[0].classList.contains('export-open-btn'), `${visible.length} visible`);
+  ok('zero visible export actions on results (v74: Project Total only)', visible.length === 0 && row.hasAttribute('hidden'), `${visible.length} visible`);
   ok('hidden plumbing present (Save / CSV / PDF / Summary)', ['save-history-btn', 'export-csv-btn', 'export-btn', 'quote-btn'].every(c => row.querySelector('.' + c)), `${rbtns.length} total`);
   ok('export sheet exists (the one place export types live)', !!d.getElementById('export-overlay'));
   for (const b of rbtns) {

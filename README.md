@@ -421,3 +421,18 @@ Stepper fix (user report: typed numbers hide under the +/− buttons on phones).
   non-.pro-input inputs (quote prices) that never got the old reservation.
 - Guard pins assert .num-field stays flex and .num-stepper stays static.
 Full chain green incl. deep-audit (0 findings).
+
+## v74
+Result cards show ZERO export buttons (user decision — exports live in
+Project Total only).
+- The 4 grey buttons (Save / CSV / PDF / Summary) were already supposed to be
+  hidden plumbing since v71 but leaked through CSS: Tailwind's [hidden] rule
+  lost to .btn's display. Fixed with [hidden] { display: none !important }.
+- The green Share/Export opener is gone from all five results too. The export
+  sheet now opens from Project Total alone (its "what" pills still cover this
+  calculation / shopping list / priced summary / project — nothing is lost).
+- The Summary VIEW keeps its own opener; results keep the hidden plumbing the
+  sheet dispatches to (row auto-hidden when it holds only plumbing).
+- Suite note: test:ui needs NODE_OPTIONS=--max-old-space-size=1536 on this
+  2 GB host (a 4 GB cap causes swap-death OOM).
+Full chain green incl. deep-audit (0 findings).

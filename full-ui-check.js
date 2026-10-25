@@ -167,17 +167,20 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
       ok('hero shows no fake cost without prices', !hero.querySelector('.rh-cost'));
     }
     ok('action buttons row', !!res.querySelector('.result-actions'));
-    ok('one visible export button + hidden plumbing', !!res.querySelector('.result-actions .export-open-btn') && !res.querySelector('.export-open-btn').hasAttribute('hidden') &&
+    ok('zero export buttons on results (v74: exports live in Project Total)', !res.querySelector('.export-open-btn') &&
+       res.querySelector('.result-actions') && res.querySelector('.result-actions').hasAttribute('hidden') &&
        ['save-history-btn', 'export-csv-btn', 'export-btn', 'quote-btn'].every(c => res.querySelector('.result-actions .' + c)),
-       `(${res.querySelectorAll('.result-actions button').length} total)`);
+       `(${res.querySelectorAll('.result-actions button').length} plumbing)`);
 
     // v71: the ONE export sheet
-    res.querySelector('.export-open-btn').click();
+    d.querySelector('.export-open-btn[data-scope="project"]').click();   // v74: the one opener (Project Total)
     await tick(120);
     const ex = d.getElementById('export-overlay');
-    ok('export sheet opens from the result', !ex.classList.contains('hidden'));
+    ok('export sheet opens from Project Total (v74: the one opener)', !ex.classList.contains('hidden'));
     ok('sheet has 4 documents and 6 unique types',
        ex.querySelectorAll('.export-doc').length === 4 && ex.querySelectorAll('.export-type').length === 6);
+    ok('project scope preselected', ex.querySelector('.export-doc[data-doc="project"]').getAttribute('aria-checked') === 'true');
+    ex.querySelector('.export-doc[data-doc="calc"]').click();
     ok('calc scope: save/pdf/csv/whats enabled, print/copy disabled',
        !ex.querySelector('[data-type="save"]').classList.contains('is-disabled') &&
        !ex.querySelector('[data-type="pdf"]').classList.contains('is-disabled') &&
