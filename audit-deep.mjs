@@ -289,7 +289,7 @@ console.log('\n================ 4. BOTTOM BUTTONS ================');
     wiz.querySelectorAll('.wizard-nav button')[0].click(); await tick(80);
     ok(`${t}: Back returns`, wiz.querySelectorAll('.wizard-step.is-current')[0].getAttribute('data-step') === '0');
     const steppers = d.querySelectorAll('#' + t + ' .num-stepper').length;
-    const inputs = d.querySelectorAll('#' + t + ' input[type="number"]:not([type="hidden"])').length;
+    const inputs = d.querySelectorAll('#' + t + ' input[inputmode="decimal"], #' + t + ' input[inputmode="numeric"]').length;
     ok(`${t}: steppers cover number inputs`, steppers === inputs, `${steppers}/${inputs}`);
   }
   ok('no page errors during button tour', errs.filter(e => !/not implemented/i.test(e)).length === 0, errs.filter(e => !/not implemented/i.test(e)).slice(0, 3).join(' | '));

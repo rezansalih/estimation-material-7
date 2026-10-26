@@ -114,11 +114,72 @@
     body.appendChild(bar);
   }
 
+  /* ------------------------------------- 2b. decimal-comma input guard --- */
+  /* Numeric fields are type="text" + inputmode so comma-decimal keyboards
+     (ar/kur Android & iOS) can type "2,5" — normalize it to "2.5" on input.
+     (the old numeric input type silently rejected "," — "2,5" became "" or "25".) */
+  (function installDecimalCommaGuard(doc) {
+    function isNumericField(el) {
+      return !!el && el.tagName === 'INPUT' &&
+        (el.getAttribute('inputmode') === 'decimal' || el.getAttribute('inputmode') === 'numeric');
+    }
+    function normalizeNumText(t) {
+      var s = String(t)
+        .replace(/[\u0660-\u0669]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); })
+        .replace(/[\u06F0-\u06F9]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+        .replace(/\u066B/g, ',')   // Arabic decimal separator -> decimal comma
+        .replace(/\u066C/g, '');   // Arabic thousands separator -> drop
+      s = s.replace(/\s/g, '');
+      if (s.indexOf(',') !== -1) {
+        if (s.indexOf('.') !== -1) {
+          // both separators present: the later one is the decimal point
+          if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.');
+          else s = s.replace(/,/g, '');
+        } else {
+          s = s.replace(',', '.').replace(/,/g, '');
+        }
+      }
+      return s.replace(/[^\d.-]/g, '');
+    }
+    doc.addEventListener('input', function (e) {
+      var el = e.target;
+      if (!isNumericField(el)) return;
+      var v = el.value;
+      if (/^[0-9.\-]*$/.test(v)) return; // already clean — leave the caret alone
+      var pos = el.selectionStart == null ? v.length : el.selectionStart;
+      var commasBefore = (v.slice(0, pos).match(/[,\u066B]/g) || []).length;
+      var nv = normalizeNumText(v);
+      el.value = nv;
+      var np = Math.min(pos + commasBefore, nv.length);
+      try { el.setSelectionRange(np, np); } catch (_) {}
+    });
+  })(document);
+
+  /* --------------------------------------- 2c. Enter key calculates --- */
+  (function installEnterToCalculate(doc) {
+    var SECTIONS = ['concrete', 'blocks', 'bricks', 'steel', 'earthwork', 'brc'];
+    doc.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' || e.isComposing || e.defaultPrevented) return;
+      var t = e.target;
+      if (!t || !t.closest) return;
+      if (t.tagName !== 'INPUT' && t.tagName !== 'SELECT') return;
+      if (t.closest('#quote-overlay') || t.closest('#app-menu') || t.closest('#global-settings-wrapper')) return;
+      for (var i = 0; i < SECTIONS.length; i++) {
+        var sec = doc.getElementById(SECTIONS[i]);
+        if (sec && !sec.classList.contains('hidden') && sec.contains(t)) {
+          var btn = sec.querySelector('[id^="calculate-"]') || doc.getElementById('mobile-calculate');
+          if (btn) { e.preventDefault(); btn.click(); }
+          return;
+        }
+      }
+    });
+  })(document);
+
   /* ------------------------------------------------------- 3. steppers --- */
   var STEPPER_SKIP = { wastage: 1 };
 
   function addSteppers(root) {
-    var inputs = root.querySelectorAll('input[type="number"]');
+    var inputs = root.querySelectorAll('input[inputmode="decimal"], input[inputmode="numeric"]');
     Array.prototype.forEach.call(inputs, function (input) {
       if (input.parentElement && input.parentElement.classList.contains('num-field')) return;
       if (STEPPER_SKIP[input.id]) return;

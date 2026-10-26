@@ -422,6 +422,93 @@ Stepper fix (user report: typed numbers hide under the +/− buttons on phones).
 - Guard pins assert .num-field stays flex and .num-stepper stays static.
 Full chain green incl. deep-audit (0 findings).
 
+## v79 — Mortar accuracy + usability wins
+
+1. **Cavity gap is no longer counted as mortar.** When the wall width is wider
+   than the block/brick system (e.g. 30 cm wall of 19 cm blocks), the leftover
+   space used to be included in the mortar volume — inflating cement ~5–6×
+   (28 bags instead of 3 for a 10 m³ wall). Mortar now counts only the joints;
+   matched walls are unchanged. A translated note shows the uncovered width
+   ("{v} cm of the wall width is not covered by the chosen unit size …").
+2. **Enter key calculates** — pressing Enter in any field runs the active
+   calculator (PC keyboards; does not fire inside quotes, settings or the menu).
+3. **Mixing water estimate everywhere** — concrete and block mortar now show
+   the same water estimate bricks had (~0.6 L per kg of cement).
+4. **Dead-code cleanup** — the unreachable imperial-units machinery and 15
+   dictionary words from deleted features (quick picks, site tools, phase
+   picker) are removed.
+
+## v78 — Two formula-level fixes (user-approved)
+
+1. **Wall leaves never exceed what physically fits.** The leaf count is now
+   capped at `floor(wallWidth / blockWidth)` — a 30 cm wall of 19 cm blocks is
+   1 leaf (2 × 19 cm cannot fit inside 30 cm), so block orders can no longer be
+   nearly doubled in such combinations. Cases that already fit (e.g. 40 cm wall
+   of 20 cm blocks = 2 leaves) are unchanged. The derived leaf count is shown
+   in the calculation trail ("Leaves in the wall").
+2. **Main bars deduct concrete cover.** Slab, footing, beam and column main-bar
+   lengths are now `member length − 2 × cover` (new cover field for slab and
+   footing, default 40 mm, same as beam/column). Steel weights are ~1–5% more
+   accurate and the cutting list shows the real lengths to cut. Stirrups
+   already used cover. Wastage % remains your safety margin on top.
+
+## v77 — Quick wins (polish round)
+
+1. **Singular grammar.** Counts of 1 now read properly in all 4 languages:
+   "1 Roll", "1 bag", "1 pc", "1 Sheet", "1 Bar" (and "لفة / پێچە / کیسە …"),
+   plurals unchanged (کیسک / کیسە word choices preserved).
+2. **Sheet counts read clean** — "3 Sheets" instead of "3 Sheets (panels)";
+   "(panels)" stays in the mode choice only.
+3. **Glue joint transparency** — glue-mode results show "Glue joint: 3 mm
+   (thin-bed)" in the calculation trail.
+4. **Wastage sanity hint** — values outside 0–30% trigger the existing
+   "looks unusual — please check" hint (never blocks the calculation).
+5. **Dead-code cleanup** — leftover approved-recipe line and unused "leaves"
+   dictionary words removed.
+
+## v76 — Deep bug sweep + keyboard-compat fix
+
+A third full sweep added an edge-case battery (`tests/edge-probe.mjs` — comma
+decimals, negatives, zeros, huge numbers, 0–50% wastage, BRC sheet mode, custom
+bar rows, Arabic RTL boot) on top of every green suite. One real bug found and
+fixed:
+
+**Decimal commas were being eaten.** The numeric fields were `type="number"`,
+which silently rejects `,` on comma-decimal keyboards (Arabic/Kurdish Android &
+iOS): typing `2,5` could leave the field empty — or worse, silently become `25`
+and produce an estimate for the wrong dimension. All numeric fields are now
+`type="text"` + `inputmode="decimal|numeric"` (same phone keypad) with an input
+normalizer (`installDecimalCommaGuard`): `2,5` → `2.5`, `1.234,5` → `1234.5`,
+US-style `1,234.5` → `1234.5`, and Arabic-Indic digits with the Arabic decimal
+separator (`٢٫٥`) → `2.5`. Plain values are never touched.
+
+## v75 — Full formula & bug audit
+
+Every formula in the app was re-derived by hand from the source and then verified
+by an independent battery, `tests/formula-audit.mjs` (22 checks with awkward
+numbers and hand-computed expectations — concrete dims/volume modes, blocks
+custom-mm + openings, glue, bricks, steel two-way + laps, BRC rolls, earthwork
+excavation/backfill, Project Total aggregation, and error guards). All five
+calculators were confirmed correct: dry-volume mix method with per-material
+wastage, face-grid block/brick counts with openings, d²/162 steel with laps and
+stirrup hooks, swell/shrink earthwork, and perimeter formwork — all × quantity.
+
+Bugs found and fixed in this round:
+
+1. **Glue joints were 30 mm, not 3 mm.** The glue joint type auto-set the joint
+   thickness field to `3` — that field is centimetres (`value / 100`), so the
+   block face grid used 3 cm joints instead of the intended 3 mm thin-bed joint,
+   undercounting blocks. It now auto-sets `0.3` (3 mm).
+2. **Input trails showed `Leaves: —`.** The blocks/bricks input-trail text still
+   read the leaves field deleted in v70; the dead clause is gone.
+3. **Inconsistent sand precision.** Blocks/bricks order rows printed sand at 3
+   decimals (`0.327 m³`) while concrete printed 2 (`1.26 m³`); all order rows now
+   use 2 decimals (calculation trails keep 3-decimal precision by design).
+
+Documented conventions (unchanged): main-bar cut length uses the full member
+length (cover is deducted in stirrup geometry only), and leaves per wall =
+`round(wallWidth / (blockWidth + joint))` as pinned in v72.
+
 ## v74
 Result cards show ZERO export buttons (user decision — exports live in
 Project Total only).

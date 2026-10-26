@@ -276,9 +276,8 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -.015em; }
 .pro-input::placeholder { color: var(--muted); }
 .pro-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-ring); }
 /* The app provides its own +/- controls; don't add tiny native spinners. */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-input[type="number"] { -moz-appearance: textfield; }
+input[inputmode="decimal"],
+input[inputmode="numeric"] { -moz-appearance: textfield; }
 
 select.pro-input {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237b8c91' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
@@ -745,7 +744,8 @@ body.view-home { padding-bottom: 28px; }
 
 
 /* Numbers type left-to-right even inside RTL forms (no cursor jumping) */
-html[dir="rtl"] input[type="number"],
+html[dir="rtl"] input[inputmode="decimal"],
+html[dir="rtl"] input[inputmode="numeric"],
 html[dir="rtl"] input[inputmode="decimal"],
 html[dir="rtl"] input[inputmode="numeric"] {
   direction: ltr;

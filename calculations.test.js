@@ -519,7 +519,24 @@ assert.ok(/navigator\.share/.test(appSrc) && /shareTextOrCopy/.test(appSrc), 'sh
 assert.ok(/shareBtn: "Share \/ Copy"/.test(appSrc), 'shareBtn key must exist in every language block');
 assert.ok(/w\.value = '2\.4'; l\.value = '4\.8'/.test(appSrc) && /w\.value = '2\.0'; l\.value = '20\.0'/.test(appSrc), 'BRC roll/sheet must fill commercial dimensions');
 assert.ok(/sand ~10, subbase ~15, soil ~20/.test(appSrc), 'backfill placeholder must show compaction guides');
-assert.ok(/html\[dir="rtl"\] input\[type="number"\]/.test(cssFile), 'RTL number fields must type LTR');
+// v76: decimal-comma guard — comma-decimal keyboards must not lose values
+// (type=number silently rejects ',', so '2,5' could become '' or '25').
+const appUiSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8');
+assert.ok(/installDecimalCommaGuard/.test(appUiSrc), 'comma guard must be installed');
+assert.ok(/normalizeNumText/.test(appUiSrc), 'comma guard must normalize comma decimals');
+assert.equal(/type=\\?"number\\?"/.test(appUiSrc + appSrc), false, 'src must not use type=number');
+// v79: cavity gap is never mortar; Enter calculates; mixing water everywhere
+const blocksSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-blocks.src.js'), 'utf8');
+const bricksSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-bricks.src.js'), 'utf8');
+assert.ok(/wallGapM/.test(blocksSrc) && /wallGapVolume/.test(bricksSrc), 'wall gap must be excluded from mortar');
+assert.ok(/installEnterToCalculate/.test(appUiSrc), 'Enter key must trigger the calculation');
+assert.ok(/mixingWaterEstimate/.test(blocksSrc) && /mixingWaterEstimate/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-concrete.src.js'), 'utf8')), 'mixing water must show for blocks and concrete');
+assert.ok(/inputmode="decimal"/.test(cssFile) && /html\[dir="rtl"\]/.test(cssFile), 'RTL number fields must type LTR');
 assert.ok(/formatMoney\(amount, quoteCurrency\(\)\)/.test(appSrc) && /formatMoney\(total, cur\)/.test(appSrc), 'quote and summary money must use formatMoney');
+
+// v80: PDF text beyond Latin-1 (Arabic/Kurdish script, the ≈ sign in bar totals)
+// must embed as a canvas image — jsPDF's WinAnsi helvetica cannot print those glyphs.
+assert.ok(appSrc.includes('[^\\u0000-\\u00FF]'), 'pdfWrite must image-embed every non-Latin-1 run');
+assert.ok(!/[\u0600-\u06FF]/.test('') && appSrc.includes('doc.addImage(cv.toDataURL'), 'pdfWrite image path must exist');
 
 console.log('PASS: concrete, blocks, bricks, steel, earthwork, openings, stirrups, and dimensional regression checks');

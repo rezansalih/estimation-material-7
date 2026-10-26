@@ -68,7 +68,8 @@ const vis = (d, sel) => {
     ok('metric grid hidden on home', !vis(d, '.metric-grid'));
     ok('sticky action bar hidden on home', !vis(d, '.mobile-actions'));
     ok('no calculator panel open', d.querySelectorAll('.tab-content:not(.hidden)').length === 0);
-    ok('no page errors', errors.length === 0, errors.join(' | '));
+
+ok('no page errors', errors.length === 0, errors.join(' | '));
   }
 
   console.log('\n=== 2. Tapping the Bricks tile opens the bricks calculator ===');
@@ -129,6 +130,12 @@ const vis = (d, sel) => {
     const txt = d.getElementById('bricks-result').textContent.replace(/\s+/g, ' ');
     ok('result rendered', !d.getElementById('bricks-result').classList.contains('hidden'));
     ok('bricks = 1,483', txt.includes('1,483'), txt.slice(0, 90));
+    // Enter key in a field runs the calculation (v79)
+    set('brick-wall-height', 4);
+    d.getElementById('brick-wall-height').dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    await tick(250);
+    const txtEnter = d.getElementById('bricks-result').textContent.replace(/\s+/g, ' ');
+    ok('Enter key recalculates', txtEnter.length > 0 && txtEnter !== txt, txtEnter.slice(0, 90));
     ok('no page errors', errors.length === 0, errors.join(' | '));
   }
 

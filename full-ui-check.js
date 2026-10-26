@@ -278,15 +278,15 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('mobile-calculate').click();
     await tick(300);
     const hero1 = d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '';
-    const w1 = parseFloat(hero1.replace(/[^\d.]/g, ''));
-    // qty 1: (3x15x144/162 + 2x21x100/162) x 1.05 = 69.22 kg
-    ok('footing weight qty 1 = 69.22', Math.abs(w1 - 69.22) < 0.02, String(w1));
+    const w1 = parseFloat(hero1.match(/\d+(?:\.\d+)?/)?.[0]);
+    // qty 1, cover 40mm: (15 x 2.92 x 144/162 + 21 x 1.92 x 100/162) x 1.05 = 67.01 kg
+    ok('footing weight qty 1 = 67.01', Math.abs(w1 - 67.01) < 0.02, String(w1));
     set('steel-member-quantity', 2);
     d.getElementById('mobile-calculate').click();
     await tick(300);
     const hero2 = d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '';
-    const w2 = parseFloat(hero2.replace(/[^\d.]/g, ''));
-    ok('member quantity doubles the weight', Math.abs(w2 - 2 * 69.22) < 0.05, String(w2));
+    const w2 = parseFloat(hero2.match(/\d+(?:\.\d+)?/)?.[0]);
+    ok('member quantity doubles the weight', Math.abs(w2 - 2 * 67.01) < 0.05, String(w2));
     ok('per-member note in details', /per member/.test(d.getElementById('steel-result').textContent));
     ok('session row dimensions are language-neutral', /3 \u00d7 2 m/.test(d.querySelector('#steel-table-body')?.textContent || ''),
        (d.querySelector('#steel-table-body')?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 80));
@@ -300,8 +300,8 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     set('steel-member-quantity', 2);
     d.getElementById('mobile-calculate').click();
     await tick(300);
-    const slabHero = parseFloat((d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '').replace(/,/g, '').match(/\d+(?:\.\d+)?/)?.[0] || 'NaN');
-    ok('slab member qty 2 doubles weight', Math.abs(slabHero - 2 * 69.22) < 0.05, String(slabHero));
+    const slabHero = parseFloat((d.querySelector('#steel-result .result-hero .rh-value')?.textContent || '').match(/\d+(?:\.\d+)?/)?.[0]);
+    ok('slab member qty 2 doubles weight', Math.abs(slabHero - 2 * 67.01) < 0.05, String(slabHero));
     sel.value = 'one_way';
     sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(50);
@@ -530,7 +530,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('mobile-calculate').click();
     await tick(300);
     const t = d.getElementById('steel-result').textContent;
-    ok('lap: 20 m x2Ø12 -> 38.45 kg', /38\.45 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 100));
+    ok('lap: 20 m x2Ø12 cover 40 -> 38.30 kg', /38\.30 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 100));
     const steelHero = d.querySelector('#steel-result .result-hero');
     ok('steel hero is Total Weight (not bar count)', !!steelHero && /Total Weight/.test(steelHero.querySelector('.rh-label')?.textContent || ''), steelHero ? steelHero.textContent.replace(/\s+/g, ' ').slice(0, 60) : 'no hero');
     ok('lap: 2 splices, 1.20 m added', /2(\s*)$/.test('2') && /1\.20 m/.test(t) && /Total number of splices|Splices|عدد|ژمارا/.test(t));
@@ -559,7 +559,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('mobile-calculate').click();
     await tick(300);
     const t = d.getElementById('steel-result').textContent;
-    ok('stirrups: 3m beam 4Ø16 + Ø8@200 -> 29.47 kg', /29\.47 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+    ok('stirrups: 3m beam 4Ø16 + Ø8@200 cover 40 -> 28.94 kg', /28\.94 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
     const sch = d.querySelector('.bar-schedule');
     ok('bar schedule present', !!sch && /Bar schedule/.test(sch.textContent));
     ok('stirrup shape shows ring dims 220 × 420', !!sch && /220 × 420/.test(sch.textContent));
@@ -610,7 +610,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('mobile-calculate').click();
     await tick(300);
     const t = d.getElementById('steel-result').textContent;
-    ok('footing number mode = 69.22 kg (matches spacing mode)', /69\.22 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
+    ok('footing number mode = 67.01 kg (matches spacing mode)', /67\.01 kg/.test(t), t.replace(/\s+/g, ' ').slice(0, 110));
   }
   {
     // Concrete formwork: slab 5x4x0.2 x2 -> edges 7.20 m² + suspended soffit 40.00 m²
@@ -817,7 +817,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     jt.value = 'glue';
     jt.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(50);
-    ok('glue auto-sets 3 mm joint', d.getElementById('block-mortar-thickness').value === '3');
+    ok('glue auto-sets 3 mm joint (0.3 cm)', d.getElementById('block-mortar-thickness').value === '0.3');
     ok('glue fields shown, mortar fields hidden', !d.getElementById('block-glue-fields').classList.contains('hidden') &&
        d.getElementById('block-mortar-fields').classList.contains('hidden'));
     d.getElementById('mobile-calculate').click();
@@ -1226,7 +1226,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     const ex = d.querySelector('input[name="earthwork-mode"][value="excavation"]');
     ex.checked = true; ex.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(60);
-    ok('excavation placeholder restores swell guides', /rock ~50/.test(d.getElementById('earthwork-swell').placeholder) && d.getElementById('earthwork-swell').max === '100', d.getElementById('earthwork-swell').placeholder);
+    ok('excavation placeholder restores swell guides', /rock ~50/.test(d.getElementById('earthwork-swell').placeholder) && d.getElementById('earthwork-swell').getAttribute('max') === '100', d.getElementById('earthwork-swell').placeholder);
     ok('no errors in D16', errs.length === 0, errs.join(' | '));
   }
 
