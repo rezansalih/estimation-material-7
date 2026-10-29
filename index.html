@@ -87,7 +87,6 @@
 <symbol id="i-shovel" viewBox="0 0 24 24"><path d="M21.56 4.56a1.5 1.5 0 0 1 0 2.122l-.47.47a3 3 0 0 1-4.212-.03 3 3 0 0 1 0-4.243l.44-.44a1.5 1.5 0 0 1 2.121 0z"></path><path d="M3 22a1 1 0 0 1-1-1v-3.586a1 1 0 0 1 .293-.707l3.355-3.355a1.205 1.205 0 0 1 1.704 0l3.296 3.296a1.205 1.205 0 0 1 0 1.704l-3.355 3.355a1 1 0 0 1-.707.293z"></path><path d="m9 15 7.879-7.878"></path></symbol>
 <symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></symbol>
 <symbol id="i-square" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"></rect></symbol>
-<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></symbol>
 <symbol id="i-table-2" viewBox="0 0 24 24"><path d="M3 9h18"></path><path d="M9 3v18"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></symbol>
 <symbol id="i-trash-2" viewBox="0 0 24 24"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
 <symbol id="i-truck" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></symbol>
@@ -136,6 +135,7 @@
                 <div class="app-menu-body">
                     <button id="open-settings-btn" class="quick-action app-menu-item" type="button"><i data-lucide="sliders-horizontal"></i><span data-lang="workspaceSettings">Project settings</span></button>
                     <button id="workspace-history-btn" class="quick-action app-menu-item" type="button"><i data-lucide="history"></i><span data-lang="workspaceHistory">Recent calculations</span></button>
+                    <button id="workspace-quote-btn" class="quick-action app-menu-item quote-btn" type="button"><i data-lucide="file-text"></i><span data-lang="quoteBtn">Summary</span></button>
                     <p class="app-menu-foot"><span id="offline-pill" class="offline-pill hidden"><i data-lucide="check-circle-2"></i><span data-lang="offlineReady">Offline Ready</span></span></p>
                 </div>
             </div>
@@ -219,6 +219,7 @@
                         <select id="currency" class="pro-input w-full">
                             <option value="$">USD ($)</option>
                             <option value="د.ع" selected>IQD (د.ع)</option>
+                            <option value="other" data-lang="customCurrencyLabel">Custom currency</option>
                         </select>
                         <p id="currency-conversion-note" class="text-xs text-gray-500 mt-1">Only USD ↔ IQD conversion is supported; enter prices in the selected currency.</p>
                         <input type="text" id="custom-currency" class="pro-input w-full mt-2 hidden" data-lang-aria="customCurrencyLabel" aria-label="Custom currency">
@@ -388,7 +389,7 @@
                                     <p id="concrete-grade-note" class="text-xs opacity-75 mt-1" data-lang="gradeNoteC20">Ordinary concrete for footings, walls and slabs. About 300–350 kg cement per m³.</p>
                                 </div>
                                 <select id="concrete-mix-basis" class="pro-input mt-2"><option value="nominal" data-lang="mixModeNominal">Nominal ratio</option><option value="custom" data-lang="mixModeCustom">Custom nominal ratio</option></select>
-                                <div id="concrete-approved-profile" class="hidden mt-2"><input id="concrete-approved-ratio" data-lang-placeholder="customRatioPlaceholder" class="pro-input" value="1:2:4" placeholder="Custom cement:sand:coarse aggregate ratio"><p class="text-xs opacity-70 mt-1" data-lang="customRatioNote">This is still a nominal loose-volume ratio, not an approved mix design.</p></div>
+                                <div id="concrete-custom-wrap" class="hidden mt-2"><input id="concrete-custom-ratio" data-lang-placeholder="customRatioPlaceholder" class="pro-input" value="1:2:4" placeholder="Custom cement:sand:coarse aggregate ratio"><p class="text-xs opacity-70 mt-1" data-lang="customRatioNote">This is still a nominal loose-volume ratio, not an approved mix design.</p></div>
                             </div>
                             <div id="concrete-dry-factor-wrap">
                                 <label for="concrete-dry-factor" class="block text-sm font-medium" data-lang="dryVolumeFactor">Dry-volume factor (estimate)</label>
@@ -403,30 +404,19 @@
 
                     <!-- Step 3: Cost -->
                     <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
-                        <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="concrete-cost-container" aria-expanded="false">
-                            <span class="text-base font-semibold header-title flex items-center gap-2">
-                                <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
-                                <span data-lang="step3Cost">Costing (Optional)</span>
-                            </span>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
-                        </button>
                         <div id="concrete-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <div>
-                                    <label class="block text-sm font-medium" data-lang="costCementBag">Cost per Cement Bag</label>
                                     <input type="text" inputmode="decimal" id="concrete-cement-cost" min="0" step="0.01" class="pro-input">
                                 </div>
                                 <div>
-                                    <label id="concrete-sand-cost-label" class="block text-sm font-medium" data-lang="costSandM3">Cost per m³ of Sand</label>
                                     <input type="text" inputmode="decimal" id="concrete-sand-cost" min="0" step="0.01" class="pro-input">
                                 </div>
                                 <div>
-                                    <label id="concrete-aggregate-cost-label" class="block text-sm font-medium" data-lang="costAggregateM3">Cost per m³ of Aggregate</label>
                                     <input type="text" inputmode="decimal" id="concrete-aggregate-cost" min="0" step="0.01" class="pro-input">
                                 </div>
-                                <div id="concrete-formwork-row" hidden><label class="block text-sm font-medium" data-upgrade-label="formworkCost">Formwork cost / m²</label><input type="text" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" value="0" class="pro-input"><p id="concrete-formwork-note" class="text-xs opacity-70 mt-1 hidden" data-lang="formworkDimensionsNote">Formwork pricing needs element dimensions; it is not included in total-volume mode.</p></div>
+                                <div id="concrete-formwork-row" hidden><input type="text" inputmode="decimal" id="concrete-formwork-cost" min="0" step="0.01" class="pro-input"></div>
                             </div>
-                            <p class="text-xs opacity-70 mt-3" data-lang="costScopeNote">Cost scope: the displayed total includes only entered cement, sand, coarse aggregate, and formwork prices. It is not a full construction cost.</p>
                         </div>
                     </div>
                     
@@ -552,14 +542,14 @@
                             <div>
                                 <label class="block text-sm font-medium" data-lang="blockType">Block Type</label>
                                 <select id="block-type" class="pro-input w-full">
-                                    <option value="solid_20" data-width="0.2" data-length="400" data-height="200" data-lang="solidBlock20">Solid (40x20x20cm)</option>
-                                    <option value="solid_15" data-width="0.15" data-length="400" data-height="200" data-lang="solidBlock15">Solid (40x20x15cm)</option>
-                                    <option value="hollow" data-width="0.2" data-length="400" data-height="200" data-lang="hollowBlock">Hollow (40x20x20cm)</option>
-                                    <option value="lightweight" data-width="0.1" data-length="600" data-height="200" data-lang="lightweightBlock">Lightweight (60x20x10cm)</option>
-                                    <option value="thermo_20" data-width="0.2" data-length="600" data-height="200" data-lang="thermoBlock20">Thermo-stone hollow (60x20x20cm)</option>
-                                    <option value="thermo_15" data-width="0.15" data-length="600" data-height="200" data-lang="thermoBlock15">Thermo-stone hollow (60x20x15cm)</option>
-                                    <option value="aac_20" data-width="0.2" data-length="600" data-height="200" data-lang="aacBlock20">AAC block (60x20x20cm)</option>
-                                    <option value="aac_15" data-width="0.15" data-length="600" data-height="200" data-lang="aacBlock15">AAC block (60x20x15cm)</option>
+                                    <option value="solid_20" data-width="200" data-length="400" data-height="200" data-lang="solidBlock20">Solid (40x20x20cm)</option>
+                                    <option value="solid_15" data-width="150" data-length="400" data-height="200" data-lang="solidBlock15">Solid (40x20x15cm)</option>
+                                    <option value="hollow" data-width="200" data-length="400" data-height="200" data-lang="hollowBlock">Hollow (40x20x20cm)</option>
+                                    <option value="lightweight" data-width="100" data-length="600" data-height="200" data-lang="lightweightBlock">Lightweight (60x20x10cm)</option>
+                                    <option value="thermo_20" data-width="200" data-length="600" data-height="200" data-lang="thermoBlock20">Thermo-stone hollow (60x20x20cm)</option>
+                                    <option value="thermo_15" data-width="150" data-length="600" data-height="200" data-lang="thermoBlock15">Thermo-stone hollow (60x20x15cm)</option>
+                                    <option value="aac_20" data-width="200" data-length="600" data-height="200" data-lang="aacBlock20">AAC block (60x20x20cm)</option>
+                                    <option value="aac_15" data-width="150" data-length="600" data-height="200" data-lang="aacBlock15">AAC block (60x20x15cm)</option>
                                     <option value="custom" data-lang="customProduct">Custom site product</option>
                                 </select>
                                 <p id="block-hollow-note" class="hidden text-xs opacity-75 mt-2" data-lang="hollowBlockNote">Hollow blocks are counted by external dimensions and joint mortar only. Grouted cells are not included; add a separate grout estimate if required.</p>
@@ -611,25 +601,15 @@
                         </div>
 
                         <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
-                            <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="block-cost-container" aria-expanded="false">
-                                <span class="text-base font-semibold header-title flex items-center gap-2">
-                                    <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
-                                    <span data-lang="step3Cost">Costing (Optional)</span>
-                                </span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
-                            </button>
                             <div id="block-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                    <div class="sm:col-span-2">
-                                       <label class="block text-sm font-medium" data-lang="costPerBlock">Cost per Block</label>
                                        <input type="text" inputmode="decimal" id="block-cost" min="0" step="0.01" class="pro-input">
                                    </div>
                                    <div>
-                                       <label class="block text-sm font-medium" data-lang="mortarCementCost">Mortar Cement Cost/Bag</label>
                                        <input type="text" inputmode="decimal" id="block-cement-cost" min="0" step="0.01" class="pro-input">
                                    </div>
                                    <div>
-                                       <label class="block text-sm font-medium" data-lang="mortarSandCost">Mortar Sand Cost/m³</label>
                                        <input type="text" inputmode="decimal" id="block-sand-cost" min="0" step="0.01" class="pro-input">
                                    </div>
                                 </div>
@@ -771,7 +751,7 @@
                                     <span class="ms-2" data-lang="includeMortarBricks">Calculate with Mortar</span>
                                 </label>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                            <div id="brick-mortar-settings" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                                 <div>
                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="mortarThickness">Mortar Thickness (cm)</label><button type="button" class="hint-btn" data-hint="hintMortar" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintMortar">How thick the mortar joint is between blocks or bricks.</p>
                                     <input type="text" inputmode="decimal" id="brick-mortar-thickness" value="1.0" min="0" step="0.1" class="pro-input" data-sane="0.2:5:">
@@ -794,25 +774,15 @@
                         </div>
                         
                         <div class="card p-3 rounded-lg text-start" hidden data-wizard-skip>
-                            <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="brick-cost-container" aria-expanded="false">
-                                <span class="text-base font-semibold header-title flex items-center gap-2">
-                                    <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
-                                    <span data-lang="step3Cost">Costing (Optional)</span>
-                                </span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
-                            </button>
                             <div id="brick-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div class="sm:col-span-2">
-                                        <label class="block text-sm font-medium" data-lang="costPerBrick">Cost per Brick</label>
                                         <input type="text" inputmode="decimal" id="brick-cost" min="0" step="0.01" class="pro-input">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium" data-lang="mortarCementCost">Mortar Cement Cost/Bag</label>
                                         <input type="text" inputmode="decimal" id="brick-cement-cost" min="0" step="0.01" class="pro-input">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium" data-lang="mortarSandCost">Mortar Sand Cost/m³</label>
                                         <input type="text" inputmode="decimal" id="brick-sand-cost" min="0" step="0.01" class="pro-input">
                                     </div>
                                </div>
@@ -885,6 +855,7 @@
                                 <option value="beam" data-lang="beam">Beam</option>
                                 <option value="column" data-lang="column">Column</option>
                                 <option value="one_way" data-lang="oneWay">One-way slab / strip</option>
+                                <option value="stair" data-lang="stairFlight">Staircase (flight)</option>
                                 <option value="brc" data-lang="brcMesh">BRC wire mesh</option>
                                 <option value="custom" data-lang="customBars">Custom bars</option>
                             </select>
@@ -930,7 +901,7 @@
                             
                              <div class="mb-2">
                                         <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
-                                        <input type="text" inputmode="decimal" id="footing-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                        <input type="text" inputmode="decimal" id="footing-cover" class="pro-input w-full" value="50" data-sane="15:120:mm">
                                     </div>
                             <div id="footing-spacing-inputs">
                                  <div class="border-t border-gray-700 pt-2">
@@ -944,8 +915,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -961,8 +932,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                         </div>
                                      </div>
@@ -981,8 +952,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                         </div>
                                      </div>
@@ -998,8 +969,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="footing-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1033,7 +1004,7 @@
                             
                              <div class="mb-2">
                                         <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
-                                        <input type="text" inputmode="decimal" id="slab-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                        <input type="text" inputmode="decimal" id="slab-cover" class="pro-input w-full" value="20" data-sane="15:120:mm">
                                     </div>
                             <div id="slab-spacing-inputs">
                                  <div class="border-t border-gray-700 pt-2">
@@ -1047,8 +1018,8 @@
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                              <select id="slab-diameter-len" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1064,8 +1035,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="slab-diameter-wid" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                         </div>
                                      </div>
@@ -1084,8 +1055,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                             <select id="slab-diameter-len-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1101,8 +1072,8 @@
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                              <select id="slab-diameter-wid-alt" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1125,8 +1096,8 @@
                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="beam-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                        <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                        <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                     </select>
                                  </div>
                              </div>
@@ -1148,7 +1119,7 @@
                                          </div>
                                          <div>
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
-                                             <input type="text" inputmode="decimal" id="beam-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                             <input type="text" inputmode="decimal" id="beam-cover" class="pro-input w-full" value="25" data-sane="15:120:mm">
                                          </div>
                                          <div>
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Stirrup Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
@@ -1158,8 +1129,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Stirrup Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
                                             <select id="beam-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1182,8 +1153,8 @@
                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Bar Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="column-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                        <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                        <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                     </select>
                                   </div>
                              </div>
@@ -1205,7 +1176,7 @@
                                         </div>
                                          <div>
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
-                                             <input type="text" inputmode="decimal" id="column-cover" class="pro-input w-full" value="40" data-sane="15:120:mm">
+                                             <input type="text" inputmode="decimal" id="column-cover" class="pro-input w-full" value="25" data-sane="15:120:mm">
                                          </div>
                                          <div>
                                              <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupSpacing">Tie Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupSpacing">Distance from one stirrup ring to the next.</p>
@@ -1215,8 +1186,8 @@
                                             <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stirrupDiameter">Tie Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintStirrupDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStirrupDiameter">Thickness of the stirrup ring bar. Ø8 is the usual size.</p>
                                             <select id="column-stirrup-diameter" class="pro-input w-full">
                                                 <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                                <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                                <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                                <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                                <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                             </select>
                                          </div>
                                      </div>
@@ -1243,13 +1214,104 @@
                                     <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
                                     <select id="one-way-diameter" class="pro-input w-full">
                                         <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
-                                        <option value="8">8</option><option value="10">10</option><option value="12">12</option><option value="14">14</option><option value="16">16</option>
-                                        <option value="18">18</option><option value="20">20</option><option value="22">22</option><option value="25">25</option><option value="28">28</option><option value="32">32</option>
+                                        <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                        <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
                                     </select>
                                  </div>
-                             </div>
+ 
+                                <div class="border-t border-gray-700 pt-2">
+                                    <label class="flex items-center gap-2 text-sm font-medium">
+                                        <input type="checkbox" id="one-way-crank" class="h-4 w-4">
+                                        <span data-lang="crankLabel">Bent-up (cranked) bars</span>
+                                    </label>
+                                    <div id="one-way-crank-details" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 items-end">
+                                        <div>
+                                            <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="crankDepth">Effective depth D (mm)</label><button type="button" class="hint-btn" data-hint="hintCrankDepth" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCrankDepth">Slab thickness minus cover. Each crank adds 0.42 × D to the bar.</p>
+                                            <input type="text" inputmode="decimal" id="one-way-crank-depth" class="pro-input w-full" data-sane="30:500:mm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium" data-lang="crankCount">Cranks per bar</label>
+                                            <select id="one-way-crank-count" class="pro-input w-full">
+                                                <option value="2" selected>2</option><option value="1">1</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <div id="steel-stair-inputs" class="hidden mt-2 space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stairGoing">Flight going (m)</label><button type="button" class="hint-btn" data-hint="hintStairGoing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintStairGoing">Horizontal run of the flight, from the face of one landing to the other.</p>
+                                    <input type="text" inputmode="decimal" id="stair-going" class="pro-input w-full" data-sane="0.5:8:m">
+                                </div>
+                                <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stairRiserH">Riser height (m)</label><button type="button" class="hint-btn" data-hint="hintRiserH" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintRiserH">Height of one step.</p>
+                                    <input type="text" inputmode="decimal" id="stair-riser-h" class="pro-input w-full" data-sane="0.1:0.25:m">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="stairRisers">Number of risers</label>
+                                    <input type="text" inputmode="numeric" id="stair-risers" class="pro-input w-full" data-sane="2:40:">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="stairFlightW">Flight width (m)</label>
+                                    <input type="text" inputmode="decimal" id="stair-width" class="pro-input w-full" data-sane="0.5:4:m">
+                                </div>
+                                <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="concreteCover">Concrete Cover (mm)</label><button type="button" class="hint-btn" data-hint="hintCover" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCover">Concrete between the steel and the outside face — it protects the steel. 40 mm is common.</p>
+                                    <input type="text" inputmode="decimal" id="stair-cover" class="pro-input w-full" value="20" data-sane="15:120:mm">
+                                </div>
+                                <div>
+                                    <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="stairEndExt">Extension into landings (each end, m)</label><button type="button" class="hint-btn" data-hint="hintEndExt" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintEndExt">How far each slope bar reaches into the landing beyond the flight. 0.3 m is typical.</p>
+                                    <input type="text" inputmode="decimal" id="stair-end-ext" class="pro-input w-full" value="0.3" data-sane="0:1.5:m">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="stairLandings">Landings included</label>
+                                    <select id="stair-landings" class="pro-input w-full">
+                                        <option value="0">0</option><option value="1">1</option><option value="2" selected>2</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium" data-lang="stairLandingDepth">Landing depth (m)</label>
+                                    <input type="text" inputmode="decimal" id="stair-landing-depth" class="pro-input w-full" value="1.2" data-sane="0.6:3:m">
+                                </div>
+                            </div>
+                            <div class="border-t border-gray-700 pt-2">
+                                <p class="text-sm font-medium mb-1" data-lang="slopeBars">Main bars (along the flight)</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                    <div>
+                                        <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                        <input type="text" inputmode="decimal" id="stair-main-spacing" class="pro-input w-full" data-sane="40:300:mm">
+                                    </div>
+                                    <div>
+                                        <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                        <select id="stair-main-diameter" class="pro-input w-full">
+                                            <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                            <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                            <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-gray-700 pt-2">
+                                <p class="text-sm font-medium mb-1" data-lang="stairDistBars">Distribution bars (across)</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                    <div>
+                                        <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="spacing">Spacing (mm)</label><button type="button" class="hint-btn" data-hint="hintSpacing" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintSpacing">Distance between two bars, measured center to center.</p>
+                                        <input type="text" inputmode="decimal" id="stair-dist-spacing" class="pro-input w-full" data-sane="40:300:mm">
+                                    </div>
+                                    <div>
+                                        <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="diameter">Diameter (mm)</label><button type="button" class="hint-btn" data-hint="hintDiameter" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintDiameter">How thick one bar is, across its round face.</p>
+                                        <select id="stair-dist-diameter" class="pro-input w-full">
+                                            <option value="" disabled selected data-lang="selectDiameter">Select Diameter</option>
+                                            <option value="8">8 (0.395 kg/m)</option><option value="10">10 (0.617 kg/m)</option><option value="12">12 (0.889 kg/m)</option><option value="14">14 (1.210 kg/m)</option><option value="16">16 (1.580 kg/m)</option>
+                                            <option value="18">18 (2.000 kg/m)</option><option value="20">20 (2.469 kg/m)</option><option value="22">22 (2.988 kg/m)</option><option value="25">25 (3.858 kg/m)</option><option value="28">28 (4.840 kg/m)</option><option value="32">32 (6.321 kg/m)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="steel-custom-inputs" class="hidden mt-2 space-y-2">
                             <div id="steel-custom-rows" class="space-y-2"></div>
                             <button type="button" id="steel-custom-add-row" class="btn btn-secondary w-full" data-lang="addRowBtn">Add bar row</button>
@@ -1268,8 +1330,13 @@
                                     <option value="sheet" data-lang="brcSheets">Sheets (panels)</option>
                                 </select>
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><label class="block text-sm font-medium" data-lang="brcPieceW">Piece width (m)</label><input type="text" inputmode="decimal" id="brc-width" class="pro-input" value="2.0" min="0.5" step="0.1" data-sane="0.5:10:m"></div>
+                            <div class="flex flex-wrap gap-2 mb-2" id="brc-size-presets">
+                                    <button type="button" class="btn btn-secondary text-xs brc-preset" data-w="4.8" data-l="2.4">4.8 × 2.4 m</button>
+                                    <button type="button" class="btn btn-secondary text-xs brc-preset" data-w="6" data-l="2.4">6 × 2.4 m</button>
+                                    <button type="button" class="btn btn-secondary text-xs brc-preset" data-w="2.4" data-l="20">2.4 × 20 m</button>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                                                <div><label class="block text-sm font-medium" data-lang="brcPieceW">Piece width (m)</label><input type="text" inputmode="decimal" id="brc-width" class="pro-input" value="2.0" min="0.5" step="0.1" data-sane="0.5:10:m"></div>
                                 <div><label class="block text-sm font-medium" data-lang="brcPieceL">Piece length (m)</label><input type="text" inputmode="decimal" id="brc-length" class="pro-input" value="20" min="1" step="0.5" data-sane="1:50:m"></div>
                             </div>
                             <div>
@@ -1277,7 +1344,7 @@
                                 <p class="field-hint hidden" data-lang="hintOverlap">Extra mesh for overlaps and cutting waste. 10% is common.</p>
                                 <input type="text" inputmode="decimal" id="brc-overlap" class="pro-input" value="10" min="0" max="50" step="1" data-sane="0:50:%">
                             </div>
-                            <div hidden><label class="block text-sm font-medium" data-lang="priceEach">Price per piece</label><input type="text" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
+                            <div hidden><input type="text" inputmode="decimal" id="brc-cost" class="pro-input" min="0" step="0.01"></div>
                         </div>
 
                         <details id="steel-lap-details" class="advanced-details">
@@ -1294,16 +1361,9 @@
 
                     <!-- Step 3: Costing -->
                     <div id="steel-cost-card" class="card p-3 rounded-lg hidden text-start" data-wizard-skip>
-                        <button type="button" class="cost-accordion-toggle flex justify-between items-center w-full py-1 text-start" data-target="steel-cost-container" aria-expanded="false">
-                            <span class="text-base font-semibold header-title flex items-center gap-2">
-                                <i data-lucide="coins" class="w-4 h-4 text-indigo-400"></i>
-                                <span data-lang="step3Cost">Costing (Optional)</span>
-                            </span>
-                            <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 transition-transform duration-200"></i>
-                        </button>
                         <div id="steel-cost-container" class="hidden mt-3 pt-3 border-t border-gray-700/60">
                             <div>
-                                <span class="label-with-hint"><label class="block text-sm font-medium" data-lang="costPerKg">Cost per kg</label><button type="button" class="hint-btn" data-hint="hintCostPerKg" data-lang-aria="helpBtn" aria-label="Help">?</button></span><p class="field-hint hidden" data-lang="hintCostPerKg">Price of one kilogram at your supplier.</p>
+                                
                                 <input type="text" inputmode="decimal" id="steel-cost" min="0" step="0.01" class="pro-input w-full">
                             </div>
                         </div>
@@ -1377,7 +1437,6 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="sm:col-span-3"><label for="earthwork-shape" class="block text-sm font-medium" data-lang="excavShape">Excavation shape</label><select id="earthwork-shape" class="pro-input"><option value="rectangular" data-lang="shapeRectangular">Rectangular pit</option><option value="trench" data-lang="shapeTrench">Trench / strip</option><option value="custom" data-lang="shapeCustom">Custom profile (same L × W × H basis)</option></select></div>
                             <div>
                                 <label for="earthwork-length" class="block text-xs sm:text-sm font-medium" data-lang="length">Length (m)</label>
                                 <input type="text" inputmode="decimal" id="earthwork-length" min="0" step="0.01" class="pro-input text-sm !p-2" placeholder="L" data-sane="0.3:300:m">
@@ -1415,7 +1474,12 @@
                                         <option value="50" data-lang="soilRock">Blasted rock · +50%</option>
                                     </select>
                                 </div>
-                                <input type="text" inputmode="decimal" id="earthwork-swell" data-lang-placeholder="swellPlaceholder" value="25" min="0" max="50" step="1" class="pro-input" placeholder="sand ~12, gravel ~15, clay ~30, rock ~50" data-sane="0:100:%">
+                                <input type="text" inputmode="decimal" id="earthwork-swell" data-lang-placeholder="swellPlaceholder" value="25" min="0" max="100" step="1" class="pro-input" placeholder="sand ~12, gravel ~15, clay ~30, rock ~50" data-sane="0:100:%">
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-2" id="earthwork-truck-presets">
+                                <button type="button" class="btn btn-secondary text-xs truck-preset" data-v="3">3 m³</button>
+                                <button type="button" class="btn btn-secondary text-xs truck-preset" data-v="4">4 m³</button>
+                                <button type="button" class="btn btn-secondary text-xs truck-preset" data-v="7">7 m³</button>
                             </div>
                        </div>
                    </div>
@@ -1590,7 +1654,7 @@
            shared openModal/closeModal helpers. */
         document.getElementById('app-menu-close-btn')?.addEventListener('click', closeMenu);
         menu?.addEventListener('click', (e) => { if (e.target === menu) closeMenu(); });
-        ['open-settings-btn', 'workspace-history-btn'].forEach((id) => {
+        ['open-settings-btn', 'workspace-history-btn', 'workspace-quote-btn'].forEach((id) => {
             document.getElementById(id)?.addEventListener('click', () => closeMenu());
         });
         const LANG_CHIP = { en: 'EN', ku: 'KU', ks: 'KS', ar: 'AR' };

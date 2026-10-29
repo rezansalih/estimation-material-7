@@ -14,10 +14,13 @@ function bricksCalc(o) {
   const netArea = totalWallVolume / wallThicknessM;
   const unwasted = (netArea / unitFace) * leaves;
   const single = L * W * H;
+  // v79: width the leaves do not cover (cavity/insulation) is not mortar.
+  const gapM = Math.max(0, wallThicknessM - leaves * (W + t));
+  const gapVol = (totalWallVolume / wallThicknessM) * gapM;
 
   let net = 0, order = 0, cementBags = 0, sand = 0, cementW = 0;
   if (includeMortar) {
-    net = Math.max(0, totalWallVolume - unwasted * single);
+    net = Math.max(0, totalWallVolume - unwasted * single - gapVol);
     order = net * (1 + waste / 100);
     if (order > 1e-6) {
       const dry = order * dryFactor, sum = ratio[0] + ratio[1];
@@ -98,6 +101,13 @@ check('mortar checkbox off -> 0 bags', noMortar.cementBags, 0, 0);
 check('mortar checkbox off -> 0 sand', noMortar.sand, 0, 0);
 const tiny = bricksCalc({ L: .240, W: .115, H: .075, wallLen: 0.2, wallH: 0.2, wallT: .115, waste: 5 });
 console.log('  1 m2 patch -> cement', f(tiny.cementW, 2), 'kg, bags', tiny.cementBags, ', water', f(tiny.water, 2), 'L  (old bagsx30 rule said 30 L)');
+
+{
+  const r = bricksCalc({ L: .240, W: .115, H: .075, wallLen: 10, wallH: 3, wallT: .28, leaves: 2, waste: 0 });
+  const ref = 8.4 - (2 * 30 / (.25 * .085)) * (.240 * .115 * .075) - 30 * .03;
+  check('cavity wall 0.28 m: mortar excludes the 3 cm gap', r.mortarNet, ref, 1e-9);
+  check('cavity wall gap volume 0.9 m3 leaves the mortar', r.mortarNet, 1.655294117647059, 1e-9);
+}
 
 console.log('\n' + '='.repeat(86));
 console.log('5. CROSS-CHECK AGAINST THE HAND-VALUE ALREADY IN tests/calculations.test.js');

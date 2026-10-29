@@ -2,8 +2,7 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.bricks = function (ctx) {
-  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty } = ctx;
-  const unitOf = (n, one, many) => (Number(n) === 1 ? one : many);
+  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty, unitOf } = ctx;
                 const lang = localStorage.getItem('language') || 'en';
                 const T = translations[lang];
 
@@ -29,7 +28,8 @@ window.__calcHandlers.bricks = function (ctx) {
                 const includeMortar = document.getElementById('brick-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('brick-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = Number(document.getElementById('brick-cement-density').value);
-                if ([brickCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
+                if ([brickCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0)) { showError(T.errRequiredFields); return; }
+                if (includeMortar && (!Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0))) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="brick-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -42,7 +42,7 @@ window.__calcHandlers.bricks = function (ctx) {
                     // depth). No wall-thickness or leaves input is needed in this mode.
                     totalWallVolume = Number(document.getElementById('brick-wall-volume').value);
                     if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0) {
-                        showError(T.errDimsWallWidth);
+                        showError(T.errTotalVolume);
                         return;
                     }
                     length = null; height = null;
@@ -124,10 +124,12 @@ window.__calcHandlers.bricks = function (ctx) {
 
                 const bricksNeeded = Math.ceil(bricksNeededUnwasted * wastageFactor);
                 const totalBrickCost = brickCost === null ? null : bricksNeeded * brickCost;
-                const totalCementCost = cementCost === null ? null : cementBags * cementCost;
-                const totalSandCost = sandCost === null ? null : sandVolume * sandCost;
-                const materialCostsComplete = [brickCost, cementCost, sandCost].every(v => v !== null && Number.isFinite(v) && v >= 0);
-                const totalCost = materialCostsComplete ? totalBrickCost + totalCementCost + totalSandCost : null;
+                // Mortar-off means no mortar materials in the bill: their prices are not
+                // required for a complete total, and no zero cost rows are shown.
+                const totalCementCost = (includeMortar && cementCost !== null) ? cementBags * cementCost : null;
+                const totalSandCost = (includeMortar && sandCost !== null) ? sandVolume * sandCost : null;
+                const materialCostsComplete = brickCost !== null && (!includeMortar || (cementCost !== null && sandCost !== null));
+                const totalCost = materialCostsComplete ? totalBrickCost + (includeMortar ? totalCementCost + totalSandCost : 0) : null;
                 const currency = getCurrency();
                 const hollowBrickNote = brickOpt.value === 'hollow_brick' ? T.hollowBrickNote : '';
                 // Masonry mortar needs roughly 0.6 L of water per kg of cement. Use the cement
@@ -137,17 +139,17 @@ window.__calcHandlers.bricks = function (ctx) {
                 const cementOrderedKg = cementBags * getCementBagMass();
 
                 lastCalcData.bricks = {
-                    nums: { bricks: bricksNeeded, cementBags: includeMortar ? cementBags : 0, sand: includeMortar ? sandVolume : 0 },
+                    nums: { bricks: bricksNeeded, cementBags: includeMortar ? cementBags : 0, sand: includeMortar ? sandVolume : 0 , cementBagKg: getCementBagMass() },
                     volume: `${totalWallVolume.toFixed(2)} m³`,
                     bricks: `${formatQty(bricksNeeded)} ${unitOf(bricksNeeded, T.pcUnitOne, T.piecesWord)}`,
                     cement: includeMortar ? `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}` : 'N/A',
                     sand: includeMortar ? `${sandVolume.toFixed(2)} m³` : 'N/A',
                     cost: materialCostsComplete ? `${currency}${formatMoney(totalCost, currency)}` : T.costNotEntered,
                     quoteLines: [
-                        { item: T.totalBricks, qty: `${formatQty(bricksNeeded)} ${unitOf(bricksNeeded, T.pcUnitOne, T.piecesWord)}`, unitPrice: brickCost },
+                        { key: 'bricks', item: T.totalBricks, qty: `${formatQty(bricksNeeded)} ${unitOf(bricksNeeded, T.pcUnitOne, T.piecesWord)}`, unitPrice: brickCost },
                         ...(includeMortar ? [
-                            { item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: cementCost },
-                            { item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
+                            { key: 'cement', item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: cementCost },
+                            { key: 'sand', item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
                         ] : [])
                     ]
                 };
@@ -166,7 +168,6 @@ window.__calcHandlers.bricks = function (ctx) {
                 if (includeMortar && mortarVolumeOrder > 1e-6) {
                     mortarResultsHTML = `
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolumeOrder.toFixed(3)} m³ <span class="text-xs opacity-75">(${mortarVolumeNet.toFixed(3)} ${T.netWord} + ${(mortarVolumeOrder - mortarVolumeNet).toFixed(3)} ${T.wasteWord})</span></span></div>
-                        ${wallGapM > 0.02 ? `<div class="result-item flex items-center gap-2 col-span-2" data-kind="detail"><i data-lucide="info"></i><span>${fill(T.wallGapNote, { v: (wallGapM * 100).toFixed(0) })}</span></div>` : ''}
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="scale"></i><span><strong class="font-semibold block">${T.cementWeight}</strong> ${cementWeight.toFixed(2)} kg</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="droplets"></i><span><strong class="font-semibold block">${T.mixingWaterEstimate}</strong> ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</span></div>
@@ -207,10 +208,11 @@ window.__calcHandlers.bricks = function (ctx) {
                                 <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="ruler"></i><span><strong class="font-semibold block">${T.bricksPerM2}</strong> ${bricksPerM2.toFixed(1)} ${T.pcsPerM2}</span></div>
                                  
                                  ${mortarResultsHTML}
+                                ${wallGapM > 0.02 ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="info"></i><span>${fill(T.wallGapNote, { v: (wallGapM * 100).toFixed(0) })}</span></div>` : ''}
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowBrickNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowBrickNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m`}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${formatQty(bricksNeeded)} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div><div>${T.trailWallLeaves}: ${leaves}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.brickCalculationDetails}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m`}</div><div>${T.totalBricks}: ${bricksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(bricksNeeded - bricksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${formatQty(bricksNeeded)} ${T.orderedWord}</div>${includeMortar ? `<div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolumeNet.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolumeNet).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div><div>${T.cementWeight}: ${fill(T.trailCementOrdered, { a: cementWeight.toFixed(2), b: cementBags, kg: getCementBagMass(), c: cementOrderedKg.toFixed(0), d: (cementOrderedKg - cementWeight).toFixed(2) })}</div><div>${T.mixingWaterEstimate}: ${fill(T.trailWaterPerKg, { v: mixingWaterLitres.toFixed(1) })}</div>` : ''}<div>${T.trailWallLeaves}: ${leaves}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowBrickNote ? `<div>${hollowBrickNote}</div>` : ''}</div></details>
                                 
                                  <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">

@@ -44,11 +44,6 @@
     let sandVolumeBeforeWaste;
     let aggregateVolumeBeforeWaste;
     let cementWeightRequired;
-    let sandWeightRequired;
-    let aggregateWeightRequired;
-    let waterLitres;
-    let admixtureAmount;
-    let admixtureRateUnit;
 
     dryVolume = wetVolume * dryFactor;
     if (!Number.isFinite(dryVolume) || dryVolume <= 0) return { ok: false, error: 'invalidDryVolume' };
@@ -58,10 +53,6 @@
     sandVolumeBeforeWaste = dryVolume * ratio[1] / sum;
     aggregateVolumeBeforeWaste = dryVolume * ratio[2] / sum;
     cementWeightRequired = cementVolume * density;
-    sandWeightRequired = null;
-    aggregateWeightRequired = null;
-    waterLitres = null;
-    admixtureAmount = null;
     const cementWastageAllowance = cementWeightRequired * (wasteFactor - 1);
     const cementWeightWithWastage = cementWeightRequired + cementWastageAllowance;
     const cementBags = Math.ceil(cementWeightWithWastage / bagKg);
@@ -75,7 +66,7 @@
 
     const values = [cementVolume, sandBaseQuantity, aggregateBaseQuantity, cementWeightRequired, cementWastageAllowance, cementWeightWithWastage, cementOrderWeight, sandVolumeOrder, aggregateVolumeOrder].filter(v => v !== null);
     if (values.some(v => !Number.isFinite(v) || v < 0)) return { ok: false, error: 'invalidCalculatedQuantity' };
-    return { ok: true, mode, type, mixMode, quantity: mode === 'dims' ? quantity : null, ratio, wasteFactor, wastePercent, wetVolume, dryVolume, cementVolume, cementWeightRequired, cementWastageAllowance, cementWeightWithWastage, cementBags, cementOrderWeight, sandVolumeBeforeWaste: sandBaseQuantity, sandWastageAllowance, sandVolumeOrder, aggregateVolumeBeforeWaste: aggregateBaseQuantity, aggregateWastageAllowance, aggregateVolumeOrder, quantityUnit: 'm³', sandWeightRequired, aggregateWeightRequired, waterLitres, admixtureAmount, admixtureRateUnit, admixtureTotalUnit: admixtureRateUnit };
+    return { ok: true, mode, type, mixMode, quantity: mode === 'dims' ? quantity : null, ratio, wasteFactor, wastePercent, wetVolume, dryVolume, cementVolume, cementWeightRequired, cementWastageAllowance, cementWeightWithWastage, cementBags, cementOrderWeight, sandVolumeBeforeWaste: sandBaseQuantity, sandWastageAllowance, sandVolumeOrder, aggregateVolumeBeforeWaste: aggregateBaseQuantity, aggregateWastageAllowance, aggregateVolumeOrder, quantityUnit: 'm³' };
   }
   return calculateConcreteEstimate;
 });

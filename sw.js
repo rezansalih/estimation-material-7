@@ -1,4 +1,4 @@
-const CACHE = 'material-estimator-v80';
+const CACHE = 'material-estimator-v98';
 const CACHE_PREFIX = 'material-estimator-';
 const APP_SHELL = [
   './index.html',
@@ -7,6 +7,8 @@ const APP_SHELL = [
   './vendor/jspdf.umd.min.js',
   './fonts/vazirmatn-arabic.woff2',
   './fonts/vazirmatn-latin.woff2',
+  './fonts/vazirmatn-extra.woff2',
+  './fonts/symbols.woff2',
   './app.js',
   './icon.svg',
   './favicon.ico',

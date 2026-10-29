@@ -22,6 +22,26 @@
   src: url('./fonts/vazirmatn-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+/* Supplement — glyphs the Vazirmatn subsets lack, same typeface so script
+   text never drops to a system font mid-word (U+0622 آ, U+066A ٪). */
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/vazirmatn-extra.woff2') format('woff2');
+  unicode-range: U+0622, U+066A, U+2026, U+2248;
+}
+/* Standalone symbols (→ ↔ ✓) — DejaVu Sans subset; they never join
+   script text, so a symbol face is safe. Declared last: later faces win overlaps. */
+@font-face {
+  font-family: 'Vazirmatn';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/symbols.woff2') format('woff2');
+  unicode-range: U+2192, U+2194, U+2713;
+}
 
 /* --------------------------------------------------------------- tokens -- */
 /* Design tokens. Light theme below; body.theme-dark flips the palette.
@@ -193,7 +213,6 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -.015em; }
 }
 .app-menu-head h2 { margin: 0; font-size: 1.02rem; font-weight: 800; }
 .app-menu-body { display: grid; gap: 10px; padding: 12px 14px 14px; }
-.app-menu-label { display: block; margin: 0 0 4px; font-size: .78rem; font-weight: 700; color: var(--muted); }
 .app-menu-item { width: 100%; justify-content: flex-start; min-height: 44px; }
 .app-menu-foot { margin: 2px 0 0; }
 .offline-pill {
@@ -208,12 +227,6 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -.015em; }
   margin-top: 8px; padding: 8px; border: 1px dashed var(--border); border-radius: 12px;
 }
 .quick-picks-label { font-size: .72rem; font-weight: 800; color: var(--muted); margin-inline-end: 2px; }
-.chip-btn {
-  border: 1px solid var(--border); background: var(--card); color: var(--text);
-  border-radius: 999px; padding: 7px 11px; font-size: .74rem; font-weight: 700;
-  cursor: pointer; min-height: 36px; line-height: 1.15; text-align: start;
-}
-.chip-btn:active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-ink); }
 .quick-picks select { min-height: 38px; max-width: 100%; }
 
 /* v63 quick clear (x) inside text fields */
@@ -235,19 +248,10 @@ h1, h2, h3 { line-height: 1.25; letter-spacing: -.015em; }
 .spec-svg .spec-bar { fill: var(--accent-ink); stroke: var(--card); stroke-width: 1; }
 .spec-svg .spec-bar-line { stroke: var(--accent-ink); stroke-width: 1.1; opacity: 0.85; }
 .spec-svg .spec-bar-line.alt { stroke: var(--accent); opacity: 0.7; }
-.spec-svg .spec-opening { fill: var(--card); stroke: var(--accent-ink); stroke-width: 1.4; stroke-dasharray: 4 2; }
 .spec-svg .spec-dim { stroke: var(--muted); stroke-width: 1; }
-.spec-svg text { font-family: var(--font); }
+.spec-svg text { font-family: 'Vazirmatn', var(--font); }
 
 /* v63 element-group tag */
-.tag-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 2px 0 6px; }
-.tag-row-label { font-size: .78rem; font-weight: 800; color: var(--muted); }
-.tag-select { min-height: 38px; max-width: 100%; flex: 1 1 180px; }
-.tag-badge {
-  display: inline-block; font-size: .66rem; font-weight: 800; line-height: 1.5;
-  padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink);
-  margin-inline-end: 4px; vertical-align: middle;
-}
 .header-tools > select {
   flex: 1 1 210px; width: auto; min-width: 210px; max-width: none;
   min-height: 44px; padding: 8px 10px; font-size: 16px;
@@ -303,7 +307,6 @@ html[dir="rtl"] select.pro-input { background-position: left 12px center; paddin
 .btn-primary:hover { background: var(--accent-ink); }
 .btn-secondary { background: var(--surface-3); color: var(--text); border: 1px solid var(--line-2); }
 .btn-secondary:hover { background: var(--surface-2); }
-.btn-ghost { background: transparent; color: var(--accent-ink); border: 1px solid var(--line-2); }
 .btn-success { background: var(--success); color: #fff; }
 
 .quick-action, .header-quick-action, .header-action, .icon-action {
@@ -346,17 +349,10 @@ html[dir="rtl"] #theme-toggle:checked + .theme-track::after { transform: transla
 .card h3, .tab-content .card h3 { font-size: .95rem; font-weight: 800; color: var(--text); }
 
 .header-title { color: var(--text); text-align: start; }
-.header-subtitle { color: var(--muted); text-align: start; }
-
-.settings-section-label {
-  margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line);
-  color: var(--accent-ink); font-size: .7rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
-}
-
 /* ----------------------------------------------------------- home screen - */
 
 
-.eyebrow, .metric-label {
+.metric-label {
   display: block; font-size: .68rem; font-weight: 800;
   letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
 }
@@ -418,12 +414,9 @@ body.view-home .calc-back            { display: none; }
 body.view-home .calculator-nav       { display: none; }
 body.view-home .metric-grid          { display: none; }
 body.view-home .mobile-guide         { display: none; }
-body.view-home .workspace-intro      { display: none; }
-
 /* Project settings is its own screen: keep it clean (no metrics, guide or calculate bar). */
 body.view-settings .metric-grid      { display: none; }
 body.view-settings .mobile-guide     { display: none; }
-body.view-settings .workspace-intro  { display: none; }
 body.view-settings .mobile-actions   { display: none !important; }
 
 /* -------------------------------------------------------------- metrics -- */
@@ -517,8 +510,6 @@ html[dir="rtl"] .num-stepper { position: static; inset: auto; }
 .wizard-step.is-current { display: block; }
 .wizard-nav { display: flex; gap: 9px; margin-top: 16px; }
 .wizard-nav button { flex: 1 1 0; }
-.wizard-nav .wz-spacer { flex: 0 0 auto; }
-
 /* --------------------------------------------------------- result hero -- */
 .result-hero {
   position: relative; overflow: hidden;
@@ -550,8 +541,6 @@ html[dir="rtl"] .num-stepper { position: static; inset: auto; }
 }
 .result-actions button span { overflow: visible; text-overflow: clip; white-space: nowrap; }
 .result-actions svg { width: 17px; height: 17px; }
-.result-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
-
 /* -------------------------------------------------------------- results -- */
 .result-card { animation: popIn .32s ease both; }
 .result-content { margin-top: 4px; }
@@ -563,8 +552,6 @@ html[dir="rtl"] .num-stepper { position: static; inset: auto; }
 .result-item svg { width: 19px; height: 19px; color: var(--accent); flex: 0 0 auto; }
 .result-item strong { display: block; font-size: .72rem; font-weight: 700; color: var(--muted); letter-spacing: .02em; }
 .result-item > span { font-size: 1rem; font-weight: 800; color: var(--text); }
-.result-item.is-total { background: var(--accent-soft); border-color: var(--accent); }
-
 .calculation-trail {
   background: var(--surface-2); border: 1px dashed var(--line-2);
   border-radius: var(--r); padding: 12px 14px; color: var(--text-2);
@@ -774,13 +761,6 @@ html[dir="rtl"] input[inputmode="numeric"] {
 .ms-1 { margin-inline-start: .25rem; }
 
 /* Read-only converter outputs: look filled-in and not tappable as inputs */
-.pro-output {
-  background: var(--surface-2) !important; color: var(--muted) !important;
-  border-style: dashed !important; cursor: default; caret-color: transparent;
-  -webkit-user-select: all; user-select: all;
-}
-.pro-output:focus { outline: none !important; box-shadow: none !important; }
-
 /* --------------------------------------------------------- icon system --- */
 svg.lucide { flex: 0 0 auto; display: inline-block; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 svg.lucide-default { width: 1.15rem; height: 1.15rem; }

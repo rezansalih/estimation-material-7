@@ -141,6 +141,7 @@
       }
       return s.replace(/[^\d.-]/g, '');
     }
+    window.__normalizeNumText = normalizeNumText;
     doc.addEventListener('input', function (e) {
       var el = e.target;
       if (!isNumericField(el)) return;
@@ -769,20 +770,13 @@
       });
     });
 
-    // v63 quick picks: one delegated handler fills engineering values, marks
-    // the fields (focus will select) and confirms the tap with a soft tick.
-    doc.addEventListener('click', function (e) {
-      var chip = e.target && e.target.closest && e.target.closest('.chip-btn[data-fill]');
-      if (!chip) return;
-      if (navigator.vibrate) navigator.vibrate(10);
-      chip.getAttribute('data-fill').split(';').forEach(function (pair) {
-        var kv = pair.split(':');
-        var el = doc.getElementById(kv[0]);
-        if (!el) return;
-        el.value = kv[1];
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        el.dataset.presetFilled = '1';
+
+    // Truck capacity quick presets (numeric labels — language-neutral).
+    doc.querySelectorAll('#earthwork-truck-presets .truck-preset').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cap = doc.getElementById('earthwork-truck-capacity');
+        if (cap) { cap.value = btn.dataset.v; cap.dispatchEvent(new Event('input', { bubbles: true })); }
+        if (navigator.vibrate) navigator.vibrate(10);
       });
     });
 
@@ -873,14 +867,15 @@
       return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anchor || 'middle') +
         '" font-size="10" fill="currentColor" opacity="0.85">' + str + '</text>';
     }
-    function beamSectionSVG() {
-      var w = specNum('beam-width-dim') || 300, d = specNum('beam-depth-dim') || 500;
-      var cover = specNum('beam-cover') || 40;
-      var bars = Math.max(2, Math.round(specNum('beam-bars') || 2));
-      var dia = specNum('beam-diameter') || 12;
-      var stirrups = (doc.getElementById('beam-include-stirrups') || {}).checked;
-      var sp = specNum('beam-stirrup-spacing') || 0;
-      var sDia = specNum('beam-stirrup-diameter') || 8;
+    function beamSectionSVG(pre) {
+      pre = pre || 'beam';
+      var w = specNum(pre + '-width-dim') || 300, d = specNum(pre + '-depth-dim') || 500;
+      var cover = specNum(pre + '-cover') || 40;
+      var bars = Math.max(2, Math.round(specNum(pre + '-bars') || 2));
+      var dia = specNum(pre + '-diameter') || 12;
+      var stirrups = (doc.getElementById(pre + '-include-stirrups') || {}).checked;
+      var sp = specNum(pre + '-stirrup-spacing') || 0;
+      var sDia = specNum(pre + '-stirrup-diameter') || 8;
       var boxW = 210, boxH = 130;
       var sc = Math.min(boxW / w, boxH / d);
       var rw = w * sc, rh = d * sc;
@@ -912,7 +907,11 @@
     function gridPlanSVG() {
       var kind = (doc.getElementById('steel-element-selector') || {}).value || 'footing';
       var L, W, spL, spW, dL, dW;
-      if (kind === 'one_way') {
+      if (kind === 'stair') {
+        L = (specNum('stair-going') || 3) * 1000; W = (specNum('stair-width') || 1.2) * 1000;
+        spL = specNum('stair-main-spacing') || 150; spW = specNum('stair-dist-spacing') || 250;
+        dL = specNum('stair-main-diameter') || 12; dW = specNum('stair-dist-diameter') || 10;
+      } else if (kind === 'one_way') {
         L = specNum('one-way-bar-length') || 6000; W = specNum('one-way-dist-length') || 5000;
         spL = specNum('one-way-spacing') || 200; spW = spL; dL = specNum('one-way-diameter') || 12; dW = dL;
       } else {
@@ -952,7 +951,8 @@
       if (steelBox) {
         var kind = (doc.getElementById('steel-element-selector') || {}).value || 'beam';
         if (kind === 'custom' || kind === 'brc') steelBox.innerHTML = '';
-        else steelBox.innerHTML = kind === 'beam' ? beamSectionSVG() : gridPlanSVG();
+        else if (kind === 'beam' || kind === 'column') steelBox.innerHTML = beamSectionSVG(kind);
+        else steelBox.innerHTML = gridPlanSVG();
       }
     }
     var drawQueued = false;

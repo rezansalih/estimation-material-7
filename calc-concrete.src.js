@@ -2,8 +2,7 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.concrete = function (ctx) {
-  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox, formatMoney, formatQty } = ctx;
-  const unitOf = (n, one, many) => (Number(n) === 1 ? one : many);
+  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox, formatMoney, formatQty, unitOf } = ctx;
                 /* ~4 m³ pickup/dump truck is how sand and gravel are sold —
                    show what fraction of a standard load the order is. */
                 const truckLoadNote = (m3) => {
@@ -23,7 +22,7 @@ window.__calcHandlers.concrete = function (ctx) {
                 const type = document.getElementById('concrete-type').value;
                 const quantity = Number(document.getElementById('concrete-quantity').value);
                 const mixMode = document.getElementById('concrete-mix-basis')?.value || 'nominal';
-                const ratioText = mixMode === 'custom' ? document.getElementById('concrete-approved-ratio').value : document.getElementById('concrete-ratio').value;
+                const ratioText = mixMode === 'custom' ? document.getElementById('concrete-custom-ratio').value : document.getElementById('concrete-ratio').value;
                 const ratio = ratioText.split(':').map(Number);
                 const dryFactor = Number(document.getElementById('concrete-dry-factor').value);
                 const cementDensity = Number(document.getElementById('concrete-cement-density').value);
@@ -46,14 +45,12 @@ window.__calcHandlers.concrete = function (ctx) {
                 wetVolume = core.wetVolume; length = Number(document.getElementById('concrete-length').value); width = Number(document.getElementById('concrete-width').value); thickness = Number(document.getElementById('concrete-thickness').value);
                 const dryVolume = core.dryVolume;
                 const materialUnit = 'm³';
-                const cementVolume = core.cementVolume;
                 const sandVolumeBeforeWaste = core.sandVolumeBeforeWaste;
                 const aggregateVolumeBeforeWaste = core.aggregateVolumeBeforeWaste;
                 const sandVolume = core.sandVolumeOrder;
                 const aggregateVolume = core.aggregateVolumeOrder;
                 const cementWeight = core.cementWeightRequired;
                 const cementWastageAllowance = core.cementWastageAllowance;
-                const totalCementWeightWithWastage = core.cementWeightWithWastage;
                 const cementOrderWeight = core.cementOrderWeight;
                 const cementBags = core.cementBags;
                 const dryVolumeText = `${dryVolume.toFixed(3)} m³ (${dryFactor} ${T.trailDryFactorNote})`;
@@ -71,17 +68,17 @@ window.__calcHandlers.concrete = function (ctx) {
                 const currency = getCurrency();
 
                 lastCalcData.concrete = {
-                    nums: { cementBags: cementBags, sand: sandVolume, aggregate: aggregateVolume },
-                    description: mode === 'volume' ? `${wetVolume.toFixed(2)} m³` : `${length} × ${width} × ${thickness} m`,
+                    nums: { cementBags: cementBags, sand: sandVolume, aggregate: aggregateVolume, cementBagKg: getCementBagMass() },
+                    description: mode === 'volume' ? `${wetVolume.toFixed(2)} m³` : `${length} × ${width} × ${thickness} m${quantity > 1 ? ` × ${quantity}` : ''}`,
                     totalVolume: `${wetVolume.toFixed(2)} m³`,
                     cement: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`,
                     sand: `${sandVolume.toFixed(2)} ${materialUnit}`,
                     aggregate: `${aggregateVolume.toFixed(2)} ${materialUnit}`,
                     cost: materialCostsComplete ? `${currency}${formatMoney(totalCost, currency)}` : T.costNotEntered,
                     quoteLines: [
-                        { item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: (document.getElementById('concrete-cement-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-cement-cost').value)) },
-                        { item: T.sand, qty: `${sandVolume.toFixed(2)} ${materialUnit}`, unitPrice: (document.getElementById('concrete-sand-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-sand-cost').value)) },
-                        { item: T.aggregate, qty: `${aggregateVolume.toFixed(2)} ${materialUnit}`, unitPrice: (document.getElementById('concrete-aggregate-cost').value.trim() === '' ? null : Number(document.getElementById('concrete-aggregate-cost').value)) }
+                        { key: 'cement', item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: cementCost },
+                        { key: 'sand', item: T.sand, qty: `${sandVolume.toFixed(2)} ${materialUnit}`, unitPrice: sandCost },
+                        { key: 'aggregate', item: T.aggregate, qty: `${aggregateVolume.toFixed(2)} ${materialUnit}`, unitPrice: aggregateCost }
                     ]
                 };
                 
@@ -123,13 +120,19 @@ window.__calcHandlers.concrete = function (ctx) {
                                 <span><strong class="font-semibold block">${T.soffitFormwork}</strong> ${soffitArea.toFixed(2)} m²</span>
                             </div>`;
                     }
-                    if(formworkArea > 0 && formworkCostPerM2 !== null && formworkCostPerM2 > 0){
-                        additionalResultsHTML += `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.formworkCostBreakdown}</strong> ${currency}${formatMoney(formworkArea * formworkCostPerM2, currency)}</span></div>`;
+                    if(formworkArea > 0){
+                        additionalResultsHTML += `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="cost"><i data-lucide="wallet"></i><span><strong class="font-semibold block">${T.formworkCostBreakdown}</strong> ${formworkCostPerM2 === null ? T.costNotEntered : `${currency}${formatMoney(formworkArea * formworkCostPerM2, currency)}`}</span></div>`;
                     }
                 }
                 const formworkCost = formworkCostPerM2 !== null ? formworkArea * formworkCostPerM2 : 0;
                 if (materialCostsComplete) totalCost += formworkCost;
                 lastCalcData.concrete.cost = materialCostsComplete ? `${currency}${formatMoney(totalCost, currency)}` : T.costNotEntered;
+                // Formwork is first-class in totals: it reaches the session row
+                // (Project Total aggregation) and the Summary sheet like any material.
+                if (formworkArea > 0) {
+                    lastCalcData.concrete.nums.formworkArea = formworkArea;
+                    lastCalcData.concrete.quoteLines.push({ key: 'formwork', item: T.formworkArea, qty: `${formworkArea.toFixed(2)} m²`, unitPrice: formworkCostPerM2 });
+                }
                 if (!window.__langRecalc) sessionResults.concrete.push(lastCalcData.concrete);
                 renderSessionTable('concrete');
 

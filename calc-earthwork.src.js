@@ -11,19 +11,28 @@ window.__calcHandlers.earthwork = function (ctx) {
                 const height = parseFloat(document.getElementById('earthwork-height').value);
                 const quantity = Number(document.getElementById('earthwork-quantity').value);
                 const truckCapacityRaw = String(document.getElementById('earthwork-truck-capacity').value).trim();
-                // Empty or invalid capacity falls back to the standard 4 m³ truck
-                // before any division happens.
+                const mode = (document.querySelector('input[name="earthwork-mode"]:checked') || {}).value || 'excavation';
+                // Empty capacity falls back to the standard 4 m³ truck and is written back
+                // into the field; garbage or non-positive values are a real error.
                 let truckCapacity = truckCapacityRaw === '' ? 4 : Number(truckCapacityRaw);
-                if (!Number.isFinite(truckCapacity) || truckCapacity <= 0) truckCapacity = 4;
+                if (truckCapacityRaw === '') {
+                    const capEl = document.getElementById('earthwork-truck-capacity');
+                    if (capEl) capEl.value = '4';
+                }
                 const swellRaw = document.getElementById('earthwork-swell').value.trim();
-                const swellPct = swellRaw === '' ? 0 : Number(swellRaw);
-                
-                if ([length, width, height, quantity, truckCapacity, swellPct].some(v => !Number.isFinite(v)) || [length, width, height, quantity, truckCapacity].some(v => v <= 0) || !Number.isInteger(quantity) || swellPct < 0 || swellPct > 100) {
+                const swellPct = swellRaw === '' ? NaN : Number(swellRaw);
+                if (![length, width, height].every(v => Number.isFinite(v) && v > 0) || !Number.isInteger(quantity) || quantity < 1) {
                     showError(T.errEarthworkDims);
                     return;
                 }
-      
-                const mode = (document.querySelector('input[name="earthwork-mode"]:checked') || {}).value || 'excavation';
+                if (!Number.isFinite(truckCapacity) || truckCapacity <= 0) {
+                    showError(T.errEarthworkTruck);
+                    return;
+                }
+                if (!Number.isFinite(swellPct) || swellPct < 0 || (mode === 'backfill' ? swellPct > 50 : swellPct > 100)) {
+                    showError(mode === 'backfill' ? T.errShrinkRange : T.errSwellRange);
+                    return;
+                }
                 const volume = length * width * height * quantity;
                 let looseVolume, totalLoads, factorUsed = swellPct;
                 if (mode === 'backfill') {
@@ -40,13 +49,13 @@ window.__calcHandlers.earthwork = function (ctx) {
                 }
 
                 lastCalcData.earthwork = {
-                    nums: { volume: volume, loads: totalLoads, mode: mode },
-                    description: `${length} × ${width} × ${height} m`,
+                    nums: { volume: volume, loads: totalLoads, mode: mode, loose: looseVolume },
+                    description: `${length} × ${width} × ${height} m${quantity > 1 ? ` × ${quantity}` : ''}`,
                     quantity: quantity,
                     volume: `${volume.toFixed(2)} m³`,
-                    truckLoads: mode === 'backfill' ? `${formatQty(totalLoads)} (${truckCapacity} m³, shrink ${factorUsed}%)` : `${formatQty(totalLoads)} (${truckCapacity} m³, +${swellPct}%)`,
+                    truckLoads: mode === 'backfill' ? `${formatQty(totalLoads)} (${truckCapacity} m³, ${T.shrinkWord} ${factorUsed}%)` : `${formatQty(totalLoads)} (${truckCapacity} m³, +${swellPct}%)`,
                     quoteLines: [
-                        { item: T.truckLoads, qty: `${formatQty(totalLoads)} × ${truckCapacity} m³`, unitPrice: null }
+                        { key: 'loads', item: T.truckLoads, qty: `${formatQty(totalLoads)} × ${truckCapacity} m³`, unitPrice: null }
                     ]
                 };
 
@@ -90,7 +99,7 @@ window.__calcHandlers.earthwork = function (ctx) {
                                     <i data-lucide="layers"></i>
                                     <span>
                                         <strong class="font-semibold block">${mode === 'backfill' ? T.looseOrder : T.looseVolume}</strong> 
-                                        ${looseVolume.toFixed(2)} m³ (${mode === 'backfill' ? 'shrink' : '+'}${mode === 'backfill' ? factorUsed : swellPct}%)
+                                        ${looseVolume.toFixed(2)} m³ (${mode === 'backfill' ? T.shrinkWord + ' ' : '+'}${mode === 'backfill' ? factorUsed : swellPct}%)
                                     </span>
                                 </div>
                                 <div class="result-item flex items-center gap-2" data-kind="order">

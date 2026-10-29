@@ -2,8 +2,7 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.steel = function (ctx) {
-  const { translations, fill, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty } = ctx;
-  const unitOf = (n, one, many) => (Number(n) === 1 ? one : many);
+  const { translations, fill, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty, unitOf } = ctx;
 
   const calculateLengthWithLap = (singleBarLength, numberOfBars, diameter, includeLap, standardLength, lapFactor) => {
     if (!includeLap || singleBarLength <= standardLength) {
@@ -176,26 +175,99 @@ window.__calcHandlers.steel = function (ctx) {
     const barLength = parseFloat(document.getElementById('one-way-bar-length').value);
     const spacing = parseFloat(document.getElementById('one-way-spacing').value);
     const diameter = parseFloat(document.getElementById('one-way-diameter').value);
+    const crankOn = !!document.getElementById('one-way-crank')?.checked;
+    const crankDepthMm = crankOn ? parseFloat(document.getElementById('one-way-crank-depth').value) : 0;
+    const crankCountN = crankOn ? Number(document.getElementById('one-way-crank-count').value) : 0;
 
     description = `${distLength} m`;
 
-    if ([distLength, barLength, spacing, diameter].every(v => !isNaN(v) && v > 0)) {
+    if ([distLength, barLength, spacing, diameter].every(v => !isNaN(v) && v > 0) &&
+        (!crankOn || (Number.isFinite(crankDepthMm) && crankDepthMm > 0 && Number.isFinite(crankCountN) && crankCountN >= 1))) {
       const numBars = Math.ceil((distLength * 1000) / spacing) + 1;
-      const lapResult = calculateLengthWithLap(barLength, numBars, diameter, includeLap, standardBarLength, lapSpliceFactor);
+      // A 45° crank adds 0.42 × D of extra bar per bend (rise over the
+      // horizontal run it replaces).
+      const crankExtra = crankOn ? crankCountN * 0.42 * (crankDepthMm / 1000) : 0;
+      const cutLength = barLength + crankExtra;
+      const lapResult = calculateLengthWithLap(cutLength, numBars, diameter, includeLap, standardBarLength, lapSpliceFactor);
       if (!lapGuard(lapResult)) return;
 
       const weight = lapResult.totalLength * weightPerMeter(diameter) * wastageFactor;
       breakdownRows.push({
         label: `${T.oneWay} (<bdi dir="ltr">Ø${diameter}mm</bdi>)`,
-        value: `${formatQty(numBars)} ${unitOf(numBars, T.barUnitOne, T.barsLabel)} · ${formatQty(weight)} kg${wasteNote}`
+        value: `${formatQty(numBars)} ${unitOf(numBars, T.barUnitOne, T.barsLabel)} · ${formatQty(weight)} kg${wasteNote}${crankOn ? ` · ${T.shapeBentUp} +${crankExtra.toFixed(2)} m` : ''}`
       });
-      scheduleRows.push({ dia: diameter, shape: T.shapeStraight, count: numBars, cut: barLength, total: lapResult.totalLength });
+      scheduleRows.push({ dia: diameter, shape: crankOn ? T.shapeBentUp : T.shapeStraight, count: numBars, cut: cutLength, total: lapResult.totalLength });
 
       addDiameter(diameter, lapResult.totalLength * memberQuantity);
       results.totalWeight = weight * memberQuantity;
       results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
       inputsValid = true;
     }
+  }
+  else if (selectedElement === 'stair') {
+    const going = parseFloat(document.getElementById('stair-going').value);
+    const riserH = parseFloat(document.getElementById('stair-riser-h').value);
+    const risers = Number(document.getElementById('stair-risers').value);
+    const width = parseFloat(document.getElementById('stair-width').value);
+    const coverMmStair = parseFloat(document.getElementById('stair-cover').value);
+    const endExt = parseFloat(document.getElementById('stair-end-ext').value);
+    const landings = Number(document.getElementById('stair-landings').value);
+    const landingDepth = parseFloat(document.getElementById('stair-landing-depth').value);
+    const mainSpacing = parseFloat(document.getElementById('stair-main-spacing').value);
+    const mainDia = parseFloat(document.getElementById('stair-main-diameter').value);
+    const distSpacing = parseFloat(document.getElementById('stair-dist-spacing').value);
+    const distDia = parseFloat(document.getElementById('stair-dist-diameter').value);
+    const coverM = Number.isFinite(coverMmStair) ? coverMmStair / 1000 : 0.02;
+
+    if ([going, riserH, risers, width, mainSpacing, mainDia, distSpacing, distDia].some(v => !Number.isFinite(v) || v <= 0) ||
+        !Number.isInteger(risers) || !Number.isFinite(endExt) || endExt < 0 ||
+        ![0, 1, 2].includes(landings) || (landings > 0 && (!Number.isFinite(landingDepth) || landingDepth <= 2 * coverM))) {
+      showError(T.errNumberInputs);
+      return;
+    }
+
+    const totalRise = risers * riserH;
+    const slopeLen = Math.sqrt(going * going + totalRise * totalRise);
+    const runWid = width - 2 * coverM;
+    const runSlope = slopeLen - 2 * coverM;
+    if (runWid <= 0 || runSlope <= 0) {
+      showError(T.errNumberInputs);
+      return;
+    }
+
+    description = `${going} × ${risers} × ${riserH} m`;
+    const groups = [];
+    // Slope (main) bars run along the flight; distribution bars run across it.
+    const mainCount = Math.ceil((runWid * 1000) / mainSpacing) + 1;
+    groups.push({ dia: mainDia, count: mainCount, cut: runSlope + 2 * endExt,
+                  label: `${T.slopeBars} (<bdi dir="ltr">Ø${mainDia}mm</bdi>)` });
+    const distCount = Math.ceil((runSlope * 1000) / distSpacing) + 1;
+    groups.push({ dia: distDia, count: distCount, cut: runWid,
+                  label: `${T.stairDistBars} (<bdi dir="ltr">Ø${distDia}mm</bdi>)` });
+    // Landing slabs carry the same mesh; their bars span the landing depth.
+    if (landings > 0) {
+      groups.push({ dia: mainDia, count: landings * mainCount, cut: landingDepth - 2 * coverM + 2 * endExt,
+                    label: `${T.stairLandings} — ${T.slopeBars} (<bdi dir="ltr">Ø${mainDia}mm</bdi>)` });
+      groups.push({ dia: distDia, count: landings * (Math.ceil(((landingDepth - 2 * coverM) * 1000) / distSpacing) + 1), cut: runWid,
+                    label: `${T.stairLandings} — ${T.stairDistBars} (<bdi dir="ltr">Ø${distDia}mm</bdi>)` });
+    }
+
+    let stairWeight = 0;
+    for (const g of groups) {
+      const lapResult = calculateLengthWithLap(g.cut, g.count, g.dia, includeLap, standardBarLength, lapSpliceFactor);
+      if (!lapGuard(lapResult)) return;
+      const w = lapResult.totalLength * weightPerMeter(g.dia) * wastageFactor;
+      stairWeight += w;
+      addDiameter(g.dia, lapResult.totalLength * memberQuantity);
+      breakdownRows.push({
+        label: g.label,
+        value: `${formatQty(g.count)} ${unitOf(g.count, T.barUnitOne, T.barsLabel)} · ${formatQty(w)} kg${wasteNote}`
+      });
+      scheduleRows.push({ dia: g.dia, shape: T.shapeStraight, count: g.count, cut: g.cut, total: lapResult.totalLength });
+    }
+    results.totalWeight = stairWeight * memberQuantity;
+    results.totalCost = costPerKg === null ? null : results.totalWeight * costPerKg;
+    inputsValid = true;
   }
   else if (isCustom) {
     const rows = [...document.querySelectorAll('#steel-custom-rows .custom-bar-row')];
@@ -278,7 +350,7 @@ window.__calcHandlers.steel = function (ctx) {
       addDiameter(stirrupDiameter, stirrupTotalLength * memberQuantity);
       breakdownRows.push({
         label: `${T.stirrupDetails} (<bdi dir="ltr">Ø${stirrupDiameter}mm</bdi>)`,
-        value: `${formatQty(numStirrups)} ${unitOf(numStirrups, T.barUnitOne, T.barsLabel)} · ${formatQty(stirrupWeight)} kg${wasteNote}`
+        value: `${formatQty(numStirrups)} ${unitOf(numStirrups, T.barUnitOne, T.barsLabel)} · ${formatQty(stirrupWeight)} kg${wasteNote} · ${T.schedCutLen.split('(')[0].trim()} ${singleStirrupLength.toFixed(2)} m (2×10d)`
       });
       scheduleRows.push({
         dia: stirrupDiameter,
@@ -297,7 +369,7 @@ window.__calcHandlers.steel = function (ctx) {
     return;
   }
 
-  const elementKey = { one_way: 'oneWay', brc: 'brcMesh' }[selectedElement] || selectedElement;
+  const elementKey = { one_way: 'oneWay', brc: 'brcMesh', stair: 'stairFlight' }[selectedElement] || selectedElement;
   const elementName = isCustom ? T.customBars : (T[elementKey] || selectedElement);
   /* purchase-order numbers: per-diameter weights and stock-bar counts */
   const steelNumsByDia = {};
@@ -313,7 +385,6 @@ window.__calcHandlers.steel = function (ctx) {
       };
     });
   }
-  const totalBars12 = Object.keys(steelNumsByDia).reduce((sum, d) => sum + steelNumsByDia[d].bars, 0);
   lastCalcData.steel = {
     nums: { weightKg: isBrc ? 0 : results.totalWeight, byDiameter: steelNumsByDia },
     element: elementName,
@@ -321,10 +392,10 @@ window.__calcHandlers.steel = function (ctx) {
     weight: isBrc ? brcOrder.pieceText : `${formatQty(results.totalWeight)} kg`,
     cost: results.totalCost === null ? T.costNotEntered : `${currency}${formatMoney(results.totalCost, currency)}`,
     quoteLines: isBrc
-      ? [{ item: `${elementName} · ${brcOrder.value}`, qty: brcOrder.pieceText, unitPrice: brcOrder.price }]
+      ? [{ key: 'brc', item: `${elementName} · ${brcOrder.value}`, qty: brcOrder.pieceText, unitPrice: brcOrder.price }]
       : isCustom
-      ? customRowsData.map(r => ({
-          item: `<bdi dir="ltr">Ø${r.diameter} mm</bdi>${r.note ? ` — ${r.note}` : ''}`,
+      ? customRowsData.map((r, ri) => ({
+          key: `custom-${ri}`, item: `<bdi dir="ltr">Ø${r.diameter} mm</bdi>${r.note ? ` — ${r.note}` : ''}`,
           qty: `${formatQty(r.weight)} kg ≈ ${formatQty(Math.ceil(r.totalLength / standardBarLength))} ${unitOf(Math.ceil(r.totalLength / standardBarLength), T.barUnitOne, T.barsLabel)} (${standardBarLength} m)`,
           unitPrice: costPerKg
         }))
@@ -333,6 +404,7 @@ window.__calcHandlers.steel = function (ctx) {
           const weight = meters * weightPerMeter(d) * wastageFactor;
           const barsToBuy = Math.ceil(meters / standardBarLength);
           return {
+            key: `dia-${d}`,
             item: `Ø${d} mm`,
             qty: `${formatQty(weight)} kg ≈ ${formatQty(barsToBuy)} ${unitOf(barsToBuy, T.barUnitOne, T.barsLabel)} (${standardBarLength} m)`,
             unitPrice: costPerKg
@@ -360,13 +432,13 @@ window.__calcHandlers.steel = function (ctx) {
     rows.push({
       kind: 'order',
       label: `<bdi dir="ltr">Ø${d} mm</bdi>`,
-      value: `${formatQty(weight)} kg ≈ ${formatQty(barsToBuy)} ${unitOf(barsToBuy, T.barUnitOne, T.barsLabel)} (${standardBarLength} m)`
+      value: `${formatQty(meters)} m · ${formatQty(weight)} kg ≈ ${formatQty(barsToBuy)} ${unitOf(barsToBuy, T.barUnitOne, T.barsLabel)} (${standardBarLength} m)`
     });
   });
 
   rows.push({ kind: 'order', hero: true, label: isBrc && brcOrder ? brcOrder.label : T.totalWeight,
               value: isBrc && brcOrder ? brcOrder.value
-                : `${formatQty(results.totalWeight)} kg${totalBars12 ? ` ≈ ${formatQty(totalBars12)} ${unitOf(totalBars12, T.barUnitOne, T.barsLabel)} (${standardBarLength} m)` : ''}` });
+                : `${formatQty(results.totalWeight)} kg` });
   rows.push({ kind: 'cost', label: T.totalCost, value: results.totalCost === null ? T.costNotEntered : `${currency}${formatMoney(results.totalCost, currency)}` });
 
   let resultsHTML = `

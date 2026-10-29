@@ -271,7 +271,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(50);
     ok('member qty visible for footing', !d.getElementById('steel-member-qty-row').classList.contains('hidden'));
-    set('footing-length', 3); set('footing-width', 2);
+    set('footing-length', 3); set('footing-width', 2); set('footing-cover', '40');
     set('footing-spacing-len', 150); set('footing-diameter-len', 12);
     set('footing-spacing-wid', 150); set('footing-diameter-wid', 10);
     set('steel-member-quantity', 1);
@@ -294,7 +294,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     sel.value = 'slab';
     sel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(50);
-    set('slab-length', 3); set('slab-width', 2);
+    set('slab-length', 3); set('slab-width', 2); set('slab-cover', '40');
     set('slab-spacing-len', 150); set('slab-diameter-len', 12);
     set('slab-spacing-wid', 150); set('slab-diameter-wid', 10);
     set('steel-member-quantity', 2);
@@ -410,7 +410,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     await tick(50);
     d.getElementById('steel-preset-btn').click();
     ok('beam preset fills stirrup assumptions', d.getElementById('beam-stirrup-spacing').value === '200' &&
-       d.getElementById('beam-cover').value === '40' &&
+       d.getElementById('beam-cover').value === '25' &&
        d.getElementById('beam-stirrup-diameter').value === '8');
     ok('beam preset enables stirrups', d.getElementById('beam-include-stirrups').checked);
     sel.value = 'custom';
@@ -492,6 +492,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     elSel.value = 'footing';
     elSel.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(50);
+    d.getElementById('footing-cover').value = '40';
     d.getElementById('footing-length').value = '3';
     d.getElementById('footing-width').value = '2';
     d.getElementById('footing-spacing-len').value = '150';
@@ -526,6 +527,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     d.getElementById('beam-length').value = '20';
     d.getElementById('beam-bars').value = '2';
     d.getElementById('beam-diameter').value = '12';
+    d.getElementById('beam-cover').value = '40';
     d.getElementById('steel-lap-details').open = true;
     d.getElementById('mobile-calculate').click();
     await tick(300);
@@ -601,6 +603,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     numMode.checked = true;
     numMode.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     await tick(30);
+    d.getElementById('footing-cover').value = '40';
     d.getElementById('footing-length').value = '3';
     d.getElementById('footing-width').value = '2';
     d.getElementById('footing-number-len').value = '15';
@@ -1060,7 +1063,7 @@ const vis = (d, sel) => { const el = d.querySelector(sel); return !!el && !el.cl
     ok('whatsapp launches api.whatsapp.com with the order text', openedUrl.indexOf('https://api.whatsapp.com/send?text=') === 0, openedUrl.slice(0, 60));
     ok('whatsapp order has date and currency header', /Date:/.test(waText) && /Currency:/.test(waText), waText.replace(/\n/g, ' | ').slice(0, 120));
     ok('whatsapp order totals cement with tonnes', /Cement Bags: \d+ bags \(\d+\.\d+ t\)/.test(waText), waText.replace(/\n/g, ' | ').slice(0, 200));
-    ok('whatsapp order lists steel by diameter with bars', /Ø12 mm: \d+\.\d+ kg ≈ \d+ Bars \(12 m\)/.test(waText), waText.replace(/\n/g, ' | ').slice(0, 300));
+    ok('whatsapp order lists steel by diameter with bars', /Ø12 mm: \d+\.\d+ kg ≈ \d+ Bars/.test(waText), waText.replace(/\n/g, ' | ').slice(0, 300));
     d.getElementById('grandtotal-close-btn').click();
     await tick(40);
     // access points: header button + metric card + nav badge

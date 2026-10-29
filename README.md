@@ -523,3 +523,247 @@ Project Total only).
 - Suite note: test:ui needs NODE_OPTIONS=--max-old-space-size=1536 on this
   2 GB host (a 4 GB cap causes swap-death OOM).
 Full chain green incl. deep-audit (0 findings).
+
+## v80 (stabilization round)
+
+Backup id-format + panel/dialog fixes pinned in the tests.
+
+## v81 (formwork into Project Total)
+
+- **Formwork lands in the Grand Total** (was computed per-calc but never added
+  to `collectGrandTotals` → row + hint `grandTotal` key + all 3 export
+  builders). Backfill fixed: the fill/shrink gate swallowed the SWELL input.
+- Quantity ≥ 1 surfaces in the Earthwork description line. Formula-audit
+  Case 11 pins `87 bags` + `/3.23/` m² formwork.
+
+## v82 (malformed-markup sweep)
+
+- `stripTags` layered AFTER `escapeHtmlText` (v53 chained the other way →
+  escaped markup printed literally in PDF/WA/summary), applied at all 4 output
+  sites. 11 dead `upgradeLabels` keys removed (×4 dictionaries).
+
+## v83 (deep bug hunt #2)
+
+- **Stable quote-line keys** (`key` field + `ln.key` lookups at 6 sites) —
+  remembered prices no longer jump between lines when a result's words change
+  length across languages.
+- **GT mass correctness**: `nums.cementBagKg`/`glueBagKg` per line;
+  `addCement`/`addGlue` aggregate real kg (mixed = `4.70 t ≈ 188 bags`).
+- **Backup round-trip** now keeps `estimatorQuotePrices` + `estimatorQuoteMeta`
+  (local price memory was silently dropped before).
+
+## v84 (local prices follow-through)
+
+- Quote-price inputs `inputmode="decimal"` + `__normalizeNumText` parse
+  (decimal comma), remembered prices sanitized on read.
+- **Currency switch converts remembered prices** (`convertPrice` over
+  `estimatorQuotePrices`); custom-currency option (`other`) restored — the
+  new guard was blocking it. Audit case 14 pins 2,5→2.5, 2.5 IQD→1.25 USD.
+
+## v85 (Kurdish Sorani font + typography round)
+
+- 49 Cyrillic lookalikes (ракит...) inside Kurdish words
+  transliterated to Kurdish/Arabic letters; tatweel stripped; 31 Arabic
+  letter-forms in `ku` normalized (ي/ى→ی, ك→ک).
+- Font gap closed: `fonts/vazirmatn-extra.woff2` (آ ٪ … ≈) +
+  `fonts/symbols.woff2` (→ ↔ ✓ from DejaVu), both declared LAST
+  in the @font-face chain so they win overlaps; spec-SVG font fixed too.
+
+## v86 (steel review round)
+
+- Hero weight-only (redundant total-bars drop, v61 pin reversed); per-branch kg/m
+  shown in Ø menus (global 0.00617 d² exact vs printed 3-decimal factors);
+  `meters` + Ø summary rows; per-element cover defaults (footing 50 / slab
+  20 / beam+col 25 mm); stirrup cut note `cut X (2×10d)`; BRC size presets;
+  mirrored Ø selects.
+
+## v87 (staircase + bent-up bars round)
+
+- **Stair flight element** (going/risers/landings, √-slope cut length,
+  landing mesh) and **one-way slab cranked bars** (0.42·D extra length).
+  18 dictionary keys ×4. Audit case 15 pins stair 82.75 kg + crank 72.35 kg.
+
+## v88 (steel follow-up)
+
+- `stair:'stairFlight'` key + localizeCell fix (stair rows no longer say
+  "(stair)"); column section + stair grid diagrams (parametrized
+  `beamSectionSVG`); 3 dead keys removed (×4).
+
+## v98 (export polish — approved A-D)
+
+- **Export labels follow the live language**: CSV headers and the combined
+  print header/footer now use translated keys (new `valueCol` + `generatedByLine`
+  ×4; Client/Date/Notes reuse the quote keys). A Kurdish document now reads
+  Kurdish from header to footer.
+- **One meta store**: the print/CSV headers used to read the long-removed
+  Project settings fields ("ghosts") and always printed "Construction Material
+  Estimate" with a blank client. All exports now read the Client Quote sheet
+  fields (the one live store) — header shows the typed project name and client.
+- **Unicode-safe filenames** — Kurdish/Arabic titles keep their text in
+  `..._estimation.csv` / `..._summary.pdf` names instead of becoming `___`.
+- **Cleanups**: money format unified with the cards (vestigial IQD check gone),
+  `qtyNum` duplicate removed (shared `quoteQtyNumber`), dead `projects` map out
+  of backup/restore, `backupHint` ×4 no longer promises "projects".
+- formula-audit 84/84 (C5 pins: panel prices on the export + typed project name
+  in the print header). Deep-audit 0 findings.
+
+## v97 (export review — bugs fixed, dislikes reported)
+
+- **Exported documents now carry panel prices**: the Summary PDF and the
+  combined print sheet only read per-quote saved prices — materials priced in
+  Project settings exported with blank price columns and "Cost not entered"
+  while the sheet showed them. All readers now follow the sheet's chain
+  (saved price → panel unit price). C5 pins 95.00 / 105.08 on the export.
+- **Project Total PDF prints the project/client header** (it read the quote
+  meta but never used it — purchase orders were anonymous).
+- **"Save to project" label → "Save to history"** ×4 (the export sheet's Save
+  has saved to history since the Projects feature was removed).
+- **Stock-bar length no longer hardcoded** as "(12 m)" in the GT WhatsApp text
+  and the steel order note ×4 — the counts follow the user's bar length.
+- formula-audit 83/83; 5 source pins; deep-audit 0 findings.
+
+## v96 (Client Quote reachable from the app menu)
+
+- **New "Summary" entry in the app menu** opens the Client Quote sheet for the
+  last calculation (user-approved fix for the unreachable sheet — its only
+  opener was hidden plumbing since v74). With no calculation yet it shows the
+  existing "no items" hint instead of an empty sheet.
+- **Latent bug fixed on the way**: `window.lastCalcData` was read by the export
+  sheet and quote dispatch as a global but never assigned — every
+  `lastCalcData.type` fallback was silently dead. The bridge now exists and the
+  current tool is recorded on each successful calculate.
+- Formula-audit C4 (menu entry routes + opens the quote sheet) — 82 asserts.
+
+## v95 (app-wide sweep — approved cleanup)
+
+- **59 dead translation keys removed from all 4 dictionaries** (~236 strings):
+  ghosts of the deleted Projects save flow, a unit converter that never shipped,
+  old hero copy, display leftovers (tableHeaderDesc, inclLap, errNegative…), and
+  the cost-label cascade (costPerBlock, priceEach, step3Cost…).
+- **Hidden cost-card chrome deleted** (accordion toggles + labels + hints around
+  the 4 hidden price cards, plus their JS handler) — the price inputs themselves
+  stay as one-price-place sync plumbing.
+- **Chip quick-pick handler + `.chip-btn` CSS deleted** (the chips themselves died
+  in v68), 17 dead CSS rules removed (eyebrow split from live .metric-label),
+  dead sprite symbol `i-sun` removed.
+- **`concrete-approved-ratio/-profile` renamed to `concrete-custom-ratio/-wrap`**
+  (ids no longer claim an "approved" mix the disclaimer denies).
+- **`unitOf` deduped** into the calculator ctx (was copied in 4 chunk files).
+- **Correction**: the 4 hidden result-card buttons are pinned v74 plumbing the
+  export sheet/quote-PDF/hotkeys/wizard dispatch through — kept.
+- app.js 265,679 → 253,895 B (−11.8 KB). formula-audit 80/80; 3 pins updated to
+  the new markup (grave-pin for the dead formwork note). Deep-audit 0 findings.
+
+## v94 (app-wide sweep — bugs fixed, findings reported)
+
+- **Formwork price honesty fix**: `concrete-formwork-cost` shipped `value="0"`,
+  so a fresh session displayed “0.00” for an unentered formwork price instead of
+  “Cost not entered” (violates the zero-vs-missing rule). The default is gone.
+- **Packaging fix**: `sw.js` caches `./icon.svg` in its app shell, but staged
+  releases never contained it — deploying a release folder would fail service
+  worker install and silently kill offline mode. Staged sets now carry 18 files
+  (13 root incl. `icon.svg` + 4 fonts + vendor jspdf).
+- App-wide useless-code sweep completed; deletions listed in the round report
+  await user approval (dead dict keys ×47, parked hidden export buttons ×20,
+  chip quick-pick handler + CSS, dead sprite `i-sun`, 13 dead CSS classes).
+
+
+
+## v93 (concrete review round)
+
+- **Math clean bill**: volume × dry-factor → ratio split → cement weight →
+  per-material wastage → bags; formwork formulas (slab edge + suspended soffit,
+  column sides, beam sides+bottom) all hand-verified and re-pinned; volume mode
+  honestly excludes formwork with its own note; cost total waits for all three
+  material prices and includes formwork only when priced.
+- **Session description now shows the element count** (`3 × 2 × 0.5 m × 2`,
+  earthwork v89 parity); the calculation trail already showed it.
+- **Useless code deleted**: the dead `isMember` constant gating the quantity
+  field, two dead locals (`cementVolume`, `totalCementWeightWithWastage`), and
+  the pure core's six always-null return fields (`waterLitres`, `admixture*`,
+  `sand/aggregateWeightRequired`) — ghosts of the removed approved-recipe
+  feature (its grave is pinned in calculations.test.js).
+- **Cleanup**: client-quote lines reuse the parsed price variables instead of
+  re-reading the DOM; hidden per-tool cost fields stay plumbing (prices live in
+  Project settings only).
+- Formula-audit case C3 (qty multiplier: 5.46 m³ / 37 bags, `× 2` description
+  suffix, no `× 1`) — 80 asserts total. Deep-audit 0 findings.
+
+
+
+## v92 (blocks review round)
+
+- **Unit landmine defused**: block presets mixed `data-width="0.2"` (metres) with
+  `data-length="400"` (millimetres) in one select, and the handler divided only
+  length/height by 1000. All preset dims are now millimetres uniformly (handler
+  divides all three); the regression pin that froze the mixed convention was
+  rewritten to demand uniform mm for blocks AND bricks.
+- **Thermo-stone picks show the grout note** under the picker (the form hint was
+  `hollow`-only while the result note already covered
+  `hollow/thermo_20/thermo_15` — now both lists match).
+- **Mortar wastage applied once** (blocks now matches the bricks convention):
+  the displayed cement weight and mixing water include the wastage, the mortar
+  row shows “0.334 to batch (0.309 net + waste)”, and cement + sand + bags +
+  water all reconcile with the shown mortar volume. (Bags and sand values are
+  unchanged — only the weight/water display moved from net to ordered.)
+- **Trail honesty**: the mortar calculation line only renders in mortar mode;
+  glue mode shows its own “Adhesive: 46.7 kg → 2 × 25 kg” line instead of a
+  “0.000 m³ mortar” stub (same gate added to the bricks trail when mortar is off).
+- Formula-audit case B7 (preset-mm count 394, thermo hint visibility,
+  wastage-once 127.99 kg / 0.334 to batch) — 77 asserts total. Deep-audit 0 findings.
+
+## v91 (bricks review round)
+
+- **Cost total follows the mortar checkbox** (bricks + blocks): with mortar off,
+  only the brick/block price is required for a complete total (was “Cost not
+  entered” even when everything shown was priced), and phantom “0” cement/sand
+  cost rows no longer appear. Mortar-off no longer validates unused mortar
+  fields (garbage in the hidden density box cannot block a brick-only estimate).
+- **Volume-mode error routing** (bricks + blocks): a bad total volume now says
+  “Please enter a valid total volume.” (`errTotalVolume`) instead of the
+  dimensions-and-wall-width message.
+- **Wall-gap note is wall geometry, not mortar**: the “{v} cm not covered” note
+  now shows whenever the leaves leave a cavity — mortar off or glue joints
+  included (it was trapped inside the mortar results block in both tools).
+- **Bricks mortar settings hide when “Calculate with Mortar” is off**
+  (values preserved; blocks already did this via `updateBlockJointVisibility`).
+  Reset now re-syncs both mortar checkboxes (was leaving the panel hidden after
+  a reset from the unchecked state).
+- Tests: bricks-audit mirror model gained the v79 gap term + a 0.28 m cavity
+  case; formula-audit case K6 (openings wall 1,212 bricks / 5 bags / 0.45 m³
+  sand / “Deducted 0.631”, mortar-off cavity wall 3,501 bricks @ 0.25 = complete
+  total, gap note, garbage-density tolerance, volume-message routing) — 72
+  asserts total. Deep-audit 0 findings.
+
+## v90 (earthwork deep-audit round 2)
+
+- **Routed validation messages** (was one message for every failure): dims/quantity
+  → `errEarthworkDims`; truck capacity → `errEarthworkTruck`; factor range →
+  `errSwellRange`/`errShrinkRange` (3 new keys ×4 languages, modeled on the
+  `errWastage` sentence pattern). 
+- **Per-mode factor bounds enforced**: swell 0–100 (excavation), shrink 0–50
+  (backfill — matches the mode-UI `max` intent). Typed values are never
+  silently substituted anymore (the old `factorUsed >= 90 → 89` cap could
+  quietly replace a typed 95 with 89; it stays as an unreachable backstop).
+- **Honest truck capacity**: garbage is scrubbed by the numeric-field cleaner
+  and empty falls back to the 4 m³ default — now written back into the field
+  so the user sees it; non-positive/garbage values that slip past the input
+  layer are a real error instead of a silent 4.
+- Empty factor now errors (asks for a percentage) instead of silently meaning
+  0%; HTML swell `max` corrected 50→100. Formula-audit case 16 grew 8 asserts
+  (60 total): shrink-60/empty/garbage/empty-capacity/swell-150 routing, the
+  written-back default, and the shrink-50 boundary (9/0.5 = 18 m³ → 5 loads).
+
+## v89 (earthwork review round)
+
+- **Per-mode soil balance** in `collectGrandTotals`: excavation → loose
+  `+swell%`, backfill → dry `+shrink%`; all 3 Grand Total builders split
+  "Excavation (swell)" / "Backfill (compaction)" + balance row
+  (`soilExport`/`soilImport`).
+- One hero result card only; `× quantity` in the description (result +
+  quote line); typed swell survives mode flips (auto-swell tracked);
+  soil-type picks hidden in Backfill mode; `shrinkWord` replaces hardcoded
+  "shrink"; `errEarthworkDims` says "elements".
+- Quality: dead `earthwork-shape` select deleted (all 3 options were the same
+  L×W×H; zero code read it); truck-capacity presets 3/4/7 m³.
+  Formula-audit case 16 (2-way soil balance 3.72 m³ import); deep-audit 0 findings.

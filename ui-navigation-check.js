@@ -218,7 +218,7 @@ ok('no page errors', errors.length === 0, errors.join(' | '));
     ok('steel: member quantity label has translations', /data-lang="memberQuantity">/.test(htmlSrc));
     ok('steel: lap splices collapsed in advanced details', /id="steel-lap-details"/.test(htmlSrc) && !/id="steel-include-lap-splice"/.test(htmlSrc));
     ok('steel: custom bars element exists', /id="steel-custom-inputs"/.test(htmlSrc) && /data-lang="customBars">/.test(htmlSrc));
-    ok('steel: diameter lists include 8 and 32', /value="8">8</.test(htmlSrc) && /value="32">32</.test(htmlSrc));
+    ok('steel: diameter lists include 8 and 32 (with kg/m)', /value="8">8 \(/.test(htmlSrc) && /value="32">32 \(/.test(htmlSrc));
     ok('steel: shop bar length field present', /id="steel-standard-bar-length"/.test(htmlSrc) && /data-lang="standardBarLength">/.test(htmlSrc));
 
     console.log('\n=== 6d. Anyone-can-use aids are in place ===');

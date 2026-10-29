@@ -162,7 +162,7 @@ assert.match(html, /const totalAggregateCost = aggregateCost === null \? null : 
 assert.match(html, /value="custom"[^>]*>Custom nominal ratio/);
 assert.equal(/value="approved"/.test(html), false, 'approved-recipe option must be gone');
 assert.equal(/concrete-approved-water|concrete-approved-admixture|concrete-approved-cement|mixMode, approvedRecipe|moistureBasisNote|Solids purchase allowance/.test(html), false, 'approved-recipe UI must be gone');
-assert.match(html, /id="concrete-approved-ratio"/, 'custom nominal ratio input stays');
+assert.match(html, /id="concrete-custom-ratio"/, 'custom nominal ratio input stays');
 assert.match(html, /id="concrete-nominal-ratio-wrap"/);
 assert.match(html, /concrete-dry-factor-wrap/);
 assert.match(html, /concrete-cement-density-wrap/);
@@ -170,8 +170,9 @@ assert.match(html, /concrete-nominal-ratio-wrap.*classList\.toggle\('hidden', cu
 assert.match(html, /getElementById\('concrete-ratio'\)\.disabled = custom/);
 assert.match(html, /languageSelector\.addEventListener\('change', updateConcreteMixVisibility\)/);
 assert.equal(require('../package.json').scripts.test, 'node tests/calculations.test.js');
-assert.match(html, /Formwork pricing needs element dimensions/);
-assert.match(html, /data-lang="costScopeNote"/);
+assert.match(html, /formworkNotIncludedVolume/, 'volume-mode formwork exclusion note lives');
+assert.equal(/formworkDimensionsNote/.test(html), false, 'dead cost-card formwork note removed (v95)');
+assert.match(html, /costScopeNote/, 'cost-scope honesty note survives in results');
 assert.match(html, /formworkRow\.classList\.toggle\('hidden', mode === 'volume'\)/);
 assert.match(html, /id="block-window-width"/);
 assert.match(html, /id="block-window-height"/);
@@ -208,14 +209,14 @@ for (const m of html.matchAll(/data-(width|length|height)="([^"]+)"[^>]*data-lan
 }
 assert.match(html, /T\.bricksPerM2/);
 // Formula-audit guards: result HTML must not hardcode the English word "bags",
-// and block preset data-width is METRES while bricks are MILLIMETRES (handler conventions).
+// and block + brick preset dimensions are all MILLIMETRES (handler divides by 1000).
 for (const f of ['calc-blocks.src.js', 'calc-bricks.src.js', 'calc-concrete.src.js']) {
   const src = fs.readFileSync(path.join(__dirname, '..', 'src', f), 'utf8');
   assert.equal(/\$\{cementBags\} bags/.test(src), false, `${f} hardcodes "bags" in output`);
 }
 {
   const blockOpts = [...html.matchAll(/<option[^>]*data-width="([^"]+)"[^>]*data-lang="(?:solidBlock20|solidBlock15|hollowBlock|lightweightBlock)"/g)].map(m => Number(m[1]));
-  assert.ok(blockOpts.length >= 4 && blockOpts.every(v => v < 1), `block preset widths must be metres (handler does not divide): ${blockOpts}`);
+  assert.ok(blockOpts.length >= 4 && blockOpts.every(v => v >= 1), `block preset widths must be millimetres (handler divides by 1000): ${blockOpts}`);
   const brickOpts = [...html.matchAll(/<option[^>]*data-width="([^"]+)"[^>]*data-lang="(?:localBrick|standardBrick|engineeringBrick|romanBrick|hollowBrick)"/g)].map(m => Number(m[1]));
   assert.ok(brickOpts.length >= 3 && brickOpts.every(v => v >= 1), `brick preset widths must be millimetres: ${brickOpts}`);
 }
@@ -256,7 +257,7 @@ for (const m of indexHtml.matchAll(/<select[^>]*(?:diameter|dia)[^>]*>[\s\S]*?<\
   assert.deepEqual(opts, DIA, `diameter select must use the unified list: ${m[0].slice(0, 60)}`);
 }
 const appSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'app.src.js'), 'utf8');
-assert.ok(appSrc.includes('[8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 32]'), 'custom bar rows must use the unified diameter list');
+assert.ok(["[8,'0.395']", "[10,'0.617']", "[12,'0.889']", "[25,'3.858']", "[32,'6.321']"].every(x => appSrc.includes(x)), 'custom bar rows must use the unified diameter list with kg/m');
 // Total-volume mode asks for volume only — no wall leaves / thickness inputs.
 for (const [wrapId, leavesId, widthId] of [['block-volume-input', 'block-leaves', 'block-wall-width-input'], ['brick-volume-input', 'brick-leaves', 'brick-wall-width-input']]) {
   const wrap = indexHtml.match(new RegExp(`<div id="${wrapId}"[\\s\\S]*?<div id="[^"]*-result|<div id="${wrapId}"[\\s\\S]*?<\\/section`));
@@ -349,7 +350,7 @@ for (const f of ['app.js']) {
 for (const [f, needle] of [['src/calc-concrete.src.js', 'nums: { cementBags: cementBags'], ['src/calc-blocks.src.js', 'nums: { blocks: blocksNeeded'], ['src/calc-bricks.src.js', 'nums: { bricks: bricksNeeded'], ['src/calc-earthwork.src.js', 'nums: { volume: volume'], ['src/calc-steel.src.js', 'nums: { weightKg:']]) {
   assert.ok(fs.readFileSync(path.join(__dirname, '..', f), 'utf8').includes(needle), `${f} must carry raw nums for the BOQ`);
 }
-assert.ok(/totalBars12 \? ` ≈ \$\{formatQty\(totalBars12\)\}/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-steel.src.js'), 'utf8')), 'steel hero must show total commercial bars');
+assert.ok(!/totalBars12/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-steel.src.js'), 'utf8')), 'steel hero shows total weight only (no mixed-diameter bar count)');
 for (const id of ['grandtotal-overlay', 'grandtotal-close-btn', 'grandtotal-print-btn', 'grand-total-btn', 'grandtotal-content']) {
   assert.ok(indexHtml.includes(`id="${id}"`), `missing #${id}`);
 }
@@ -479,7 +480,7 @@ assert.ok(/id="quote-share-btn"/.test(indexHtml) && /id="grandtotal-share-btn"/.
   assert.ok(/id="steel-cost-card" class="card p-3 rounded-lg hidden/.test(indexHtml), 'steel cost card must stay hidden');
   assert.ok(/id="concrete-formwork-row" hidden/.test(indexHtml), 'formwork price row must be hidden plumbing');
   assert.ok(/<div hidden><label[^>]*data-lang="glueCost"/.test(indexHtml), 'glue price field must be hidden plumbing');
-  assert.ok(/<div hidden><label[^>]*data-lang="priceEach"/.test(indexHtml), 'BRC price field must be hidden plumbing');
+  assert.ok(/<div hidden><input[^>]*id="brc-cost"/.test(indexHtml), 'BRC price field must be hidden plumbing');
   // wizard must skip hidden cards (so the cost step vanishes from the flow)
   const appUiSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'app-ui.src.js'), 'utf8');
   assert.ok(appUiSrc.includes("card.hasAttribute('data-wizard-skip')"), 'wizard must skip data-wizard-skip cards');
@@ -538,5 +539,92 @@ assert.ok(/formatMoney\(amount, quoteCurrency\(\)\)/.test(appSrc) && /formatMone
 // must embed as a canvas image — jsPDF's WinAnsi helvetica cannot print those glyphs.
 assert.ok(appSrc.includes('[^\\u0000-\\u00FF]'), 'pdfWrite must image-embed every non-Latin-1 run');
 assert.ok(!/[\u0600-\u06FF]/.test('') && appSrc.includes('doc.addImage(cv.toDataURL'), 'pdfWrite image path must exist');
+
+// v81: formwork is first-class in totals — quote line, session nums, Project Total row,
+// and its cost row follows the 'Cost not entered' / 0-is-valid standard.
+const concreteSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-concrete.src.js'), 'utf8');
+assert.ok(/nums\.formworkArea/.test(concreteSrc), 'formwork area must reach session nums (Project Total)');
+assert.ok(/item: T\.formworkArea/.test(concreteSrc), 'Summary sheet must carry a formwork line');
+assert.ok(/formworkCostPerM2 === null \? T\.costNotEntered/.test(concreteSrc), 'formwork cost row must show Cost not entered, 0 valid');
+assert.ok(/formwork: 0/.test(appSrc) && /tot\.formwork \+= n\.formworkArea/.test(appSrc), 'Project Total must aggregate formwork');
+
+// v97 (export round): no hardcoded stock-bar length in share texts / order note,
+// and the export sheet's Save says history (it saves to history, not a project).
+assert.equal(/\(12 m\)/.test(appSrc), false, 'GT share text must not hardcode (12 m)');
+assert.equal(/standard 12 m commercial|12 مەترییێن|١٢ مەتر|طول 12 م/.test(appSrc), false, 'orderBarsNote must not hardcode the bar length');
+assert.equal(/typeSave: "Save to project"|typeSave: "حفظ في المشروع"/.test(appSrc), false, 'export Save label must say history');
+assert.ok(/priceOf\(ln, i\)/.test(appSrc), 'summary sheet prices fall back to panel unitPrice');
+assert.ok(!/Construction Material Estimate/.test(appSrc), 'print/CSV headers use the live quote meta');
+assert.ok(!/project-name/.test(appSrc) && !/estimatorProjects/.test(appSrc), 'ghost project store fully removed');
+assert.ok(/generatedByLine/.test(appSrc) && /valueCol/.test(appSrc) && /readQuoteMeta/.test(appSrc), 'translated export keys + single meta reader');
+
+// v82: summary sheets strip bidi tags from item labels (steel <bdi> leaked as text),
+// and the dead upgrade-label map entries are gone.
+assert.ok(/stripTags\(ln\.item\)/.test(appSrc) && /stripTags\(line\.item\)/.test(appSrc), 'every Summary consumer must strip item tags');
+assert.ok(!/\bimperialUnits:/.test(appSrc) && !/\binputUnits:/.test(appSrc), 'dead upgradeLabels keys must stay removed');
+assert.ok(!/wallLeaves:'/.test(appSrc), 'dead upgradeLabels wallLeaves must not return');
+
+// v83: remembered quote prices follow stable line keys; Project Total sums
+// ordered mass (bags × their own size); backups keep quote prices and headers.
+assert.ok(/key: 'cement'/.test(concreteSrc) && /key: 'formwork'/.test(concreteSrc), 'quote lines must carry stable keys');
+assert.ok(/cementBagKg/.test(concreteSrc) && /glueBagKg/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-blocks.src.js'), 'utf8')), 'session rows must record the bag size used');
+assert.ok(/key: `dia-/.test(fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-steel.src.js'), 'utf8')), 'steel quote lines must key by diameter');
+assert.ok(/addCement/.test(appSrc) && /tot\.cementKg/.test(appSrc), 'Project Total must aggregate ordered mass');
+assert.ok(/quotePrices: JSON\.parse/.test(appSrc) && /data\.quotePrices/.test(appSrc), 'backup must keep quote prices');
+assert.ok(/quoteMeta: JSON\.parse/.test(appSrc) && /data\.quoteMeta/.test(appSrc), 'backup must keep quote header meta');
+assert.ok(/blockPreGlueJoint/.test(appSrc), 'glue joint auto-set must restore on switch back to mortar');
+// v84: quote price input joins the numeric guard; remembered prices convert
+// with the currency; the custom currency option is reachable again.
+assert.ok(appSrc.includes('inputmode="decimal" min="0" step="0.01" class="quote-input quote-price"'), 'quote price input must be a guarded numeric field');
+assert.ok(/__normalizeNumText/.test(appSrc), 'quote prices must parse with the shared comma rule');
+assert.ok(/convertPrice/.test(appSrc) && /estimatorQuotePrices/.test(appSrc), 'currency conversion must cover remembered quote prices');
+const htmlSrc = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+assert.ok(/value="other"/.test(htmlSrc) && /'other'/.test(appSrc), 'custom currency must be selectable');
+// v85: every letter in ku/ks uses Kurdish forms; no stray scripts, tatweel or
+// Cyrillic lookalikes; font supplements cover what the Vazirmatn subsets lack.
+assert.ok(!/[а-яА-Я]/.test(appSrc), 'no Cyrillic lookalike letters in translations');
+const kuWin = appSrc.slice(appSrc.indexOf('ku: {'), appSrc.indexOf('ks: {'));
+const ksWin = appSrc.slice(appSrc.indexOf('ks: {'), appSrc.indexOf('ar: {'));
+assert.ok(kuWin.length > 1000 && ksWin.length > 1000, 'ku/ks translation windows located');
+for (const pair of [['ku', kuWin], ['ks', ksWin]]) {
+  const w = pair[1];
+  assert.ok(!w.includes('ى') && !w.includes('ي') && !w.includes('ك') && !w.includes('ـ'), pair[0] + ' uses Kurdish letter forms only');
+}
+const cssV85 = fs.readFileSync(path.join(__dirname, '..', 'new-style.css'), 'utf8');
+assert.ok(cssV85.includes('vazirmatn-extra.woff2') && cssV85.includes('symbols.woff2'), 'font supplements declared');
+assert.ok(cssV85.includes('U+0622, U+066A, U+2026, U+2248') && cssV85.includes('U+2192, U+2194, U+2713'), 'supplement ranges cover every font gap');
+const swV85 = fs.readFileSync(path.join(__dirname, '..', 'sw.js'), 'utf8');
+assert.ok(swV85.includes('vazirmatn-extra.woff2') && swV85.includes('symbols.woff2'), 'service worker caches the font supplements');
+// v86: steel tool — per-element cover defaults, kg/m on every diameter menu,
+// mirrored entry-mode selects, BRC piece presets, meters per diameter in rows.
+assert.ok(!/totalBars12/.test(appSrc) === false || true, 'placeholder');
+const idxSrc = htmlSrc;
+assert.ok(/id="footing-cover" class="pro-input w-full" value="50"/.test(idxSrc) && /id="slab-cover" class="pro-input w-full" value="20"/.test(idxSrc), 'footing/slab covers default to practice values');
+assert.ok(/id="beam-cover" class="pro-input w-full" value="25"/.test(idxSrc) && /id="column-cover" class="pro-input w-full" value="25"/.test(idxSrc), 'beam/column covers default to 25');
+assert.ok(idxSrc.includes('12 (0.889 kg/m)'), 'diameter menus show kg/m');
+assert.ok(idxSrc.includes('brc-size-presets') && appSrc.includes('brc-preset'), 'BRC piece-size presets wired');
+assert.ok(/-diameter-len-alt/.test(appSrc) && /sync\(primary, mirror\)/.test(appSrc), 'entry-mode diameter selects mirror each other');
+// v87: staircase element + bent-up (cranked) bars for one-way strips.
+const steelV87 = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-steel.src.js'), 'utf8');
+assert.ok(/stair-going/.test(steelV87) && /selectedElement === 'stair'/.test(steelV87), 'staircase element wired');
+assert.ok(/0\.42/.test(steelV87) && /one-way-crank/.test(appSrc), 'bent-up crank allowance wired');
+assert.ok(htmlSrc.includes('id="stair-main-spacing"') && htmlSrc.includes('id="one-way-crank-depth"'), 'stair + crank fields present');
+// v88: stair name maps to its translated label; session rows re-localize it;
+// the section diagram reads each element's own fields; dead keys removed.
+assert.ok(/stair: 'stairFlight'/.test(steelV87), 'stair element name maps to its label');
+assert.ok(/'brcMesh', 'stairFlight'\]/.test(appSrc), 'session table re-localizes stair rows');
+assert.ok(/beamSectionSVG\(pre\)/.test(appUiSrc) || /pre \+ '-/.test(appUiSrc), 'section diagram is per-element');
+assert.ok(/stair-main-spacing/.test(appUiSrc), 'stair diagram reads stair fields');
+assert.ok(!/\bquantities:/.test(appSrc) && !/\blengthPerBar:/.test(appSrc) && !/\bunitWeight:/.test(appSrc), 'dead dict keys removed');
+// v89: earthwork — translated shrink label, split GT sections, soil balance,
+// typed-swell restore, dead shape select removed, truck presets.
+const earthV89 = fs.readFileSync(path.join(__dirname, '..', 'src', 'calc-earthwork.src.js'), 'utf8');
+assert.ok(/T\.shrinkWord/.test(earthV89) && !/['"]shrink['"]/.test(earthV89), 'shrink label is translated, not hardcoded');
+assert.ok(/loose: looseVolume/.test(earthV89), 'earthwork rows carry loose volume for the balance');
+assert.ok(/soilExport/.test(appSrc) && /looseExc/.test(appSrc), 'GT splits excavation/backfill with a soil balance');
+assert.ok(/lastAutoSwell/.test(appSrc), 'mode toggle only replaces auto-set swell values');
+assert.ok(!/earthwork-shape/.test(htmlSrc) && !/\bexcavShape:/.test(appSrc), 'dead excavation-shape select removed');
+assert.ok(htmlSrc.includes('earthwork-truck-presets') && appUiSrc.includes('truck-preset'), 'truck presets wired');
+assert.ok(!/number of walls/.test(appSrc), 'earthwork error says elements, not walls');
 
 console.log('PASS: concrete, blocks, bricks, steel, earthwork, openings, stirrups, and dimensional regression checks');

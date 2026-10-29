@@ -2,15 +2,14 @@
    (tab open or Calculate tap); registers its handler instead of running at startup. */
 window.__calcHandlers = window.__calcHandlers || {};
 window.__calcHandlers.blocks = function (ctx) {
-  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty } = ctx;
-  const unitOf = (n, one, many) => (Number(n) === 1 ? one : many);
+  const { translations, fill, getCementBagMass, getCurrency, getWastageFactor, renderSessionTable, showError, sessionResults, lastCalcData, errorBox , formatMoney, formatQty, unitOf } = ctx;
                 const lang = localStorage.getItem('language') || 'en';
                 const T = translations[lang];
 
                 const blockOpt = document.getElementById('block-type').options[document.getElementById('block-type').selectedIndex];
                 const blockCustom = blockOpt.value === 'custom';
                 const blockLengthM = blockCustom ? Number(document.getElementById('block-custom-length').value) / 1000 : parseFloat(blockOpt.getAttribute('data-length')) / 1000;
-                const blockWidthM = blockCustom ? Number(document.getElementById('block-custom-width').value) / 1000 : parseFloat(blockOpt.getAttribute('data-width'));
+                const blockWidthM = blockCustom ? Number(document.getElementById('block-custom-width').value) / 1000 : parseFloat(blockOpt.getAttribute('data-width')) / 1000;
                 const blockHeightM = blockCustom ? Number(document.getElementById('block-custom-height').value) / 1000 : parseFloat(blockOpt.getAttribute('data-height')) / 1000;
                 
                 if ([blockLengthM, blockWidthM, blockHeightM].some(v => isNaN(v) || v <= 0)) {
@@ -28,7 +27,9 @@ window.__calcHandlers.blocks = function (ctx) {
                 const includeMortar = document.getElementById('block-include-mortar').checked;
                 const mortarRatioParts = document.getElementById('block-mortar-ratio').value.split(':').map(Number);
                 const cementDensity = Number(document.getElementById('block-cement-density').value);
-                if ([blockCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0) || !Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0)) { showError(T.errRequiredFields); return; }
+                if ([blockCost, cementCost, sandCost].filter(v => v !== null).some(v => !Number.isFinite(v) || v < 0)) { showError(T.errRequiredFields); return; }
+                const mortarMixActive = includeMortar && document.getElementById('block-joint-type')?.value !== 'glue';
+                if (mortarMixActive && (!Number.isFinite(cementDensity) || cementDensity <= 0 || mortarRatioParts.some(v => !Number.isFinite(v) || v <= 0))) { showError(T.errRequiredFields); return; }
 
                 const mode = document.querySelector('input[name="block-mode"]:checked').value;
                 let totalWallVolume, length, height, dimsWallWidth = null;
@@ -41,7 +42,7 @@ window.__calcHandlers.blocks = function (ctx) {
                     // width). No wall-thickness or leaves input is needed in this mode.
                     totalWallVolume = Number(document.getElementById('block-wall-volume').value);
                     if (!Number.isFinite(totalWallVolume) || totalWallVolume <= 0) {
-                        showError(T.errDimsWallWidth);
+                        showError(T.errTotalVolume);
                         return;
                     }
                     length = null; height = null;
@@ -84,7 +85,7 @@ window.__calcHandlers.blocks = function (ctx) {
                 const wastageFactor = getWastageFactor();
                 if (wastageFactor === null) return;
                 const singleBlockVolume = blockLengthM * blockWidthM * blockHeightM;
-                let blocksNeededUnwasted, mortarVolume = 0, cementBags = 0, sandVolume = 0, cementWeight = 0; let mixingWaterLitres = 0;
+                let blocksNeededUnwasted, mortarVolume = 0, mortarVolumeOrder = 0, cementBags = 0, sandVolume = 0, cementWeight = 0; let mixingWaterLitres = 0;
                 
                 // v70: total-volume mode counts one layer; dimensions mode derives layers from the wall width.
                 const mortarThicknessM = includeMortar ? Number(document.getElementById('block-mortar-thickness').value) / 100 : 0;
@@ -119,46 +120,51 @@ window.__calcHandlers.blocks = function (ctx) {
                     if (mortarVolume < -1e-9) { showError(T.errRequiredFields); return; }
                     mortarVolume = Math.max(0, mortarVolume);
                     if (mortarVolume > 0) {
-                        const dryMortarVolume = mortarVolume * mortarDryFactor;
+                        // Wastage is applied once, to the wet mortar, so cement and sand
+                        // inherit it and the shown quantities reconcile with the shown
+                        // mortar volume (same convention as the bricks tool).
+                        mortarVolumeOrder = mortarVolume * wastageFactor;
+                        const dryMortarVolume = mortarVolumeOrder * mortarDryFactor;
                         const sumOfRatio = mortarRatioParts.reduce((a, b) => a + b, 0);
                         const cementVolume = (dryMortarVolume * mortarRatioParts[0]) / sumOfRatio;
                         sandVolume = (dryMortarVolume * mortarRatioParts[1]) / sumOfRatio;
                         cementWeight = cementVolume * cementDensity;
-                        cementBags = Math.ceil((cementWeight * wastageFactor) / getCementBagMass());
-                        sandVolume *= wastageFactor;
+                        cementBags = Math.ceil(cementWeight / getCementBagMass());
                     }
                     mixingWaterLitres = cementWeight * 0.6;
                 }
                 
                 const blocksNeeded = Math.ceil(blocksNeededUnwasted * wastageFactor);
                 const totalBlockCost = blockCost === null ? null : blocksNeeded * blockCost;
-                const totalCementCost = (!glueMode && cementCost !== null) ? cementBags * cementCost : null;
-                const totalSandCost = (!glueMode && sandCost !== null) ? sandVolume * sandCost : null;
+                // Mortar/glue-off means no joint materials in the bill: their prices are not
+                // required for a complete total, and no zero cost rows are shown.
+                const totalCementCost = (!glueMode && includeMortar && cementCost !== null) ? cementBags * cementCost : null;
+                const totalSandCost = (!glueMode && includeMortar && sandCost !== null) ? sandVolume * sandCost : null;
                 const totalGlueCost = glueMode ? (gluePrice === null ? null : glueBags * gluePrice) : null;
                 const materialCostsComplete = (glueMode
                     ? [blockCost, gluePrice]
-                    : [blockCost, cementCost, sandCost]
+                    : (includeMortar ? [blockCost, cementCost, sandCost] : [blockCost])
                 ).every(v => v !== null && Number.isFinite(v) && v >= 0);
                 const totalCost = materialCostsComplete
-                    ? totalBlockCost + (glueMode ? totalGlueCost : totalCementCost + totalSandCost)
+                    ? totalBlockCost + (glueMode ? totalGlueCost : (includeMortar ? totalCementCost + totalSandCost : 0))
                     : null;
                 const currency = getCurrency();
                 const hollowGroutNote = ['hollow', 'thermo_20', 'thermo_15'].includes(blockOpt.value) ? T.hollowBlockNote : '';
 
                 lastCalcData.blocks = {
-                    nums: { blocks: blocksNeeded, cementBags: glueMode ? 0 : (includeMortar ? cementBags : 0), sand: (!glueMode && includeMortar) ? sandVolume : 0, glueBags: glueMode ? glueBags : 0 },
+                    nums: { blocks: blocksNeeded, cementBags: glueMode ? 0 : (includeMortar ? cementBags : 0), sand: (!glueMode && includeMortar) ? sandVolume : 0, glueBags: glueMode ? glueBags : 0 , cementBagKg: getCementBagMass(), glueBagKg: glueBagSize || 25 },
                     volume: `${totalWallVolume.toFixed(2)} m³`,
                     blocks: `${formatQty(blocksNeeded)} ${unitOf(blocksNeeded, T.pcUnitOne, T.piecesWord)}`,
                     cement: glueMode ? `${formatQty(glueBags)} ${unitOf(glueBags, T.bagUnitOne, T.bagsWord)}` : (includeMortar ? `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}` : 'N/A'),
                     sand: (!glueMode && includeMortar) ? `${sandVolume.toFixed(2)} m³` : 'N/A',
                     cost: materialCostsComplete ? `${currency}${formatMoney(totalCost, currency)}` : T.costNotEntered,
                     quoteLines: [
-                        { item: T.totalBlocks, qty: `${formatQty(blocksNeeded)} ${unitOf(blocksNeeded, T.pcUnitOne, T.piecesWord)}`, unitPrice: blockCost },
+                        { key: 'blocks', item: T.totalBlocks, qty: `${formatQty(blocksNeeded)} ${unitOf(blocksNeeded, T.pcUnitOne, T.piecesWord)}`, unitPrice: blockCost },
                         ...(glueMode
-                            ? [{ item: T.glueAdhesive, qty: `${formatQty(glueBags)} ${unitOf(glueBags, T.bagUnitOne, T.bagsWord)} (${formatQty(glueKg, 1)} kg)`, unitPrice: gluePrice }]
+                            ? [{ key: 'glue', item: T.glueAdhesive, qty: `${formatQty(glueBags)} ${unitOf(glueBags, T.bagUnitOne, T.bagsWord)} (${formatQty(glueKg, 1)} kg)`, unitPrice: gluePrice }]
                             : (includeMortar ? [
-                                { item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: cementCost },
-                                { item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
+                                { key: 'cement', item: T.cementBags, qty: `${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}`, unitPrice: cementCost },
+                                { key: 'sand', item: T.sand, qty: `${sandVolume.toFixed(2)} m³`, unitPrice: sandCost }
                             ] : []))
                     ]
                 };
@@ -182,8 +188,7 @@ window.__calcHandlers.blocks = function (ctx) {
                     costResultsHTML = rowsCost.join('');
                 } else if (includeMortar && mortarVolume > 0) {
                     mortarResultsHTML = `
-                        <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolume.toFixed(3)} m³</span></div>
-                        ${wallGapM > 0.02 ? `<div class="result-item flex items-center gap-2 col-span-2" data-kind="detail"><i data-lucide="info"></i><span>${fill(T.wallGapNote, { v: (wallGapM * 100).toFixed(0) })}</span></div>` : ''}
+                        <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="blending"></i><span><strong class="font-semibold block">${T.mortarVolume}</strong> ${mortarVolumeOrder.toFixed(3)} m³ <span class="text-xs opacity-75">(${mortarVolume.toFixed(3)} ${T.netWord} + ${(mortarVolumeOrder - mortarVolume).toFixed(3)} ${T.wasteWord})</span></span></div>
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="shopping-bag"></i><span><strong class="font-semibold block">${T.cementBags}</strong> ${formatQty(cementBags)} ${unitOf(cementBags, T.bagUnitOne, T.bagsWord)}</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="detail"><i data-lucide="scale"></i><span><strong class="font-semibold block">${T.cementWeight}</strong> ${cementWeight.toFixed(2)} kg</span></div>
                         <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="waves"></i><span><strong class="font-semibold block">${T.sand}</strong> ${sandVolume.toFixed(2)} m³</span></div>
@@ -223,10 +228,11 @@ window.__calcHandlers.blocks = function (ctx) {
                                 <div class="result-item flex items-center gap-2" data-kind="order"><i data-lucide="table-2"></i><span><strong class="font-semibold block">${T.totalBlocks}</strong> ${formatQty(blocksNeeded)}</span></div>
                                  
                                  ${mortarResultsHTML}
+                                 ${wallGapM > 0.02 ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="info"></i><span>${fill(T.wallGapNote, { v: (wallGapM * 100).toFixed(0) })}</span></div>` : ''}
 
                                  ${hasOpenings ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start" data-kind="detail"><i data-lucide="scan"></i><span><strong class="font-semibold block">${T.totalOpeningVolume}</strong> ${totalOpeningVolumeForDisplay}</span></div>` : ''}
                                 ${hollowGroutNote ? `<div class="result-item flex items-center gap-2 sm:col-span-2 text-start"><i data-lucide="info"></i><span>${hollowGroutNote}</span></div>` : ''}
-                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${formatQty(blocksNeeded)} ${T.orderedWord}</div><div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolume.toFixed(3), b: (mortarVolume * mortarDryFactor > 0 ? (mortarVolume * wastageFactor).toFixed(3) : '0.000'), c: (mortarVolume * wastageFactor - mortarVolume).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div><div>${T.trailWallLeaves}: ${leaves}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}${glueMode ? `<div>${T.glueJointNote}</div>` : ''}</div></details>
+                                <details class="calculation-trail card p-3 mt-2 sm:col-span-2 text-sm text-start"><summary class="font-semibold">${T.calculationDetails || 'Calculation details'}</summary><div class="mt-2 space-y-1"><div>${mode === 'volume' ? `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³` : `${T.totalWallVolume}: ${totalWallVolume.toFixed(3)} m³; ${T.wallWidth}: ${wallThicknessM.toFixed(3)} m`}</div><div>${T.totalBlocks}: ${blocksNeededUnwasted.toFixed(2)} ${T.trailBeforeWaste} + ${(blocksNeeded - blocksNeededUnwasted).toFixed(2)} ${T.wasteWord} = ${formatQty(blocksNeeded)} ${T.orderedWord}</div>${(includeMortar && !glueMode) ? `<div>${T.mortarVolume}: ${fill(T.trailNetToBatch, { a: mortarVolume.toFixed(3), b: mortarVolumeOrder.toFixed(3), c: (mortarVolumeOrder - mortarVolume).toFixed(3) })}; ${T.mortarDryFactor}: ${mortarDryFactor.toFixed(2)}; ${T.mortarMixRatio}: <bdi dir="ltr">${mortarRatioParts.join(':')}</bdi></div>` : ''}<div>${T.trailWallLeaves}: ${leaves}</div>${hasOpenings ? `<div>${T.totalOpeningVolume}: ${totalOpeningVolumeForDisplay}</div>` : ''}${hollowGroutNote ? `<div>${hollowGroutNote}</div>` : ''}${glueMode ? `<div>${T.glueAdhesive}: ${glueKg.toFixed(1)} kg → ${glueBags} × ${glueBagSize} kg</div><div>${T.glueJointNote}</div>` : ''}</div></details>
                                
                                 <div class="sm:col-span-2 mt-2 pt-2 border-t border-gray-700">
                                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-start">
